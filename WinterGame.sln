@@ -1,9 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35506.116 d17.12
+VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinterGame", "WinterGame.vcxproj", "{A0ECBC58-FE34-477C-B275-299ED2583C53}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Externals\GameEngine_DX12\Engine\Engine.vcxproj", "{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTex", "Externals\GameEngine_DX12\Engine\Externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj", "{371B9FA9-4C90-4AC6-A123-ACED756D6C77}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGui", "Externals\GameEngine_DX12\Engine\Externals\ImGui\ImGui.vcxproj", "{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VecMat", "Externals\GameEngine_DX12\Engine\Externals\VectorMatrix\Project\VecMat.vcxproj", "{A87AD77F-CC08-4788-8630-68470354FCD3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Externals", "Externals", "{3BC02507-77C0-40A8-9E3B-2FA4A06BE9B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,14 +25,48 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Debug|x64.ActiveCfg = Debug|x64
 		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Debug|x64.Build.0 = Debug|x64
-		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Debug|x86.ActiveCfg = Debug|Win32
-		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Debug|x86.Build.0 = Debug|Win32
+		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Debug|x86.ActiveCfg = Debug|x64
 		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Release|x64.ActiveCfg = Release|x64
 		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Release|x64.Build.0 = Release|x64
-		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Release|x86.ActiveCfg = Release|Win32
-		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Release|x86.Build.0 = Release|Win32
+		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Release|x86.ActiveCfg = Release|x64
+		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Debug|x64.ActiveCfg = Debug|x64
+		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Debug|x64.Build.0 = Debug|x64
+		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Debug|x86.ActiveCfg = Debug|x64
+		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Debug|x86.Build.0 = Debug|x64
+		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Release|x64.ActiveCfg = Release|x64
+		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Release|x64.Build.0 = Release|x64
+		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Release|x86.ActiveCfg = Release|x64
+		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Release|x86.Build.0 = Release|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Debug|x64.ActiveCfg = Debug|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Debug|x64.Build.0 = Debug|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Debug|x86.ActiveCfg = Debug|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release|x64.ActiveCfg = Release|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release|x64.Build.0 = Release|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release|x86.ActiveCfg = Release|x64
+		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Debug|x64.ActiveCfg = Debug|x64
+		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Debug|x64.Build.0 = Debug|x64
+		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Debug|x86.ActiveCfg = Debug|x64
+		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Debug|x86.Build.0 = Debug|x64
+		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Release|x64.ActiveCfg = Release|x64
+		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Release|x64.Build.0 = Release|x64
+		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Release|x86.ActiveCfg = Release|x64
+		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Release|x86.Build.0 = Release|x64
+		{A87AD77F-CC08-4788-8630-68470354FCD3}.Debug|x64.ActiveCfg = Debug|x64
+		{A87AD77F-CC08-4788-8630-68470354FCD3}.Debug|x64.Build.0 = Debug|x64
+		{A87AD77F-CC08-4788-8630-68470354FCD3}.Debug|x86.ActiveCfg = Debug|x64
+		{A87AD77F-CC08-4788-8630-68470354FCD3}.Debug|x86.Build.0 = Debug|x64
+		{A87AD77F-CC08-4788-8630-68470354FCD3}.Release|x64.ActiveCfg = Release|x64
+		{A87AD77F-CC08-4788-8630-68470354FCD3}.Release|x64.Build.0 = Release|x64
+		{A87AD77F-CC08-4788-8630-68470354FCD3}.Release|x86.ActiveCfg = Release|x64
+		{A87AD77F-CC08-4788-8630-68470354FCD3}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C} = {3BC02507-77C0-40A8-9E3B-2FA4A06BE9B2}
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77} = {3BC02507-77C0-40A8-9E3B-2FA4A06BE9B2}
+		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B} = {3BC02507-77C0-40A8-9E3B-2FA4A06BE9B2}
+		{A87AD77F-CC08-4788-8630-68470354FCD3} = {3BC02507-77C0-40A8-9E3B-2FA4A06BE9B2}
 	EndGlobalSection
 EndGlobal
