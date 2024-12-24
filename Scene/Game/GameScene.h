@@ -1,8 +1,10 @@
 #pragma once
 
 #include <Interfaces/IScene.h>
+#include <Features/Object3d/Object3d.h>
+#include <Features/GameEye/GameEye.h>
 
-class TitleScene : public IScene
+class GameScene : public IScene
 {
 public:
     /// <summary>
@@ -36,4 +38,7 @@ public:
     void Draw2dForeground() override;
 
 
+private:
+    std::unique_ptr<Object3d> grid_ = {};
+    std::unique_ptr<GameEye> gameEye_ = {};
 };

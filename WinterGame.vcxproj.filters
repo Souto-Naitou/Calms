@@ -13,6 +13,15 @@
     <Filter Include="Scene\Title">
       <UniqueIdentifier>{8e625d63-a460-40bf-be2c-df0e21c56009}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\Game">
+      <UniqueIdentifier>{caef7934-734a-4ac8-9c48-d59212b0d380}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{04dfdcfc-59e1-403a-9266-6a4aaee534b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Player">
+      <UniqueIdentifier>{9c09af10-26f5-42dc-8a06-e0fbf245b9c6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinterGame\WinterGame.cpp">
@@ -25,6 +34,12 @@
     <ClCompile Include="Scene\Title\TitleScene.cpp">
       <Filter>Scene\Title</Filter>
     </ClCompile>
+    <ClCompile Include="Scene\Game\GameScene.cpp">
+      <Filter>Scene\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\Player\Player.cpp">
+      <Filter>GameObject\Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinterGame\WinterGame.h">
@@ -35,6 +50,15 @@
     </ClInclude>
     <ClInclude Include="Scene\Title\TitleScene.h">
       <Filter>Scene\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Game\GameScene.h">
+      <Filter>Scene\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\BaseObject.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\Player\Player.h">
+      <Filter>GameObject\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

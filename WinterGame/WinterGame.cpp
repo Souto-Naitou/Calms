@@ -21,7 +21,7 @@ void WinterGame::Initialize()
     pModelManager_->LoadAllModel();
 
     /// シーンの生成
-    pSceneManager_->ReserveScene("TitleScene");
+    pSceneManager_->ReserveScene("GameScene");
 }
 
 void WinterGame::Finalize()
