@@ -22,6 +22,9 @@
     <Filter Include="GameObject\Player">
       <UniqueIdentifier>{9c09af10-26f5-42dc-8a06-e0fbf245b9c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject\PlayerBullet">
+      <UniqueIdentifier>{2eeb9b05-afc1-4862-a621-00288d2a243f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinterGame\WinterGame.cpp">
@@ -40,6 +43,8 @@
     <ClCompile Include="GameObject\Player\Player.cpp">
       <Filter>GameObject\Player</Filter>
     </ClCompile>
+    <ClCompile Include="GameObject\BaseObject.cpp" />
+    <ClCompile Include="GameObject\PlayerBullet\PlayerBullet.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinterGame\WinterGame.h">
@@ -59,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="GameObject\Player\Player.h">
       <Filter>GameObject\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\PlayerBullet\PlayerBullet.h">
+      <Filter>GameObject\PlayerBullet</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

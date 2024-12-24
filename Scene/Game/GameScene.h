@@ -3,6 +3,10 @@
 #include <Interfaces/IScene.h>
 #include <Features/Object3d/Object3d.h>
 #include <Features/GameEye/GameEye.h>
+#include <GameObject/Player/Player.h>
+#include <GameObject/PlayerBullet/PlayerBullet.h>
+#include <list>
+#include <memory>
 
 class GameScene : public IScene
 {
@@ -41,4 +45,11 @@ public:
 private:
     std::unique_ptr<Object3d> grid_ = {};
     std::unique_ptr<GameEye> gameEye_ = {};
+    std::unique_ptr<Player> player_ = {};
+    std::list<std::unique_ptr<PlayerBullet>> playerBullets_ = {};
+
+
+private:
+    void CreatePlayerBullet();
+    void RemovePlayerBullet();
 };
