@@ -15,6 +15,8 @@ ConstantBuffer<Matrices> gWVPMatrix : register(b0);
 VertexShaderOutput main(VertexShaderInput input)
 {
     VertexShaderOutput output;
-    output.position = mul(float4(input.position, 1.0f), gWVPMatrix.WVP);
+    float4 pos = mul(float4(input.position, 1.0f), gWVPMatrix.WVP);
+
+    output.position = pos;
     return output;
 }

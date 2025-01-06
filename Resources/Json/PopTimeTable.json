@@ -1,0 +1,46 @@
+{
+    "Enemy": {
+        "TimeTable" : [
+            {
+                "name" : "Wave1",
+                "beginTime" : 0.000,
+                "endTime" : 15.000,
+                "enemyType" : "Normal",
+                "enemyCount" : 3,
+                "interval" : 5.000
+            },
+            {
+                "name" : "Wave2",
+                "beginTime" : 15.000,
+                "endTime" : 30.000,
+                "enemyType" : "Normal",
+                "enemyCount" : 5,
+                "interval" : 5.000
+            },
+            {
+                "name" : "Wave3",
+                "beginTime" : 30.000,
+                "endTime" : 40.000,
+                "enemyType" : "Normal",
+                "enemyCount" : 1,
+                "interval" : 2.000
+            },
+            {
+                "name" : "Wave4",
+                "beginTime" : 40.000,
+                "endTime" : 50.000,
+                "enemyType" : "Normal",
+                "enemyCount" : 3,
+                "interval" : 2.000
+            },
+            {
+                "name" : "Wave5",
+                "beginTime" : 50.000,
+                "endTime" : 60.000,
+                "enemyType" : "Normal",
+                "enemyCount" : 3,
+                "interval" : 3.500
+            }
+        ]
+    }
+}

@@ -6,6 +6,9 @@
 #include <memory>
 #include <Features/Input/Input.h>
 #include <Timer/Timer.h>
+#include <Collision/Manager/CollisionManager.h>
+#include <Collision/Collider/Collider.h>
+#include <Collision/Shape.h>
 
 class Player : public BaseObject
 {
@@ -14,6 +17,7 @@ public:
     void Finalize();
     void Update();
     void Draw();
+    void DrawLine();
 
 
 public: /// Getter
@@ -21,6 +25,7 @@ public: /// Getter
 
 
 public: /// Setter
+    void SetIsDrawCollisionArea(bool _isDraw) { isDrawCollisionArea_ = _isDraw; }
 
 
 private:
@@ -32,6 +37,11 @@ private:
     bool isShot_ = false;
     double shotInterval_ = 0.1;
 
+    /// コライダー
+    std::unique_ptr<Collider> collider_ = nullptr;
+    OBB obb_ = {};
+    bool isDrawCollisionArea_ = false;
+
 
 private:
     void UpdateInputCommands();
@@ -41,4 +51,5 @@ private:
 
 private: /// 他クラスの所有物
     Input* input_ = nullptr;
+    CollisionManager* collisionManager_ = nullptr;
 };

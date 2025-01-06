@@ -31,6 +31,11 @@ public:
     void Draw3d() override;
 
     /// <summary>
+    /// ライン描画
+    /// </summary>
+    void DrawLine() override;
+
+    /// <summary>
     /// 前景描画
     /// </summary>
     void Draw2dForeground() override;

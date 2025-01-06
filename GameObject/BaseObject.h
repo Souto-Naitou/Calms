@@ -3,6 +3,8 @@
 #include <Vector3.h>
 #include <string>
 #include <Features/GameEye/GameEye.h>
+#include <DIContainer/DIContainer.h>
+#include <Common/structs.h>
 
 class BaseObject
 {
@@ -13,6 +15,7 @@ public:
     virtual void Finalize();
     virtual void Update() = 0;
     virtual void Draw() = 0;
+    virtual void DrawLine() = 0;
 
 
 public: /// Getter
@@ -35,6 +38,7 @@ public: /// Setter
     void SetVelocity(const Vector3& _velocity) { velocity_ = _velocity; }
     void SetAcceleration(const Vector3& _acceleration) { acceleration_ = _acceleration; }
     void SetFriction(float _friction) { friction_ = _friction; }
+    void SetDIContainer(DIContainer* _diContainer) { diContainer_ = _diContainer; }
 
 
 protected:
@@ -59,4 +63,7 @@ protected:
 
 protected: /// 他クラスの所有物
     GameEye* gameEye_ = nullptr;
+    DIContainer* diContainer_ = nullptr;
+    DirectionalLight* directionalLight_ = nullptr;
+    PointLight* pointLight_ = nullptr;
 };

@@ -21,6 +21,10 @@ void TitleScene::Draw3d()
 {
 }
 
+void TitleScene::DrawLine()
+{
+}
+
 void TitleScene::Draw2dForeground()
 {
 }

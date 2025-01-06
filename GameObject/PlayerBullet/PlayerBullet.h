@@ -6,6 +6,9 @@
 #include <memory>
 #include <Features/GameEye/GameEye.h>
 #include <Timer/Timer.h>
+#include <Collision/Collider/Collider.h>
+#include <Collision/Manager/CollisionManager.h>
+#include <Features/Primitive/OBB.h>
 
 class PlayerBullet : public BaseObject
 {
@@ -14,17 +17,29 @@ public:
     void Finalize() override;
     void Update() override;
     void Draw() override;
+    void DrawLine() override;
 
 
 public: /// Setter
     void SetMoveVelocity(const Vector3& _velocity) { moveVelocity_ = _velocity; }
+    void SetIsDrawCollisionArea(bool _isDraw) { isDrawCollisionArea_ = _isDraw; }
+
 
 private:
-    std::unique_ptr<Object3d> object_ = {};
-    std::unique_ptr<Timer> timer_ = {};
+    std::unique_ptr<Object3d> object_ = nullptr;
+    std::unique_ptr<Timer> timer_ = nullptr;
     float lifeTimeLimit_ = 3.0f;
     Vector3 moveVelocity_ = {};
 
+    /// コライダー
+    std::unique_ptr<Collider> collider_ = nullptr;
+    OBB obb_ = {};
+    bool isDrawCollisionArea_ = false;
+
 private:
     void ModifyGameEye(GameEye* _eye) override;
+    void DebugWindow() override;
+
+private: /// 他クラスの所有物
+    CollisionManager* collisionManager_ = nullptr;
 };

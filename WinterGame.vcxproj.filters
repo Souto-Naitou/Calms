@@ -25,6 +25,30 @@
     <Filter Include="GameObject\PlayerBullet">
       <UniqueIdentifier>{2eeb9b05-afc1-4862-a621-00288d2a243f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameObject\Enemy">
+      <UniqueIdentifier>{4d23f7ae-e8c6-41ef-a58f-cd83eb389201}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{358766f1-f9ea-418b-ba8d-ae816f7b6d25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DIContainer">
+      <UniqueIdentifier>{a054c6e7-0a23-441a-8a5f-995110a91dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PopSystem">
+      <UniqueIdentifier>{dbf0e03b-698b-4eb1-bf27-3bb34f606cb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PopSystem\Enemy">
+      <UniqueIdentifier>{beced530-f079-4aed-84b5-fdaaed33c53c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EventListener">
+      <UniqueIdentifier>{db49e90e-2b87-40c5-b88a-a7f2ab7fd0ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{f629a227-da6b-426b-97f9-3a33cfaa6f4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\CountDown">
+      <UniqueIdentifier>{537eb468-a26f-41f8-97a1-eb5d138e5beb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinterGame\WinterGame.cpp">
@@ -43,8 +67,30 @@
     <ClCompile Include="GameObject\Player\Player.cpp">
       <Filter>GameObject\Player</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject\BaseObject.cpp" />
-    <ClCompile Include="GameObject\PlayerBullet\PlayerBullet.cpp" />
+    <ClCompile Include="GameObject\BaseObject.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\PlayerBullet\PlayerBullet.cpp">
+      <Filter>GameObject\PlayerBullet</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\Enemy\Enemy.cpp">
+      <Filter>GameObject\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision\Collider\Collider.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision\Manager\CollisionManager.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="EventListener\EventListener.cpp">
+      <Filter>EventListener</Filter>
+    </ClCompile>
+    <ClCompile Include="PopSystem\Enemy\EnemyPopSystem.cpp">
+      <Filter>PopSystem\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\CountDown\CountDown.cpp">
+      <Filter>UI\CountDown</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinterGame\WinterGame.h">
@@ -67,6 +113,30 @@
     </ClInclude>
     <ClInclude Include="GameObject\PlayerBullet\PlayerBullet.h">
       <Filter>GameObject\PlayerBullet</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\Enemy\Enemy.h">
+      <Filter>GameObject\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\Collider\Collider.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\Manager\CollisionManager.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="DIContainer\DIContainer.h">
+      <Filter>DIContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="PopSystem\Enemy\EnemyPopSystem.h">
+      <Filter>PopSystem\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EventListener\EventListener.h">
+      <Filter>EventListener</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\Shape.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\CountDown\CountDown.h">
+      <Filter>UI\CountDown</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

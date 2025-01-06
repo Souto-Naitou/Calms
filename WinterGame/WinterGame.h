@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Framework/NimaFramework.h>
+#include <Collision/Manager/CollisionManager.h>
 
 class WinterGame : public NimaFramework
 {
@@ -29,5 +30,5 @@ public:
 
 
 private: /// ゲーム内オブジェクト
-
+    CollisionManager* pCollisionManager_ = nullptr;
 };
