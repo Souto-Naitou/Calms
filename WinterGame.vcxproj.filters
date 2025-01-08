@@ -49,6 +49,21 @@
     <Filter Include="UI\CountDown">
       <UniqueIdentifier>{537eb468-a26f-41f8-97a1-eb5d138e5beb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DeltaTimeManager">
+      <UniqueIdentifier>{88b53fff-6bff-4e83-821b-8fa959597194}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\ScreenToWorld">
+      <UniqueIdentifier>{fc9ef5a7-41f0-4008-9361-cecdf65911e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameTimer">
+      <UniqueIdentifier>{7e57411c-5795-47fe-bd26-eaea6b828de2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\InputGuide">
+      <UniqueIdentifier>{be36d6ff-38cc-49dc-bc4d-af352c25742d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Clear">
+      <UniqueIdentifier>{e038e2c1-eee8-42e3-8c9b-f54ae3698b78}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinterGame\WinterGame.cpp">
@@ -91,6 +106,13 @@
     <ClCompile Include="UI\CountDown\CountDown.cpp">
       <Filter>UI\CountDown</Filter>
     </ClCompile>
+    <ClCompile Include="DeltaTimeManager\DeltaTimeManager.cpp">
+      <Filter>DeltaTimeManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\ScreenToWorld\ScreenToWorld.cpp" />
+    <ClCompile Include="GameTimer\GameTimer.cpp" />
+    <ClCompile Include="InputGuide\InputGuide.cpp" />
+    <ClCompile Include="Scene\Clear\ClearScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinterGame\WinterGame.h">
@@ -137,6 +159,21 @@
     </ClInclude>
     <ClInclude Include="UI\CountDown\CountDown.h">
       <Filter>UI\CountDown</Filter>
+    </ClInclude>
+    <ClInclude Include="DeltaTimeManager\DeltaTimeManager.h">
+      <Filter>DeltaTimeManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\ScreenToWorld\ScreenToWorld.h">
+      <Filter>GameObject\ScreenToWorld</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTimer\GameTimer.h">
+      <Filter>GameTimer</Filter>
+    </ClInclude>
+    <ClInclude Include="InputGuide\InputGuide.h">
+      <Filter>UI\InputGuide</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Clear\ClearScene.h">
+      <Filter>Scene\Clear</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -11,6 +11,7 @@ void Player::Initialize()
     /// インスタンスの取得
     input_ = Input::GetInstance();
     collisionManager_ = CollisionManager::GetInstance();
+    deltaTimeManager_ = DeltaTimeManager::GetInstance();
 
     
     /// タイマーの初期化
@@ -22,6 +23,7 @@ void Player::Initialize()
     movePower_ = 20.0f;
     friction_ = 0.95f;
     translation_ = Vector3(0, 0.5f, 0);
+    hp_ = 100.0f;
 
 
     /// オブジェクトの初期化
@@ -44,6 +46,8 @@ void Player::Initialize()
     collider_->SetShape(Shape::OBB);
     collider_->SetRadius(2u);
     collider_->SetMask(collisionManager_->GetNewMask("player"));
+    collider_->SetOnCollision(std::bind(&Player::OnCollision, this, std::placeholders::_1));
+    collider_->SetOnCollisionTrigger(std::bind(&Player::OnCollisionTrigger, this, std::placeholders::_1));
 
     // コライダーの登録
     collisionManager_->RegisterCollider(collider_.get());
@@ -63,8 +67,12 @@ void Player::Update()
     // 入力コマンドの更新
     UpdateInputCommands();
 
+    /// 反発の速度を適用
+    acceleration_ += accelerationRefl_;
+    accelerationRefl_ = Vector3(0, 0, 0);
+
     // 座標更新
-    BaseObject::UpdateTransform();
+    BaseObject::UpdateTransform(deltaTimeManager_->GetDeltaTime(1));
 
     // 座標の反映
     object_->SetTranslate(translation_);
@@ -124,7 +132,7 @@ void Player::UpdateInputCommands()
     }
 
     isShot_ = false;
-    if (input_->PushKey(DIK_SPACE))
+    if (input_->PushMouse(Input::MouseNum::Left))
     {
         if (timerShot_->GetNow() > shotInterval_)
         {
@@ -133,19 +141,47 @@ void Player::UpdateInputCommands()
             timerShot_->Start();
         }
     }
+
+    isSlow_ = false;
+    if (input_->PushKey(DIK_LSHIFT))
+    {
+        isSlow_ = true;
+    }
 }
 
 void Player::DebugWindow()
 {
+#ifdef _DEBUG
     BaseObject::DebugWindow();
     ImGui::DragFloat("MovePower", &movePower_, 0.12f);
 
     ImGui::SeparatorText("Debug");
     ImGui::Checkbox("Draw2D Collision Area", &isDrawCollisionArea_);
+#endif
 }
 
 void Player::ModifyGameEye(GameEye* _eye)
 {
     object_->SetGameEye(gameEye_);
     obb_.SetGameEye(gameEye_);
+}
+
+void Player::OnCollisionTrigger(const Collider* _collider)
+{
+    if (_collider->GetColliderID() == "enemy")
+    {
+        hp_ -= _collider->GetOwner()->GetAttackPower();
+    }
+}
+
+void Player::OnCollision(const Collider* _other)
+{
+    if (_other->GetColliderID() == "enemy")
+    {
+        /// 反発を速度に適用
+        Vector3 otherPos = _other->GetOwner()->GetTranslation();
+        Vector3 dir = translation_ - otherPos;
+
+        accelerationRefl_ = dir * reflectionPower_;
+    }
 }

@@ -6,7 +6,9 @@ void PlayerBullet::Initialize()
 {
     BaseObject::Initialize();
 
+    /// インスタンスの取得
     collisionManager_ = CollisionManager::GetInstance();
+    deltaTimeManager_ = DeltaTimeManager::GetInstance();
 
     name_ = "playerBullet";
 
@@ -14,12 +16,19 @@ void PlayerBullet::Initialize()
     timer_ = std::make_unique<Timer>();
     timer_->Start();
 
+
     /// オブジェクトの初期化
     object_ = std::make_unique<Object3d>();
     object_->Initialize("Cube.obj");
     object_->SetScale(Vector3(0.3f, 0.3f, 0.3f));
     object_->SetTranslate(Vector3(0, 0.5f, 0));
     object_->SetRotate(Vector3(0, 0, 0));
+
+
+    /// パラメータの初期化
+    friction_ = 1.0f;
+    hp_ = 100.0f;
+    attackPower_ = 5.0f;
 
 
     /// OBBの初期化
@@ -34,6 +43,7 @@ void PlayerBullet::Initialize()
     collider_->SetShape(Shape::OBB);
     collider_->SetRadius(2u);
     collider_->SetMask(collisionManager_->GetNewMask("playerBullet", "player"));
+    collider_->SetOnCollisionTrigger(std::bind(&PlayerBullet::OnCollisionTrigger, this, std::placeholders::_1));
 
     collisionManager_->RegisterCollider(collider_.get());
 }
@@ -62,7 +72,7 @@ void PlayerBullet::Update()
     velocity_ = moveVelocity_;
 
     // 位置の更新
-    BaseObject::UpdateTransform();
+    BaseObject::UpdateTransform(deltaTimeManager_->GetDeltaTime(1));
 
     // 位置の反映
     object_->SetTranslate(translation_);
@@ -108,8 +118,18 @@ void PlayerBullet::ModifyGameEye(GameEye* _eye)
     obb_.SetGameEye(gameEye_);
 }
 
+void PlayerBullet::OnCollisionTrigger(const Collider* _other)
+{
+    if (_other->GetColliderID() == "enemy")
+    {
+        isAlive_ = false;
+    }
+}
+
 void PlayerBullet::DebugWindow()
 {
+#ifdef _DEBUG
     BaseObject::DebugWindow();
     ImGui::Checkbox("Draw2D Collision Area", &isDrawCollisionArea_);
+#endif
 }

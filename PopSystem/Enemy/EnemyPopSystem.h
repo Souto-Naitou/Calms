@@ -37,6 +37,10 @@ public:
     bool IsExistPopRequest() const { return !popPoints_.empty(); }
     Vector3 GetPopPoint();
 
+    void StartPop();
+    void StopPop();
+
+    bool IsEnablePop() const { return isEnablePop_; }
 
 public: /// Setter
     void SetPopInterval(float _interval) { popInterval_ = _interval; }
@@ -67,6 +71,7 @@ private:
     float                   popInterval_            = 1.0f;                 // !< 生成間隔
     std::queue<Vector3>     popPoints_              = {};                   // !< 生成する位置のキュー
     uint32_t                popCount_               = 1;                    // !< 一度に生成する数
+    bool                    isEnablePop_            = false;                // !< 生成フラグ
 
 
     /// Json

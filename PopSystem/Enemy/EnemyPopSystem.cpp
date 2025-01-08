@@ -24,13 +24,7 @@ void EnemyPopSystem::Initialize()
     DebugManager::GetInstance()->SetComponent(name_, std::bind(&EnemyPopSystem::DebugWindow, this));
 
 
-    /// タイマーの初期化
-    timerOverall_.Start();
-    timerPop_.Start();
-
-
     /// ラインの初期化
-
     linesArea_ = new Line(4);
     linesArea_->Initialize();
     linesArea_->SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
@@ -53,6 +47,11 @@ void EnemyPopSystem::Finalize()
 
 void EnemyPopSystem::Update()
 {
+    if (isEnablePop_ == false)
+    {
+        return;
+    }
+
     UpdatePop();
 
     if (timerPop_.GetNow() > popInterval_)
@@ -76,13 +75,13 @@ void EnemyPopSystem::DrawArea()
 
     /// エリア
     (*linesArea_)[0] = popRangeBegin_;
-    (*linesArea_)[0] = { popRangeEnd_.x, popRangeBegin_.y, popRangeBegin_.z };
     (*linesArea_)[1] = { popRangeEnd_.x, popRangeBegin_.y, popRangeBegin_.z };
-    (*linesArea_)[1] = popRangeEnd_;
-    (*linesArea_)[2] = popRangeEnd_;
-    (*linesArea_)[2] = { popRangeBegin_.x, popRangeEnd_.y, popRangeEnd_.z };
-    (*linesArea_)[3] = { popRangeBegin_.x, popRangeEnd_.y, popRangeEnd_.z };
-    (*linesArea_)[3] = popRangeBegin_;
+    (*linesArea_)[2] = { popRangeEnd_.x, popRangeBegin_.y, popRangeBegin_.z };
+    (*linesArea_)[3] = popRangeEnd_;
+    (*linesArea_)[4] = popRangeEnd_;
+    (*linesArea_)[5] = { popRangeBegin_.x, popRangeEnd_.y, popRangeEnd_.z };
+    (*linesArea_)[6] = { popRangeBegin_.x, popRangeEnd_.y, popRangeEnd_.z };
+    (*linesArea_)[7] = popRangeBegin_;
 
     /// 除外エリア (ignoreRangeは半径) 16本の線で円を描く
     float theta = 0;
@@ -130,6 +129,22 @@ Vector3 EnemyPopSystem::GetPopPoint()
     return popPoint;
 }
 
+void EnemyPopSystem::StartPop()
+{
+    timerOverall_.Start();
+    timerPop_.Start();
+    isEnablePop_ = true;
+    return;
+}
+
+void EnemyPopSystem::StopPop()
+{
+    timerOverall_.Reset();
+    timerPop_.Reset();
+    isEnablePop_ = false;
+    return;
+}
+
 void EnemyPopSystem::PopRandom()
 {
     Vector3 randPosition = {};
@@ -160,6 +175,7 @@ void EnemyPopSystem::PopRandom()
 
 void EnemyPopSystem::DebugWindow()
 {
+#ifdef _DEBUG
     ImGui::Text("Overall Time: %.1f", timerOverall_.GetNow());
     ImGui::Text(popData_[popDataIndex_].name.c_str());
     ImGui::Text("Pop Time: %.2f", timerPop_.GetNow());
@@ -182,6 +198,7 @@ void EnemyPopSystem::DebugWindow()
     ImGui::DragFloat3("Pop Range End", &popRangeEnd_.x, 0.01f);
     ImGui::DragFloat3("Ignore Position", &ignorePosition_.x), 0.01f;
     ImGui::DragFloat("Ignore Range", &ignoreRange_, 0.01f);
+#endif
 }
 
 void EnemyPopSystem::ModifyGameEye(GameEye* _eye)
@@ -224,6 +241,11 @@ void EnemyPopSystem::InitPopData()
 
 void EnemyPopSystem::UpdatePop()
 {
+    if (timerOverall_.GetIsStart() == false)
+    {
+        return;
+    }
+
     double nowTime = timerOverall_.GetNow();
 
     /// 終了時間を過ぎたら次のデータへ

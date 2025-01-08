@@ -42,11 +42,6 @@ void CollisionManager::RegisterCollider(Collider* _collider)
     colliders_.push_back(_collider);
 }
 
-void CollisionManager::ClearColliderList()
-{
-    colliders_.clear();
-}
-
 void CollisionManager::DeleteCollider(Collider* _collider)
 {
     for (int i = 0; i < colliders_.size(); i++)
@@ -57,6 +52,14 @@ void CollisionManager::DeleteCollider(Collider* _collider)
             colliders_.erase(colliders_.begin() + i);
         }
     }
+}
+
+void CollisionManager::ClearCollider()
+{
+    colliders_.clear();
+    collisionNames_.clear();
+    attributeList_.clear();
+    maskList_.clear();
 }
 
 uint32_t CollisionManager::GetNewAttribute(std::string _id)

@@ -10,6 +10,7 @@ void Enemy::Initialize()
 
     /// インスタンスの取得
     collisionManager_ = CollisionManager::GetInstance();
+    deltaTimeManager_ = DeltaTimeManager::GetInstance();
 
 
     /// パラメータの初期化
@@ -19,9 +20,13 @@ void Enemy::Initialize()
     ss << "##0x" << std::hex << this;
     name_ += ss.str();
 
+
+    /// パラメータの初期化
     friction_ = 0.95f;
     moveSpeed_ = 10.0f;
     translation_ = Vector3(0, 0.5f, 0);
+    attackPower_ = 10.0f;
+    hp_ = 50.0f;
 
 
     /// オブジェクトの初期化
@@ -84,7 +89,7 @@ void Enemy::Update()
         rotation_ = Vector3(0, -velocity_.xz().Theta(), 0);
     }
 
-    BaseObject::UpdateTransform();
+    BaseObject::UpdateTransform(deltaTimeManager_->GetDeltaTime(1));
 
     object_->SetTranslate(translation_);
     object_->SetRotate(rotation_);
@@ -143,13 +148,16 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
 {
     if (_other->GetColliderID() == "playerBullet")
     {
-        isAlive_ = false;
+        hp_ -= _other->GetOwner()->GetAttackPower();
+        if (hp_ <= 0) isAlive_ = false;
     }
 
 }
 
 void Enemy::DebugWindow()
 {
+#ifdef _DEBUG
     BaseObject::DebugWindow();
     ImGui::Checkbox("Draw2D Collision Area", &isDrawCollisionArea_);
+#endif
 }

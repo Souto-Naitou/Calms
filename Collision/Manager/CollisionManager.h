@@ -21,8 +21,8 @@ public:
     void Initialize();
     void CheckAllCollision();
     void RegisterCollider(Collider* _collider);
-    void ClearColliderList();
     void DeleteCollider(Collider* _collider);
+    void ClearCollider();
     uint32_t GetNewAttribute(std::string _id);
 
     template <typename... Args>

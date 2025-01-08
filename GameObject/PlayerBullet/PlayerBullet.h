@@ -9,6 +9,7 @@
 #include <Collision/Collider/Collider.h>
 #include <Collision/Manager/CollisionManager.h>
 #include <Features/Primitive/OBB.h>
+#include <DeltaTimeManager/DeltaTimeManager.h>
 
 class PlayerBullet : public BaseObject
 {
@@ -28,7 +29,7 @@ public: /// Setter
 private:
     std::unique_ptr<Object3d> object_ = nullptr;
     std::unique_ptr<Timer> timer_ = nullptr;
-    float lifeTimeLimit_ = 3.0f;
+    float lifeTimeLimit_ = 8.0f;
     Vector3 moveVelocity_ = {};
 
     /// コライダー
@@ -38,8 +39,10 @@ private:
 
 private:
     void ModifyGameEye(GameEye* _eye) override;
+    void OnCollisionTrigger(const Collider* _other);
     void DebugWindow() override;
 
 private: /// 他クラスの所有物
     CollisionManager* collisionManager_ = nullptr;
+    DeltaTimeManager* deltaTimeManager_ = nullptr;
 };

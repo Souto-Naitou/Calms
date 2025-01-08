@@ -65,6 +65,7 @@ void Collider::OnCollisionTrigger(const Collider* _other)
 
 void Collider::DebugWindow()
 {
+#ifdef _DEBUG
     ImGui::Text("Attribute: %x", collisionAttribute_);
     auto pFunc = [&]()
     {
@@ -77,4 +78,5 @@ void Collider::DebugWindow()
     };
 
     ImGuiTemplate::VariableTable("Collider", pFunc);
+#endif // _DEBUG
 }

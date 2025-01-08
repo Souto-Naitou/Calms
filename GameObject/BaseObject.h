@@ -27,6 +27,7 @@ public: /// Getter
     const Vector3& GetAcceleration() const { return acceleration_; }
     float GetFriction() const { return friction_; }
     const bool IsAlive() const { return isAlive_; }
+    const float GetAttackPower() const { return attackPower_; }
 
 
 public: /// Setter
@@ -46,6 +47,8 @@ protected:
 
     bool isAlive_ = true;
 
+    float hp_ = 0.0f;
+
     Vector3 rotation_ = {};
     Vector3 scale_ = {};
     Vector3 translation_ = {};
@@ -53,10 +56,11 @@ protected:
     Vector3 acceleration_ = {};
 
     float friction_ = 1.0f;
+    float attackPower_ = 0.0f;
 
 
 protected:
-    void UpdateTransform();
+    void UpdateTransform(float _dt);
     virtual void DebugWindow();
     virtual void ModifyGameEye(GameEye* _eye) = 0;
 

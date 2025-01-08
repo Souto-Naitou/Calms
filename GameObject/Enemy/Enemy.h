@@ -9,6 +9,7 @@
 #include <Collision/Collider/Collider.h>
 #include <Collision/Manager/CollisionManager.h>
 #include <Features/Primitive/OBB.h>
+#include <DeltaTimeManager/DeltaTimeManager.h>
 
 class Enemy : public BaseObject
 {
@@ -52,4 +53,5 @@ private:
 
 private: /// 他クラスの所有物
     CollisionManager* collisionManager_ = nullptr;
+    DeltaTimeManager* deltaTimeManager_ = nullptr;
 };
