@@ -8,10 +8,22 @@ struct Camera
 struct Material
 {
     float4 color;
-    int lightingType;
-    int enableLighting;
     float4x4 uvTransform;
     float shininess;
+};
+
+struct Lighting
+{
+    int enableLighting;
+    int lightingType;
+};
+
+struct PointLight
+{
+    int enablePointLight; //!< ポイントライトを有効にするか
+    float4 color; //!< ライトの色
+    float3 position; //!< ライトの位置
+    float intensity; //!< 輝度
 };
 
 struct DirectionalLight
@@ -30,6 +42,8 @@ ConstantBuffer<Material> gMaterial : register(b0);
 ConstantBuffer<DirectionalLight> gDirectionalLight : register(b1);
 ConstantBuffer<UVTiling> gUVTiling : register(b2);
 ConstantBuffer<Camera> gCamera : register(b3);
+ConstantBuffer<Lighting> gLighting : register(b4);
+ConstantBuffer<PointLight> gPointLight : register(b5);
 
 struct PixelShaderOutput
 {
@@ -53,16 +67,18 @@ PixelShaderOutput main(VertexShaderOutput input)
     float3 reflectLight = reflect(gDirectionalLight.direction, normalize(input.normal));
     float RdotE = dot(reflectLight, toEye);
     float specularPow = pow(saturate(RdotE), gMaterial.shininess); // 反射強度
+    
+    float3 pointLightDir = normalize(gPointLight.position - input.worldPosition);
 
 
-    if (gMaterial.enableLighting != 0)
+    if (gLighting.enableLighting != 0)
     {
         float cos;
-        if (gMaterial.lightingType == 0)
+        if (gLighting.lightingType == 0)
         {
             cos = saturate(dot(normalize(input.normal), -gDirectionalLight.direction));
         }
-        else if (gMaterial.lightingType == 1)
+        else if (gLighting.lightingType == 1)
         {
             // half lambert
             float NdotL = dot(normalize(input.normal), -gDirectionalLight.direction);
@@ -72,7 +88,22 @@ PixelShaderOutput main(VertexShaderOutput input)
         float3 diffuse = gMaterial.color.rgb * textureColor.rgb * gDirectionalLight.color.rgb * cos * gDirectionalLight.intensity;
         float3 specular = gDirectionalLight.color.rgb * gDirectionalLight.intensity * specularPow * float3(1.0f, 1.0f, 1.0f);
 
-        output.color.rgb = diffuse + specular;
+        /// ポイントライト
+        if (gPointLight.enablePointLight == 1)
+        {
+            float distance = length(gPointLight.position - input.worldPosition); // ポイントライトへの距離
+            if (distance < 0.1f) distance = 0.1f; // 0除算対策
+            float factor = 1.0f / (distance * distance); // 距離の2乗に反比例する
+            
+            float3 pointLightDiffuse = gMaterial.color.rgb * textureColor.rgb * gPointLight.color.rgb * saturate(dot(input.normal, pointLightDir)) * gPointLight.intensity * factor;
+            float3 pointLightSpecular = gPointLight.color.rgb * gPointLight.intensity * specularPow * float3(1.0f, 1.0f, 1.0f) * factor;
+            
+            output.color.rgb = diffuse + specular + pointLightDiffuse + pointLightSpecular;
+        }
+        else
+        {
+            output.color.rgb = diffuse + specular;
+        }
         output.color.a = gMaterial.color.a * textureColor.a;
     }
     else

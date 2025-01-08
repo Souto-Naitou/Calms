@@ -13,6 +13,57 @@
     <Filter Include="Scene\Title">
       <UniqueIdentifier>{8e625d63-a460-40bf-be2c-df0e21c56009}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\Game">
+      <UniqueIdentifier>{caef7934-734a-4ac8-9c48-d59212b0d380}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{04dfdcfc-59e1-403a-9266-6a4aaee534b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Player">
+      <UniqueIdentifier>{9c09af10-26f5-42dc-8a06-e0fbf245b9c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\PlayerBullet">
+      <UniqueIdentifier>{2eeb9b05-afc1-4862-a621-00288d2a243f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\Enemy">
+      <UniqueIdentifier>{4d23f7ae-e8c6-41ef-a58f-cd83eb389201}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{358766f1-f9ea-418b-ba8d-ae816f7b6d25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DIContainer">
+      <UniqueIdentifier>{a054c6e7-0a23-441a-8a5f-995110a91dd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PopSystem">
+      <UniqueIdentifier>{dbf0e03b-698b-4eb1-bf27-3bb34f606cb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PopSystem\Enemy">
+      <UniqueIdentifier>{beced530-f079-4aed-84b5-fdaaed33c53c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EventListener">
+      <UniqueIdentifier>{db49e90e-2b87-40c5-b88a-a7f2ab7fd0ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{f629a227-da6b-426b-97f9-3a33cfaa6f4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\CountDown">
+      <UniqueIdentifier>{537eb468-a26f-41f8-97a1-eb5d138e5beb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DeltaTimeManager">
+      <UniqueIdentifier>{88b53fff-6bff-4e83-821b-8fa959597194}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject\ScreenToWorld">
+      <UniqueIdentifier>{fc9ef5a7-41f0-4008-9361-cecdf65911e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameTimer">
+      <UniqueIdentifier>{7e57411c-5795-47fe-bd26-eaea6b828de2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\InputGuide">
+      <UniqueIdentifier>{be36d6ff-38cc-49dc-bc4d-af352c25742d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Clear">
+      <UniqueIdentifier>{e038e2c1-eee8-42e3-8c9b-f54ae3698b78}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinterGame\WinterGame.cpp">
@@ -25,6 +76,43 @@
     <ClCompile Include="Scene\Title\TitleScene.cpp">
       <Filter>Scene\Title</Filter>
     </ClCompile>
+    <ClCompile Include="Scene\Game\GameScene.cpp">
+      <Filter>Scene\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\Player\Player.cpp">
+      <Filter>GameObject\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\BaseObject.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\PlayerBullet\PlayerBullet.cpp">
+      <Filter>GameObject\PlayerBullet</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\Enemy\Enemy.cpp">
+      <Filter>GameObject\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision\Collider\Collider.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision\Manager\CollisionManager.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="EventListener\EventListener.cpp">
+      <Filter>EventListener</Filter>
+    </ClCompile>
+    <ClCompile Include="PopSystem\Enemy\EnemyPopSystem.cpp">
+      <Filter>PopSystem\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\CountDown\CountDown.cpp">
+      <Filter>UI\CountDown</Filter>
+    </ClCompile>
+    <ClCompile Include="DeltaTimeManager\DeltaTimeManager.cpp">
+      <Filter>DeltaTimeManager</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\ScreenToWorld\ScreenToWorld.cpp" />
+    <ClCompile Include="GameTimer\GameTimer.cpp" />
+    <ClCompile Include="InputGuide\InputGuide.cpp" />
+    <ClCompile Include="Scene\Clear\ClearScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinterGame\WinterGame.h">
@@ -35,6 +123,57 @@
     </ClInclude>
     <ClInclude Include="Scene\Title\TitleScene.h">
       <Filter>Scene\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Game\GameScene.h">
+      <Filter>Scene\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\BaseObject.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\Player\Player.h">
+      <Filter>GameObject\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\PlayerBullet\PlayerBullet.h">
+      <Filter>GameObject\PlayerBullet</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\Enemy\Enemy.h">
+      <Filter>GameObject\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\Collider\Collider.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\Manager\CollisionManager.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="DIContainer\DIContainer.h">
+      <Filter>DIContainer</Filter>
+    </ClInclude>
+    <ClInclude Include="PopSystem\Enemy\EnemyPopSystem.h">
+      <Filter>PopSystem\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="EventListener\EventListener.h">
+      <Filter>EventListener</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision\Shape.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\CountDown\CountDown.h">
+      <Filter>UI\CountDown</Filter>
+    </ClInclude>
+    <ClInclude Include="DeltaTimeManager\DeltaTimeManager.h">
+      <Filter>DeltaTimeManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject\ScreenToWorld\ScreenToWorld.h">
+      <Filter>GameObject\ScreenToWorld</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTimer\GameTimer.h">
+      <Filter>GameTimer</Filter>
+    </ClInclude>
+    <ClInclude Include="InputGuide\InputGuide.h">
+      <Filter>UI\InputGuide</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Clear\ClearScene.h">
+      <Filter>Scene\Clear</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

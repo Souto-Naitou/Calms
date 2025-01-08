@@ -14,6 +14,10 @@ void WinterGame::Initialize()
     pSceneFactory_ = new SceneFactory();
     pSceneManager_->SetSceneFactory(pSceneFactory_);
 
+    /// 当たり判定マネージャの初期化
+    pCollisionManager_ = CollisionManager::GetInstance();
+    pCollisionManager_->Initialize();
+
     /// 自動ロードパスの追加
     pModelManager_->AddAutoLoadPath("resources/models");
 
@@ -22,6 +26,15 @@ void WinterGame::Initialize()
 
     /// シーンの生成
     pSceneManager_->ReserveScene("TitleScene");
+
+    /// テクスチャの検索パスを追加
+    pTextureManager_->AddSearchPath("resources/images");
+
+    /// イージングマネージャの初期化
+    pEasingManager_ = EasingManager::GetInstance();
+
+    /// CSVLoaderの初期化
+    pCSVLoader_ = CSVLoader::GetInstance();
 }
 
 void WinterGame::Finalize()
@@ -43,6 +56,9 @@ void WinterGame::Update()
     /// シーン更新
     pSceneManager_->Update();
 
+    /// 当たり判定の更新
+    pCollisionManager_->CheckAllCollision();
+
     /// パーティクル更新
     pParticleManager_->Update();
 }
@@ -60,6 +76,18 @@ void WinterGame::Draw()
     /// 3D描画
     pObject3dSystem_->PresentDraw();
     pSceneManager_->SceneDraw3d();
+
+    /// 中景スプライトの描画
+    pSpriteSystem_->PresentDraw();
+    pSceneManager_->SceneDraw2dMidground();
+
+    /// 中景3dオブジェクトの描画
+    pObject3dSystem_->PresentDraw();
+    pSceneManager_->SceneDraw3dMidground();
+
+    /// ライン描画
+    pLineSystem_->PresentDraw();
+    pSceneManager_->SceneDrawLine();
 
     /// パーティクル描画
     pParticleSystem_->PresentDraw();
