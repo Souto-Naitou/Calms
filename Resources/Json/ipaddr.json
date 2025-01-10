@@ -2,5 +2,5 @@
     "ENABLE" : true,
     "IPADDR" : "192.168.11.17",
     "PORT" : "27015",
-    "HOSTORCLIENT" : 1
+    "HOSTORCLIENT" : 0
 }

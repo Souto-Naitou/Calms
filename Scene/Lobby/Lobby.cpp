@@ -204,7 +204,12 @@ void LobbyScene::ClientConnect()
     clientTryConnection_ = true;
 
     client_->Initialize(wsaData_);
-    client_->Connect(ip_, port_);
+
+    while (!client_->Connect(ip_, port_))
+    {
+        OutputDebugStringA("Connect failed\n");
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
 
     isConnected_ = true;
 }

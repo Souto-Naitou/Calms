@@ -220,6 +220,7 @@ void GameScene::Update()
     {
         enemyPopSystem_.StartPop();
         gameTimer_->Start();
+        gameTimer_->SetDisplay(true);
     }
 
 

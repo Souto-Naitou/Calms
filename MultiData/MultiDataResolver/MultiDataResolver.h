@@ -90,4 +90,10 @@ private:
     /// JSONデータを解析
     /// </summary>
     void ParseJsonData_Client();
+
+
+private:
+    std::string name_ = "Network Buffer";
+    void DebugWindow();
+
 };

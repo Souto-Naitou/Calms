@@ -195,6 +195,11 @@ void MultiGame::Update()
     playerpos.z = Math::clamp(player_->GetTranslation().z, -areaWidth_ + 0.5f, areaWidth_ - 0.5f);
     player_->SetTranslation(playerpos);
 
+
+    /// カメラの追尾更新
+    UpdateFollowCamera();
+
+
     /// 敵生成システムの更新
     UpdateEnemyPopSystem();
 
@@ -394,6 +399,15 @@ void MultiGame::UpdateEnemyPopSystem()
         enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
         enemy_.push_back(std::move(enemy));
     }
+}
+
+void MultiGame::UpdateFollowCamera()
+{
+    Vector3 playerpos = player_->GetTranslation();
+    Vector3 eyepos = gameEye_->GetTransform().translate;
+    eyepos.Lerp(eyepos, Vector3(playerpos.x, 50.0f, playerpos.z), 0.1f);
+
+    gameEye_->SetTranslate(eyepos);
 }
 
 void MultiGame::MultiplayDataUpdate()

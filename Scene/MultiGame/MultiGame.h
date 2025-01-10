@@ -116,6 +116,7 @@ private:
 
     void RemoveEnemy();
     void UpdateEnemyPopSystem();
+    void UpdateFollowCamera();
 
     /// ネットワーク
     void MultiplayDataUpdate();

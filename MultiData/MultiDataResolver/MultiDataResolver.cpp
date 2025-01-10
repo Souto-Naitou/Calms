@@ -1,10 +1,14 @@
 #include "MultiDataResolver.h"
 #include <MultiDataManager/MultiDataManager.h>
 #include <Features/Particle/Manager/EmitterManager.h>
+#include <imgui.h>
+#include <DebugTools/DebugManager/DebugManager.h>
 
 void MultiDataResolver::Initialize()
 {
     MultiDataManager::GetInstance()->GetTCPData(&host_, &client_, &hostOrClient_);
+
+    DebugManager::GetInstance()->SetComponent("#Window", name_, std::bind(&MultiDataResolver::DebugWindow, this));
 
     jsonParser_ = new Json::Parser();
     jsonSaver_ = Json::Saver::GetInstance();
@@ -80,6 +84,8 @@ void MultiDataResolver::Finalize()
         client_->Close();
         delete client_;
     }
+
+    DebugManager::GetInstance()->DeleteComponent("#Window", name_.c_str());
 }
 
 Vector3 MultiDataResolver::PopPlayer2Position()
@@ -197,4 +203,18 @@ void MultiDataResolver::ParseJsonData_Client()
 
 
     qPos_P2.push(EmitterManager::ParseVector3(pos));
+}
+
+void MultiDataResolver::DebugWindow()
+{
+#ifdef _DEBUG
+
+    ImGui::BeginChild("Buffer", ImVec2(-1, -1), ImGuiChildFlags_Border);
+
+    ImGui::ShowDemoWindow();
+    ImGui::TextUnformatted(receiveBuffer_.c_str());
+
+    ImGui::EndChild();
+
+#endif // _DEBUG
 }
