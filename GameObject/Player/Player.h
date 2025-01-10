@@ -28,6 +28,7 @@ public: /// Getter
 
 public: /// Setter
     void SetIsDrawCollisionArea(bool _isDraw) { isDrawCollisionArea_ = _isDraw; }
+    void SetEnableInput(bool _enable) { enableInput_ = _enable; }
 
 
 private:
@@ -50,6 +51,9 @@ private:
     /// 反発用
     Vector3 accelerationRefl_ = {};
     float reflectionPower_ = 70.0f;
+
+    /// マルチプレイ用
+    bool enableInput_ = true;
 
 
 private:

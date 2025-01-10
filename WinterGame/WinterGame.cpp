@@ -1,9 +1,10 @@
 #include "WinterGame.h"
 
 #include <Common/define.h>
-#include <Windows.h>
 #include <Features/SceneManager/SceneManager.h>
 #include <Scene/Factory/SceneFactory.h>
+
+#pragma comment(lib, "Ws2_32.lib")
 
 void WinterGame::Initialize()
 {

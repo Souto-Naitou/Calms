@@ -35,7 +35,7 @@ void TitleScene::Update()
 
     if (pInput_->TriggerKey(DIK_SPACE))
     {
-        pSceneTransition_->ChangeScene("GameScene", std::make_unique<TransFadeInOut>());
+        pSceneTransition_->ChangeScene("LobbyScene", std::make_unique<TransFadeInOut>());
     }
 
     pSpace_->Update();

@@ -65,7 +65,7 @@ void Player::Finalize()
 void Player::Update()
 {
     // 入力コマンドの更新
-    UpdateInputCommands();
+    if (enableInput_) UpdateInputCommands();
 
     /// 反発の速度を適用
     acceleration_ += accelerationRefl_;

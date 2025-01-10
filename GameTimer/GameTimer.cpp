@@ -8,14 +8,20 @@ void GameTimer::Reset()
     isNextScene_ = false;
     isStart_ = false;
     nowTime_ = 0.0;
+    if (pTimer_) pTimer_->Reset();
 }
 
 void GameTimer::Start()
 {
     isStart_ = true;
+
+    if (isUseSystemClock_)
+    {
+        pTimer_->Start();
+    }
 }
 
-void GameTimer::Initialize()
+void GameTimer::Initialize(bool _useSystemClock)
 {
     for (int i = 0; i < 10; i++)
     {
@@ -31,6 +37,13 @@ void GameTimer::Initialize()
         onesPlaceNums_[i]->SetAnchorPoint({ 0.5f, 0.5f });
         onesPlaceNums_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.2f });
     }
+
+    if (_useSystemClock)
+    {
+        pTimer_ = new Timer();
+    }
+
+    isUseSystemClock_ = _useSystemClock;
 }
 
 void GameTimer::Update()
@@ -38,10 +51,17 @@ void GameTimer::Update()
     /// タイマー更新
     if (isStart_)
     {
-        nowTime_ += DeltaTimeManager::GetInstance()->GetDeltaTime(1);
+        if (isUseSystemClock_)
+        {
+            nowTime_ = pTimer_->GetNow();
+        }
+        else
+        {
+            nowTime_ += DeltaTimeManager::GetInstance()->GetDeltaTime(1);
+        }
     }
 
-    if (nowTime_ > gameDuration_)
+    if (nowTime_ >= gameDuration_)
     {
         isEnd_ = true;
     }
@@ -59,7 +79,7 @@ void GameTimer::Update()
 
 void GameTimer::Draw()
 {
-    if (!isStart_)
+    if (!isDisplay_)
     {
         return;
     }

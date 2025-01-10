@@ -1,24 +1,25 @@
-#include "GameScene.h"
+#include "MultiGame.h"
 
 #include <Features/Model/ModelManager.h>
 #include <Features/SceneTransition/SceneTransitionManager.h>
 #include <Features/SceneTransition/TransFadeInOut.h>
 #include <MathExtension/mathExtension.h>
+#include <MultiDataManager/MultiDataManager.h>
 
 #include <Vector3.h>
 
 #include <imgui.h>
 
-void GameScene::Initialize()
+void MultiGame::Initialize()
 {
     /// インスタンスの取得
     pDebugManager_ = DebugManager::GetInstance();
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
     randomGenerator_ = RandomGenerator::GetInstance();
-    
+
 
     /// デバッグウィンドウを登録
-    pDebugManager_->SetComponent(name_, std::bind(&GameScene::DebugWindow, this));
+    pDebugManager_->SetComponent(name_, std::bind(&MultiGame::DebugWindow, this));
 
 
     /// グリッドの初期化
@@ -42,10 +43,16 @@ void GameScene::Initialize()
     player_->Initialize();
     player_->SetDIContainer(&gObjDIContainer_);
 
+    player2_ = std::make_unique<Player>();
+    player2_->Initialize();
+    player2_->SetDIContainer(&gObjDIContainer_);
+    player2_->SetEnableInput(false);
+
 
     /// ゲームアイをセット
     grid_->SetGameEye(gameEye_.get());
     player_->SetGameEye(gameEye_.get());
+    player2_->SetGameEye(gameEye_.get());
 
 
     /// 平行光源の初期化
@@ -97,7 +104,7 @@ void GameScene::Initialize()
 
     /// ゲームタイマーの初期化
     gameTimer_ = std::make_unique<GameTimer>();
-    gameTimer_->Initialize(false);
+    gameTimer_->Initialize(true);
 
 
     /// 入力ガイド
@@ -122,18 +129,23 @@ void GameScene::Initialize()
 
     (*line_)[6] = Vector3(-areaWidth_, 0.5f, areaWidth_);
     (*line_)[7] = Vector3(-areaWidth_, 0.5f, -areaWidth_);
+
+    /// マルチプレイデータの初期化
+    multiDataResolver_.Initialize();
+    multiDataResolver_.Start();
 }
 
-void GameScene::Finalize()
+void MultiGame::Finalize()
 {
     for (auto& enemy : enemy_)
     {
         enemy->Finalize();
         enemy.reset();
     }
-    
+
     grid_->Finalize();
     player_->Finalize();
+    player2_->Finalize();
 
     for (auto& bullet : playerBullets_)
     {
@@ -149,12 +161,14 @@ void GameScene::Finalize()
     gameTimer_->Finalize();
     inputGuide_->Finalize();
     line_->Finalize();
+    multiDataResolver_.Finalize();
 
     /// 解放を明示しないと何故かリークする
     enemy_.clear();
     grid_.reset();
     gameEye_.reset();
     player_.reset();
+    player2_.reset();
     playerBullets_.clear();
     countDown_.reset();
     screenToWorld_.reset();
@@ -165,8 +179,7 @@ void GameScene::Finalize()
     pDebugManager_->DeleteComponent(name_.c_str());
 }
 
-
-void GameScene::Update()
+void MultiGame::Update()
 {
     gameEye_->Update();
     grid_->Update();
@@ -182,13 +195,10 @@ void GameScene::Update()
     playerpos.z = Math::clamp(player_->GetTranslation().z, -areaWidth_ + 0.5f, areaWidth_ - 0.5f);
     player_->SetTranslation(playerpos);
 
-    /// プレイヤーのスロー更新
-    PlayerSlowUpdate();
-
     /// 敵生成システムの更新
     UpdateEnemyPopSystem();
 
-    
+
     for (auto& enemy : enemy_)
     {
         enemy->Update();
@@ -219,7 +229,8 @@ void GameScene::Update()
     if (countDown_->IsEnd() && !enemyPopSystem_.IsEnablePop())
     {
         enemyPopSystem_.StartPop();
-        gameTimer_->Start();
+        if (multiDataResolver_.isHost()) gameTimer_->Start();
+        gameTimer_->SetDisplay(true);
     }
 
 
@@ -250,27 +261,37 @@ void GameScene::Update()
 
     /// ラインの更新
     line_->Update();
+
+    /// マルチプレイデータの更新
+    /// [Player]
+    multiDataResolver_.SetPlayerPosition(player_->GetTranslation());
+    player2_->SetTranslation(multiDataResolver_.PopPlayer2Position());
+    /// [GameTimer]
+    if (multiDataResolver_.isHost()) multiDataResolver_.SetNowTime(static_cast<uint32_t>(gameTimer_->GetNowTime()));
+    else gameTimer_->SetNowTime(static_cast<double>(multiDataResolver_.GetNowTime()));
+
+
+    player2_->Update();
 }
 
-
-void GameScene::Draw2dBackGround()
+void MultiGame::Draw2dBackGround()
 {
 }
 
-
-void GameScene::Draw3d()
+void MultiGame::Draw3d()
 {
     grid_->Draw();
 }
 
-void GameScene::Draw2dMidground()
+void MultiGame::Draw2dMidground()
 {
     gameTimer_->Draw();
 }
 
-void GameScene::Draw3dMidground()
+void MultiGame::Draw3dMidground()
 {
     player_->Draw();
+    player2_->Draw();
 
     for (auto& enemy : enemy_)
     {
@@ -285,9 +306,11 @@ void GameScene::Draw3dMidground()
     screenToWorld_->Draw();
 }
 
-void GameScene::DrawLine()
+void MultiGame::DrawLine()
 {
     player_->DrawLine();
+    player2_->DrawLine();
+
     for (auto& enemy : enemy_)
     {
         enemy->DrawLine();
@@ -302,13 +325,13 @@ void GameScene::DrawLine()
     line_->Draw();
 }
 
-void GameScene::Draw2dForeground()
+void MultiGame::Draw2dForeground()
 {
     countDown_->Draw2D();
     inputGuide_->Draw();
 }
 
-void GameScene::CreatePlayerBullet()
+void MultiGame::CreatePlayerBullet()
 {
     Vector3 direction = screenToWorld_->GetWorldPoint() - player_->GetTranslation();
 
@@ -329,8 +352,7 @@ void GameScene::CreatePlayerBullet()
     playerBullets_.push_back(std::move(bullet));
 }
 
-
-void GameScene::RemovePlayerBullet()
+void MultiGame::RemovePlayerBullet()
 {
     playerBullets_.remove_if([](const std::unique_ptr<PlayerBullet>& _bullet)
     {
@@ -343,8 +365,7 @@ void GameScene::RemovePlayerBullet()
     });
 }
 
-
-void GameScene::RemoveEnemy()
+void MultiGame::RemoveEnemy()
 {
     enemy_.remove_if([](const std::unique_ptr<Enemy>& _enemy)
     {
@@ -357,8 +378,7 @@ void GameScene::RemoveEnemy()
     });
 }
 
-
-void GameScene::UpdateEnemyPopSystem()
+void MultiGame::UpdateEnemyPopSystem()
 {
     enemyPopSystem_.SetIgnorePosition(player_->GetTranslation());
     enemyPopSystem_.Update();
@@ -376,30 +396,12 @@ void GameScene::UpdateEnemyPopSystem()
     }
 }
 
-void GameScene::PlayerSlowUpdate()
+void MultiGame::MultiplayDataUpdate()
 {
-    Vector3 playerpos = player_->GetTranslation();
-    if (player_->IsSlow())
-    {
-        Vector3 eyepos = gameEye_->GetTransform().translate;
-        eyepos.Lerp(eyepos, Vector3(playerpos.x, 30.0f, playerpos.z), 0.1f);
 
-        gameEye_->SetTranslate(eyepos);
-
-        deltaTimeManager_->SetDeltaTime(1, 1.0f / 120.0f);
-    }
-    else
-    {
-        Vector3 eyepos = gameEye_->GetTransform().translate;
-        eyepos.Lerp(eyepos, Vector3(playerpos.x, 50.0f, playerpos.z), 0.1f);
-
-        gameEye_->SetTranslate(eyepos);
-
-        deltaTimeManager_->SetDeltaTime(1, 1.0f / 60.0f);
-    }
 }
 
-void GameScene::DebugWindow()
+void MultiGame::DebugWindow()
 {
 #ifdef _DEBUG
     ImGui::SeparatorText("Collider Debug");
@@ -414,6 +416,7 @@ void GameScene::DebugWindow()
     if (ImGui::Checkbox("Player", &isDisplayColliderPlayer_))
     {
         player_->SetIsDrawCollisionArea(isDisplayColliderPlayer_);
+        player2_->SetIsDrawCollisionArea(isDisplayColliderPlayer_);
     }
 
     if (ImGui::Checkbox("PlayerBullet", &isDisplayColliderPlayerBullet_))
