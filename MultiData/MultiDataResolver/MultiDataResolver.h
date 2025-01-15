@@ -43,7 +43,7 @@ private:
 
 
     /// バッファ設定
-    uint32_t                                    queueBuffer_        = 5u;           /// キューのバッファサイズ
+    uint32_t                                    queueBuffer_        = 10u;          /// キューのバッファサイズ
 
     
     /// バッファ情報
