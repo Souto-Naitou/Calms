@@ -135,9 +135,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ProjectReference Include="Externals\GameEngine_DX12\Engine\Engine.vcxproj">
       <Project>{9fd2d32d-dab0-40a1-b430-cbc12517b87c}</Project>
     </ProjectReference>
-    <ProjectReference Include="Externals\GameEngine_DX12\Engine\Externals\Easing_ImGui\Easing_ImGui.vcxproj">
-      <Project>{ba3d0f34-3210-4d13-8763-196fccc04957}</Project>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision\Collider\Collider.h" />

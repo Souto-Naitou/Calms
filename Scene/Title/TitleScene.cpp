@@ -16,7 +16,7 @@ void TitleScene::Initialize()
 
     pSpace_ = new Sprite();
     pSpace_->SetName("SpaceSprite");
-    pSpace_->Initialize("spacePress.png");
+    pSpace_->Initialize("clear.png");
     pSpace_->SetAnchorPoint({ 0.5f, 0.5f });
     pSpace_->SetPosition({ WinSystem::kClientWidth / 2, WinSystem::kClientHeight / 2 + 100 });
 }

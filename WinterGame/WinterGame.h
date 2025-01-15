@@ -2,8 +2,6 @@
 
 #include <Framework/NimaFramework.h>
 #include <Collision/Manager/CollisionManager.h>
-#include <EasingManager/EasingManager.h>
-#include <CSVLoader.h>
 
 class WinterGame : public NimaFramework
 {
@@ -33,6 +31,4 @@ public:
 
 private: /// ゲーム内オブジェクト
     CollisionManager* pCollisionManager_ = nullptr;
-    EasingManager* pEasingManager_ = nullptr;
-    CSVLoader* pCSVLoader_ = nullptr;
 };

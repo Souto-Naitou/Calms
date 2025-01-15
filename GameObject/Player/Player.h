@@ -10,6 +10,7 @@
 #include <Collision/Collider/Collider.h>
 #include <Collision/Shape.h>
 #include <DeltaTimeManager/DeltaTimeManager.h>
+#include <Features/Particle/Emitter/ParticleEmitter.h>
 
 class Player : public BaseObject
 {
@@ -55,6 +56,8 @@ private:
     /// マルチプレイ用
     bool enableInput_ = true;
 
+    /// パーティクルエミッター
+    std::unique_ptr<ParticleEmitter> shotEmitter = nullptr;
 
 private:
     void UpdateInputCommands();

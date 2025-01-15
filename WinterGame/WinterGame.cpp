@@ -30,12 +30,6 @@ void WinterGame::Initialize()
 
     /// テクスチャの検索パスを追加
     pTextureManager_->AddSearchPath("resources/images");
-
-    /// イージングマネージャの初期化
-    pEasingManager_ = EasingManager::GetInstance();
-
-    /// CSVLoaderの初期化
-    pCSVLoader_ = CSVLoader::GetInstance();
 }
 
 void WinterGame::Finalize()
