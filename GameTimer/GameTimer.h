@@ -35,7 +35,7 @@ private:
     bool isDisplay_ = false;
     bool isUseSystemClock_ = false;
 
-    const double gameDuration_ = 60.0;
+    const double gameDuration_ = 10.0;
     const double changeInterval_ = 2.0;
 
     bool isEnd_ = false;

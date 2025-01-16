@@ -5,6 +5,7 @@
 #include <Features/Input/Input.h>
 #include <Features/SceneTransition/SceneTransitionManager.h>
 #include <Features/Sprite/Sprite.h>
+#include <Features/Particle/Emitter/ParticleEmitter.h>
 #include <memory>
 
 class TitleScene : public IScene

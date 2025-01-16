@@ -14,9 +14,12 @@ void TitleScene::Initialize()
     gameEye_->SetTranslate(Vector3(0, 15.0f, -30.0f));
     gameEye_->SetRotate(Vector3(-1.2f, 0, 0));
 
+    pParticleEmitter_ = new ParticleEmitter();
+    pParticleEmitter_->Initialize("Particle/ParticleSpark.obj", "resources/json/particles/shot.json", true);
+
     pSpace_ = new Sprite();
     pSpace_->SetName("SpaceSprite");
-    pSpace_->Initialize("clear.png");
+    pSpace_->Initialize("resources/images/spacepress.png");
     pSpace_->SetAnchorPoint({ 0.5f, 0.5f });
     pSpace_->SetPosition({ WinSystem::kClientWidth / 2, WinSystem::kClientHeight / 2 + 100 });
 }
@@ -26,6 +29,7 @@ void TitleScene::Finalize()
     gameEye_.reset();
 
     pSpace_->Finalize();
+
     delete pSpace_;
 }
 

@@ -8,17 +8,17 @@
 
 void ClearScene::Initialize()
 {
-    pClear_ = new Sprite();
-    pClear_->SetName("ClearSprite");
-    pClear_->Initialize("clear.png");
-    pClear_->SetAnchorPoint({ 0.5f, 0.5f });
-    pClear_->SetPosition({ WinSystem::kClientWidth/2, WinSystem::kClientHeight/2});
-
     pSpace_ = new Sprite();
     pSpace_->SetName("SpaceSprite");
     pSpace_->Initialize("spacePress.png");
     pSpace_->SetAnchorPoint({ 0.5f, 0.5f });
     pSpace_->SetPosition({ WinSystem::kClientWidth / 2, WinSystem::kClientHeight / 2 + 100 });
+
+    pClear_ = new Sprite();
+    pClear_->SetName("ClearSprite");
+    pClear_->Initialize("clear.png");
+    pClear_->SetAnchorPoint({ 0.5f, 0.5f });
+    pClear_->SetPosition({ WinSystem::kClientWidth/2, WinSystem::kClientHeight/2});
 }
 
 void ClearScene::Finalize()
