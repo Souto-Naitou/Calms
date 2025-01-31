@@ -1,9 +1,10 @@
 #include "WinterGame.h"
 
 #include <Common/define.h>
-#include <Windows.h>
 #include <Features/SceneManager/SceneManager.h>
 #include <Scene/Factory/SceneFactory.h>
+
+#pragma comment(lib, "Ws2_32.lib")
 
 void WinterGame::Initialize()
 {
@@ -29,12 +30,6 @@ void WinterGame::Initialize()
 
     /// テクスチャの検索パスを追加
     pTextureManager_->AddSearchPath("resources/images");
-
-    /// イージングマネージャの初期化
-    pEasingManager_ = EasingManager::GetInstance();
-
-    /// CSVLoaderの初期化
-    pCSVLoader_ = CSVLoader::GetInstance();
 }
 
 void WinterGame::Finalize()
@@ -98,5 +93,12 @@ void WinterGame::Draw()
     pSceneManager_->SceneDraw2dForeground();
 
     pImGuiManager_->EndFrame();
+    pDirectX_->CommandExecute();
+
+    /// テキスト描画
+    pTextSystem_->PresentDraw();
+    pSceneManager_->SceneDrawText();
+    pTextSystem_->PostDraw();
+
     pDirectX_->PostDraw();
 }

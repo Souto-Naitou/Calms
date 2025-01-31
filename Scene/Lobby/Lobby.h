@@ -1,14 +1,14 @@
 #pragma once
 
 #include <Interfaces/IScene.h>
-#include <Features/GameEye/GameEye.h>
-#include <Features/Input/Input.h>
-#include <Features/SceneTransition/SceneTransitionManager.h>
-#include <Features/Sprite/Sprite.h>
-#include <Features/Particle/Emitter/ParticleEmitter.h>
-#include <memory>
+#include <Network/TCP_IP.h>
 
-class TitleScene : public IScene
+#include <thread>
+
+#include <JsonParser/JsonLoader.h>
+
+
+class LobbyScene : public IScene
 {
 public:
     /// <summary>
@@ -63,11 +63,40 @@ public:
 
 
 private:
-    std::unique_ptr<GameEye>                    gameEye_            = {};           // !< ゲームアイ
-    Sprite*                                     pSpace_             = nullptr;
-    
+    WSADATA wsaData_;
+    TCP::Host* host_;
+    uint32_t handle_ = 0;
+
+
+    TCP::Client* client_;
+
+    int hostOrClient_ = 0;
+
+    std::string ip_ = "";
+    std::string port_ = "";
+
+    bool hostOpenRequest_ = false;
+    bool hostOpened_ = false;
+
+    bool clientTryConnectionRequest_ = false;
+    bool clientTryConnection_ = false;
+
+    bool isConnected_ = false;
+
+    std::thread* networkThread_ = nullptr;
+    bool isEnableJson_ = false;
 
 private:
-    Input*                                      pInput_             = nullptr;      // !< 入力
-    SceneTransitionManager*                     pSceneTransition_   = nullptr;      // !< シーン遷移
+    std::string windowName_ = "LobbyScene";
+    void DebugWindow();
+
+    /// ネットワークスレッド
+    void DeleteNetworkThread();
+    void BeginNetworkThread();
+
+    void HostOpen();
+    void ClientConnect();
+
+    void HostFinalize();
+    void ClientFinalize();
 };

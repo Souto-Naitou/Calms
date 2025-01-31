@@ -10,6 +10,7 @@
 #include <Collision/Collider/Collider.h>
 #include <Collision/Shape.h>
 #include <DeltaTimeManager/DeltaTimeManager.h>
+#include <Features/Particle/Emitter/ParticleEmitter.h>
 
 class Player : public BaseObject
 {
@@ -28,6 +29,7 @@ public: /// Getter
 
 public: /// Setter
     void SetIsDrawCollisionArea(bool _isDraw) { isDrawCollisionArea_ = _isDraw; }
+    void SetEnableInput(bool _enable) { enableInput_ = _enable; }
 
 
 private:
@@ -51,6 +53,11 @@ private:
     Vector3 accelerationRefl_ = {};
     float reflectionPower_ = 70.0f;
 
+    /// マルチプレイ用
+    bool enableInput_ = true;
+
+    /// パーティクルエミッター
+    std::unique_ptr<ParticleEmitter> shotEmitter = nullptr;
 
 private:
     void UpdateInputCommands();

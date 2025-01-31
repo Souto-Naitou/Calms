@@ -61,6 +61,9 @@
       <AdditionalIncludeDirectories>$(ProjectDir)Externals\GameEngine_DX12\Engine\Externals\VectorMatrix\math;$(ProjectDir)Externals\GameEngine_DX12\Engine;$(ProjectDir)Externals\ImGui;$(ProjectDir)Externals;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -83,6 +86,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalIncludeDirectories>$(ProjectDir)Externals\GameEngine_DX12\Engine\Externals\VectorMatrix\math;$(ProjectDir)Externals\GameEngine_DX12\Engine;$(ProjectDir)Externals\ImGui;$(ProjectDir)Externals;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -107,21 +113,30 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="GameObject\ScreenToWorld\ScreenToWorld.cpp" />
     <ClCompile Include="GameTimer\GameTimer.cpp" />
     <ClCompile Include="InputGuide\InputGuide.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="main.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="MultiDataManager\MultiDataManager.cpp" />
+    <ClCompile Include="MultiData\MultiDataResolver\MultiDataResolver.cpp" />
     <ClCompile Include="PopSystem\Enemy\EnemyPopSystem.cpp" />
     <ClCompile Include="Scene\Clear\ClearScene.cpp" />
     <ClCompile Include="Scene\Factory\SceneFactory.cpp" />
     <ClCompile Include="Scene\Game\GameScene.cpp" />
+    <ClCompile Include="Scene\Lobby\Lobby.cpp" />
+    <ClCompile Include="Scene\MultiGame\MultiGame.cpp" />
     <ClCompile Include="Scene\Title\TitleScene.cpp" />
+    <ClCompile Include="ScoreSystem\ScoreSystem.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="UI\CountDown\CountDown.cpp" />
     <ClCompile Include="WinterGame\WinterGame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Externals\GameEngine_DX12\Engine\Engine.vcxproj">
       <Project>{9fd2d32d-dab0-40a1-b430-cbc12517b87c}</Project>
-    </ProjectReference>
-    <ProjectReference Include="Externals\GameEngine_DX12\Engine\Externals\Easing_ImGui\Easing_ImGui.vcxproj">
-      <Project>{ba3d0f34-3210-4d13-8763-196fccc04957}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -138,11 +153,17 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="GameObject\ScreenToWorld\ScreenToWorld.h" />
     <ClInclude Include="GameTimer\GameTimer.h" />
     <ClInclude Include="InputGuide\InputGuide.h" />
+    <ClInclude Include="MultiDataManager\MultiDataManager.h" />
+    <ClInclude Include="MultiData\MultiDataResolver\MultiDataResolver.h" />
     <ClInclude Include="PopSystem\Enemy\EnemyPopSystem.h" />
     <ClInclude Include="Scene\Clear\ClearScene.h" />
     <ClInclude Include="Scene\Factory\SceneFactory.h" />
     <ClInclude Include="Scene\Game\GameScene.h" />
+    <ClInclude Include="Scene\Lobby\Lobby.h" />
+    <ClInclude Include="Scene\MultiGame\MultiGame.h" />
     <ClInclude Include="Scene\Title\TitleScene.h" />
+    <ClInclude Include="ScoreSystem\ScoreSystem.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="UI\CountDown\CountDown.h" />
     <ClInclude Include="WinterGame\WinterGame.h" />
   </ItemGroup>

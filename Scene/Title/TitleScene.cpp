@@ -16,7 +16,7 @@ void TitleScene::Initialize()
 
     pSpace_ = new Sprite();
     pSpace_->SetName("SpaceSprite");
-    pSpace_->Initialize("spacePress.png");
+    pSpace_->Initialize("resources/images/spacepress.png");
     pSpace_->SetAnchorPoint({ 0.5f, 0.5f });
     pSpace_->SetPosition({ WinSystem::kClientWidth / 2, WinSystem::kClientHeight / 2 + 100 });
 }
@@ -26,6 +26,7 @@ void TitleScene::Finalize()
     gameEye_.reset();
 
     pSpace_->Finalize();
+
     delete pSpace_;
 }
 
@@ -33,7 +34,11 @@ void TitleScene::Update()
 {
     gameEye_->Update();
 
-    if (pInput_->TriggerKey(DIK_SPACE))
+    if (pInput_->TriggerKey(DIK_RETURN))
+    {
+        pSceneTransition_->ChangeScene("LobbyScene", std::make_unique<TransFadeInOut>());
+    }
+    else if (pInput_->TriggerKey(DIK_SPACE))
     {
         pSceneTransition_->ChangeScene("GameScene", std::make_unique<TransFadeInOut>());
     }
@@ -51,6 +56,7 @@ void TitleScene::Draw3d()
 
 void TitleScene::Draw2dMidground()
 {
+    pSpace_->Draw();
 }
 
 void TitleScene::Draw3dMidground()
@@ -63,5 +69,8 @@ void TitleScene::DrawLine()
 
 void TitleScene::Draw2dForeground()
 {
-    pSpace_->Draw();
+}
+
+void TitleScene::DrawTexts()
+{
 }

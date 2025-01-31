@@ -17,11 +17,11 @@
 #include <GameTimer/GameTimer.h>
 #include <InputGuide/InputGuide.h>
 #include <Features/Line/Line.h>
-#include <ScoreSystem/ScoreSystem.h>
+#include <MultiData/MultiDataResolver/MultiDataResolver.h>
 #include <list>
 #include <memory>
 
-class GameScene : public IScene
+class MultiGame : public IScene
 {
 public:
     /// <summary>
@@ -69,12 +69,10 @@ public:
     /// </summary>
     void Draw2dForeground() override;
 
-
     /// <summary>
     /// テキスト描画
     /// </summary>
     void DrawTexts() override;
-
 
 private:
     std::unique_ptr<Object3d>                   grid_               = {};       // !< グリッド
@@ -85,7 +83,6 @@ private:
     std::unique_ptr<ScreenToWorld>              screenToWorld_      = {};       // !< 座標変換
     std::unique_ptr<GameTimer>                  gameTimer_          = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                 inputGuide_         = {};       // !< 入力ガイド
-    std::unique_ptr<ScoreSystem>                scoreSystem_        = {};       // !< スコアシステム
 
     EnemyPopSystem                              enemyPopSystem_     = {};       // !< 敵生成システム
     DIContainer                                 gObjDIContainer_    = {};       // !< ゲームオブジェクトのDIコンテナ
@@ -94,16 +91,20 @@ private:
     std::unique_ptr<CountDown>                  countDown_          = {};       // !< カウントダウン
     Timer                                       timer_              = {};       // !< タイマー
     double                                      countDownOffset_    = 2.0;      // !< カウントダウンのオフセット
+    MultiDataResolver                           multiDataResolver_  = {};       // !< マルチデータリゾルバ
 
     bool                                        isChangingScene_    = false;    // !< シーン遷移中かどうか
-    Line*                                       line_               = nullptr;  // !< エリア用ライン
+    Line* line_ = nullptr;  // !< エリア用ライン
     float                                       areaWidth_          = 25.0f;    // !< エリアの幅
 
+    /// ネットワーク
+    /// 通信相手のデータ
+    std::unique_ptr<Player>                     player2_            = nullptr;  // !< プレイヤー2
 
 
 private: /// デバッグ用
     DebugManager* pDebugManager_ = nullptr;
-    std::string name_ = "GameScene";
+    std::string name_ = "MultiGame";
 
     /// コライダーの描画
     bool isDisplayColliderEnemy_ = false;
@@ -119,8 +120,10 @@ private:
 
     void RemoveEnemy();
     void UpdateEnemyPopSystem();
+    void UpdateFollowCamera();
 
-    void PlayerSlowUpdate();
+    /// ネットワーク
+    void MultiplayDataUpdate();
 
     void DebugWindow();
 

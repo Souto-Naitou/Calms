@@ -64,6 +64,21 @@
     <Filter Include="Scene\Clear">
       <UniqueIdentifier>{e038e2c1-eee8-42e3-8c9b-f54ae3698b78}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\Lobby">
+      <UniqueIdentifier>{b3e92359-b782-496d-8f89-5556be172543}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\MultiGame">
+      <UniqueIdentifier>{965bb4e1-6b00-406f-9b2e-1349f6e9118a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MultiData">
+      <UniqueIdentifier>{ea193379-2d59-4248-a97b-42bd27ab419f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MultiData\MultiDataResolver">
+      <UniqueIdentifier>{871347c5-b419-4bb5-9e14-458f14e6b9eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScoreSystem">
+      <UniqueIdentifier>{1a901cd6-b7ad-42da-adc5-24619b1aa5db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinterGame\WinterGame.cpp">
@@ -109,10 +124,34 @@
     <ClCompile Include="DeltaTimeManager\DeltaTimeManager.cpp">
       <Filter>DeltaTimeManager</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject\ScreenToWorld\ScreenToWorld.cpp" />
-    <ClCompile Include="GameTimer\GameTimer.cpp" />
-    <ClCompile Include="InputGuide\InputGuide.cpp" />
-    <ClCompile Include="Scene\Clear\ClearScene.cpp" />
+    <ClCompile Include="Scene\Clear\ClearScene.cpp">
+      <Filter>Scene\Clear</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTimer\GameTimer.cpp">
+      <Filter>GameTimer</Filter>
+    </ClCompile>
+    <ClCompile Include="InputGuide\InputGuide.cpp">
+      <Filter>UI\InputGuide</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject\ScreenToWorld\ScreenToWorld.cpp">
+      <Filter>GameObject\ScreenToWorld</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\Lobby\Lobby.cpp">
+      <Filter>Scene\Lobby</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\MultiGame\MultiGame.cpp">
+      <Filter>Scene\MultiGame</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="MultiData\MultiDataResolver\MultiDataResolver.cpp">
+      <Filter>MultiData\MultiDataResolver</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiDataManager\MultiDataManager.cpp">
+      <Filter>MultiData</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreSystem\ScoreSystem.cpp">
+      <Filter>ScoreSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinterGame\WinterGame.h">
@@ -174,6 +213,22 @@
     </ClInclude>
     <ClInclude Include="Scene\Clear\ClearScene.h">
       <Filter>Scene\Clear</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Lobby\Lobby.h">
+      <Filter>Scene\Lobby</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Scene\MultiGame\MultiGame.h">
+      <Filter>Scene\MultiGame</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiDataManager\MultiDataManager.h">
+      <Filter>MultiData</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiData\MultiDataResolver\MultiDataResolver.h">
+      <Filter>MultiData\MultiDataResolver</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreSystem\ScoreSystem.h">
+      <Filter>ScoreSystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

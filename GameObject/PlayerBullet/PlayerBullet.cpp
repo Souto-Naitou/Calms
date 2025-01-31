@@ -10,7 +10,9 @@ void PlayerBullet::Initialize()
     collisionManager_ = CollisionManager::GetInstance();
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
 
+
     name_ = "playerBullet";
+
 
     /// タイマーの初期化
     timer_ = std::make_unique<Timer>();
@@ -41,9 +43,10 @@ void PlayerBullet::Initialize()
     collider_->SetAttribute(collisionManager_->GetNewAttribute("playerBullet"));
     collider_->SetOwner(this);
     collider_->SetShape(Shape::OBB);
-    collider_->SetRadius(2u);
+    collider_->SetRadius(1);
     collider_->SetMask(collisionManager_->GetNewMask("playerBullet", "player"));
     collider_->SetOnCollisionTrigger(std::bind(&PlayerBullet::OnCollisionTrigger, this, std::placeholders::_1));
+    collider_->SetEnableLighter(true);
 
     collisionManager_->RegisterCollider(collider_.get());
 }

@@ -1,0 +1,6 @@
+{
+    "ENABLE" : true,
+    "IPADDR" : "127.0.0.1",
+    "PORT" : "27015",
+    "HOSTORCLIENT" : 1
+}

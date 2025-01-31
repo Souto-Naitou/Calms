@@ -15,6 +15,11 @@ class ClearScene : public IScene
     void DrawLine() override;
     void Draw2dForeground() override;
 
+    /// <summary>
+    /// テキスト描画
+    /// </summary>
+    void DrawTexts() override;
+
 private:
     Sprite* pClear_ = nullptr;
     Sprite* pSpace_ = nullptr;

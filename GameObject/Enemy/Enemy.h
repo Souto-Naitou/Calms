@@ -10,6 +10,7 @@
 #include <Collision/Manager/CollisionManager.h>
 #include <Features/Primitive/OBB.h>
 #include <DeltaTimeManager/DeltaTimeManager.h>
+#include <Features/Particle/Emitter/ParticleEmitter.h>
 
 class Enemy : public BaseObject
 {
@@ -38,10 +39,15 @@ private:
     Vector2 velocity_move = {};
     float moveSpeed_ = 0.0f;
     float reflectionPower_ = 15.0f;
+    float bulletReflectionPower_ = 25.0f;
 
     std::unique_ptr<Collider> collider_ = nullptr;
     OBB obb_ = {};
     bool isDrawCollisionArea_ = false;
+
+    /// パーティクル
+    std::unique_ptr<ParticleEmitter> hitParticle_ = nullptr;
+    std::unique_ptr<ParticleEmitter> deathParticle_ = nullptr;
 
 
 private:
