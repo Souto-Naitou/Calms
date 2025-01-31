@@ -7,7 +7,7 @@
 class GameTimer
 {
 public:
-    void Initialize(bool _useSystemClock);
+    void Initialize(bool _useSystemClock, double _gameDuration);
     void Update();
     void Draw();
     void Finalize();
@@ -35,7 +35,7 @@ private:
     bool isDisplay_ = false;
     bool isUseSystemClock_ = false;
 
-    const double gameDuration_ = 10.0;
+    double gameDuration_ = 0.0;
     const double changeInterval_ = 2.0;
 
     bool isEnd_ = false;

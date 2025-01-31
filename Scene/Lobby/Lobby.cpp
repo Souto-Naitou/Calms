@@ -95,6 +95,10 @@ void LobbyScene::Draw2dForeground()
 {
 }
 
+void LobbyScene::DrawTexts()
+{
+}
+
 void LobbyScene::DebugWindow()
 {
 #ifdef _DEBUG

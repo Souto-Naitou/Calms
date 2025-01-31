@@ -93,5 +93,12 @@ void WinterGame::Draw()
     pSceneManager_->SceneDraw2dForeground();
 
     pImGuiManager_->EndFrame();
+    pDirectX_->CommandExecute();
+
+    /// テキスト描画
+    pTextSystem_->PresentDraw();
+    pSceneManager_->SceneDrawText();
+    pTextSystem_->PostDraw();
+
     pDirectX_->PostDraw();
 }

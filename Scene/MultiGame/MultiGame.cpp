@@ -104,7 +104,7 @@ void MultiGame::Initialize()
 
     /// ゲームタイマーの初期化
     gameTimer_ = std::make_unique<GameTimer>();
-    gameTimer_->Initialize(true);
+    gameTimer_->Initialize(true, 60.0);
 
 
     /// 入力ガイド
@@ -334,6 +334,10 @@ void MultiGame::Draw2dForeground()
 {
     countDown_->Draw2D();
     inputGuide_->Draw();
+}
+
+void MultiGame::DrawTexts()
+{
 }
 
 void MultiGame::CreatePlayerBullet()

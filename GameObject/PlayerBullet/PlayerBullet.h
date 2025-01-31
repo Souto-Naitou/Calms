@@ -10,6 +10,7 @@
 #include <Collision/Manager/CollisionManager.h>
 #include <Features/Primitive/OBB.h>
 #include <DeltaTimeManager/DeltaTimeManager.h>
+#include <Features/Particle/Emitter/ParticleEmitter.h>
 
 class PlayerBullet : public BaseObject
 {

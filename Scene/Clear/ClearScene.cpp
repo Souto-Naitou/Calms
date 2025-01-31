@@ -66,3 +66,7 @@ void ClearScene::DrawLine()
 void ClearScene::Draw2dForeground()
 {
 }
+
+void ClearScene::DrawTexts()
+{
+}

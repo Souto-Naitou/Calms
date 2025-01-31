@@ -6,7 +6,7 @@
                 "beginTime" : 0.000,
                 "endTime" : 15.000,
                 "enemyType" : "Normal",
-                "enemyCount" : 3,
+                "enemyCount" : 5,
                 "interval" : 5.000
             },
             {
@@ -14,7 +14,7 @@
                 "beginTime" : 15.000,
                 "endTime" : 30.000,
                 "enemyType" : "Normal",
-                "enemyCount" : 5,
+                "enemyCount" : 7,
                 "interval" : 5.000
             },
             {
@@ -23,14 +23,14 @@
                 "endTime" : 40.000,
                 "enemyType" : "Normal",
                 "enemyCount" : 1,
-                "interval" : 2.000
+                "interval" : 0.500
             },
             {
                 "name" : "Wave4",
                 "beginTime" : 40.000,
                 "endTime" : 50.000,
                 "enemyType" : "Normal",
-                "enemyCount" : 3,
+                "enemyCount" : 5,
                 "interval" : 2.000
             },
             {
@@ -38,7 +38,7 @@
                 "beginTime" : 50.000,
                 "endTime" : 60.000,
                 "enemyType" : "Normal",
-                "enemyCount" : 3,
+                "enemyCount" : 7,
                 "interval" : 3.500
             }
         ]

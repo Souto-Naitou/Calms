@@ -14,9 +14,6 @@ void TitleScene::Initialize()
     gameEye_->SetTranslate(Vector3(0, 15.0f, -30.0f));
     gameEye_->SetRotate(Vector3(-1.2f, 0, 0));
 
-    pParticleEmitter_ = new ParticleEmitter();
-    pParticleEmitter_->Initialize("Particle/ParticleSpark.obj", "resources/json/particles/shot.json", true);
-
     pSpace_ = new Sprite();
     pSpace_->SetName("SpaceSprite");
     pSpace_->Initialize("resources/images/spacepress.png");
@@ -59,6 +56,7 @@ void TitleScene::Draw3d()
 
 void TitleScene::Draw2dMidground()
 {
+    pSpace_->Draw();
 }
 
 void TitleScene::Draw3dMidground()
@@ -71,5 +69,8 @@ void TitleScene::DrawLine()
 
 void TitleScene::Draw2dForeground()
 {
-    pSpace_->Draw();
+}
+
+void TitleScene::DrawTexts()
+{
 }

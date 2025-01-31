@@ -76,6 +76,9 @@
     <Filter Include="MultiData\MultiDataResolver">
       <UniqueIdentifier>{871347c5-b419-4bb5-9e14-458f14e6b9eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ScoreSystem">
+      <UniqueIdentifier>{1a901cd6-b7ad-42da-adc5-24619b1aa5db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinterGame\WinterGame.cpp">
@@ -145,6 +148,9 @@
     </ClCompile>
     <ClCompile Include="MultiDataManager\MultiDataManager.cpp">
       <Filter>MultiData</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreSystem\ScoreSystem.cpp">
+      <Filter>ScoreSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +226,9 @@
     </ClInclude>
     <ClInclude Include="MultiData\MultiDataResolver\MultiDataResolver.h">
       <Filter>MultiData\MultiDataResolver</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreSystem\ScoreSystem.h">
+      <Filter>ScoreSystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

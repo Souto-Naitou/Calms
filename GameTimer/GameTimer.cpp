@@ -21,8 +21,10 @@ void GameTimer::Start()
     }
 }
 
-void GameTimer::Initialize(bool _useSystemClock)
+void GameTimer::Initialize(bool _useSystemClock, double _gameDuration)
 {
+    gameDuration_ = _gameDuration;
+
     for (int i = 0; i < 10; i++)
     {
         tensPlaceNums_[i] = new Sprite();
@@ -30,12 +32,14 @@ void GameTimer::Initialize(bool _useSystemClock)
         tensPlaceNums_[i]->Initialize("number_" + std::to_string(i) + ".png");
         tensPlaceNums_[i]->SetAnchorPoint({ 0.5f, 0.5f });
         tensPlaceNums_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.2f });
+        tensPlaceNums_[i]->SetSizeMultiply(0.75f);
 
         onesPlaceNums_[i] = new Sprite();
         onesPlaceNums_[i]->SetName("onesPlaceNum_" + std::to_string(i));
         onesPlaceNums_[i]->Initialize("number_" + std::to_string(i) + ".png");
         onesPlaceNums_[i]->SetAnchorPoint({ 0.5f, 0.5f });
         onesPlaceNums_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.2f });
+        onesPlaceNums_[i]->SetSizeMultiply(0.75f);
     }
 
     if (_useSystemClock)
@@ -93,7 +97,7 @@ void GameTimer::Draw()
 
     tensPlaceNums_[tens_place]->SetPosition({
         WinSystem::kClientWidth / 2 - tensPlaceNums_[tens_place]->GetSize().x / 3.0f,
-        static_cast<float>(WinSystem::kClientHeight / 3)
+        static_cast<float>(WinSystem::kClientHeight / 4)
         }
     );
 
@@ -103,7 +107,7 @@ void GameTimer::Draw()
 
     onesPlaceNums_[ones_place]->SetPosition({
         WinSystem::kClientWidth / 2 + onesPlaceNums_[ones_place]->GetSize().x / 3.0f,
-        static_cast<float>(WinSystem::kClientHeight / 3)
+        static_cast<float>(WinSystem::kClientHeight / 4)
         }
     );
 

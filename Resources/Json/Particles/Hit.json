@@ -2,58 +2,58 @@
     "alphaDeltaValue" : 0.000000,
     "beginColor" : {
         "a" : 1.000000,
-        "b" : 0.894118,
-        "g" : 0.894118,
-        "r" : 0.894118
+        "b" : 0.000000,
+        "g" : 0.000000,
+        "r" : 0.976471
     },
     "beginPosition" : {
         "x" : 0.000000,
         "y" : 0.000000,
         "z" : 0.000000
     },
-    "emitInterval" : 0.020000,
-    "emitNum" : 50,
+    "emitInterval" : 0.000000,
+    "emitNum" : 5,
     "emitPositionFixed" : {
         "x" : 0.000000,
         "y" : 0.000000,
         "z" : 0.000000
     },
-    "emitterLifeTime" : 0.000000,
-    "emitterName" : "Smoke",
+    "emitterLifeTime" : 1.500000,
+    "emitterName" : "Firework",
     "enableRandomEmit" : false,
     "enableRandomVelocity" : true,
     "endColor" : {
         "a" : 0.000000,
-        "b" : 0.368627,
-        "g" : 0.368627,
-        "r" : 0.368627
+        "b" : 0.000000,
+        "g" : 0.000000,
+        "r" : 0.474510
     },
     "endPosition" : {
-        "x" : 10.000000,
-        "y" : 3.000000,
+        "x" : 0.000000,
+        "y" : 5.000000,
         "z" : 0.000000
     },
     "endScale" : {
-        "x" : 0.170000,
-        "y" : 0.170000,
-        "z" : 0.100000
+        "x" : 0.300000,
+        "y" : 0.300000,
+        "z" : 0.300000
     },
     "gravity" : {
         "x" : 0.000000,
         "y" : 0.000000,
         "z" : 0.000000
     },
-    "particleLifeTime" : 2.000000,
+    "particleLifeTime" : 1.300000,
     "resistance" : {
-        "x" : 0.750000,
+        "x" : 0.000000,
         "y" : 0.000000,
         "z" : 0.000000
     },
     "scaleDelayTime" : 0.000000,
     "startScale" : {
-        "x" : 0.000000,
-        "y" : 0.000000,
-        "z" : 0.000000
+        "x" : 0.300000,
+        "y" : 0.300000,
+        "z" : 0.300000
     },
     "velocityFixed" : {
         "x" : 0.000000,
@@ -61,13 +61,13 @@
         "z" : 0.000000
     },
     "velocityRandomRangeBegin" : {
-        "x" : 0.330000,
-        "y" : 0.800000,
-        "z" : -0.300000
+        "x" : -5.000000,
+        "y" : -5.000000,
+        "z" : -5.000000
     },
     "velocityRandomRangeEnd" : {
-        "x" : 0.020000,
-        "y" : 0.600000,
-        "z" : 0.300000
+        "x" : 5.000000,
+        "y" : 5.000000,
+        "z" : 5.000000
     }
 }

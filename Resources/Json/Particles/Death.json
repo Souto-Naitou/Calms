@@ -11,7 +11,7 @@
         "y" : -0.200000,
         "z" : -0.200000
     },
-    "emitInterval" : 0.020000,
+    "emitInterval" : 0.000000,
     "emitNum" : 10,
     "emitPositionFixed" : {
         "x" : 0.000000,
@@ -19,7 +19,7 @@
         "z" : 0.000000
     },
     "emitterLifeTime" : 0.000000,
-    "emitterName" : "Shot",
+    "emitterName" : "EnemyDeath",
     "enableRandomEmit" : false,
     "enableRandomVelocity" : true,
     "endColor" : {

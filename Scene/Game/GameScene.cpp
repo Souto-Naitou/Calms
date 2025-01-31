@@ -3,7 +3,9 @@
 #include <Features/Model/ModelManager.h>
 #include <Features/SceneTransition/SceneTransitionManager.h>
 #include <Features/SceneTransition/TransFadeInOut.h>
+#include <Features/Text/TextSystem.h>
 #include <MathExtension/mathExtension.h>
+#include <Features/Particle/ParticleManager.h>
 
 #include <Vector3.h>
 
@@ -19,6 +21,10 @@ void GameScene::Initialize()
 
     /// デバッグウィンドウを登録
     pDebugManager_->SetComponent(name_, std::bind(&GameScene::DebugWindow, this));
+
+
+    /// テキストの色を追加
+    TextSystem::GetInstance()->SetColorBrush("HarfWhite", D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.5f));
 
 
     /// グリッドの初期化
@@ -51,7 +57,7 @@ void GameScene::Initialize()
     /// 平行光源の初期化
     directionalLight_.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
     directionalLight_.direction = Vector3(0.0f, -1.0f, -0.0f);
-    directionalLight_.intensity = 0.7f;
+    directionalLight_.intensity = 0.2f;
 
 
     /// ポイントライトの初期化
@@ -68,8 +74,6 @@ void GameScene::Initialize()
 
     /// 敵生成システムの初期化
     enemyPopSystem_.Initialize();
-    enemyPopSystem_.SetPopInterval(2.0f);
-    enemyPopSystem_.SetPopCount(2);
     enemyPopSystem_.SetPopRange(Vector3(-30.0f, 0.5f, -30.0f), Vector3(30.0f, 0.5f, 30.0f));
     enemyPopSystem_.SetIgnoreRange(3.0f);
     enemyPopSystem_.SetGameEye(gameEye_.get());
@@ -97,12 +101,17 @@ void GameScene::Initialize()
 
     /// ゲームタイマーの初期化
     gameTimer_ = std::make_unique<GameTimer>();
-    gameTimer_->Initialize(false);
+    gameTimer_->Initialize(false, 60.0);
 
 
     /// 入力ガイド
     inputGuide_ = std::make_unique<InputGuide>();
     inputGuide_->Initialize();
+
+
+    /// スコアシステムの初期化
+    scoreSystem_ = std::make_unique<ScoreSystem>();
+    scoreSystem_->Initialize();
 
 
     /// エリアの初期化
@@ -149,6 +158,8 @@ void GameScene::Finalize()
     gameTimer_->Finalize();
     inputGuide_->Finalize();
     line_->Finalize();
+    scoreSystem_->Finalize();
+    ParticleManager::GetInstance()->ReleaseAllParticle();
 
     /// 解放を明示しないと何故かリークする
     enemy_.clear();
@@ -206,12 +217,12 @@ void GameScene::Update()
         bullet->Update();
     }
 
-    /// プレイヤー弾の削除
-    RemovePlayerBullet();
-
-
     /// 敵の削除
     RemoveEnemy();
+
+
+    /// プレイヤー弾の削除
+    RemovePlayerBullet();
 
 
     /// カウントダウンの更新
@@ -251,6 +262,8 @@ void GameScene::Update()
 
     /// ラインの更新
     line_->Update();
+
+    scoreSystem_->Update();
 }
 
 
@@ -309,6 +322,11 @@ void GameScene::Draw2dForeground()
     inputGuide_->Draw();
 }
 
+void GameScene::DrawTexts()
+{
+    scoreSystem_->DrawTxt();
+}
+
 void GameScene::CreatePlayerBullet()
 {
     Vector3 direction = screenToWorld_->GetWorldPoint() - player_->GetTranslation();
@@ -347,11 +365,12 @@ void GameScene::RemovePlayerBullet()
 
 void GameScene::RemoveEnemy()
 {
-    enemy_.remove_if([](const std::unique_ptr<Enemy>& _enemy)
+    enemy_.remove_if([&](const std::unique_ptr<Enemy>& _enemy)
     {
         if (!_enemy->IsAlive())
         {
             _enemy->Finalize();
+            scoreSystem_->CountEnemyDeath();
             return true;
         }
         return false;

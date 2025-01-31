@@ -32,6 +32,7 @@ void Player::Initialize()
     object_->SetName("player");
     object_->SetTranslate(Vector3(0, 0.5f, 0));
     object_->SetRotate(Vector3(0, 0, 0));
+    object_->SetColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
 
 
     /// OBBの初期化
@@ -48,14 +49,15 @@ void Player::Initialize()
     collider_->SetMask(collisionManager_->GetNewMask("player"));
     collider_->SetOnCollision(std::bind(&Player::OnCollision, this, std::placeholders::_1));
     collider_->SetOnCollisionTrigger(std::bind(&Player::OnCollisionTrigger, this, std::placeholders::_1));
+    collider_->SetEnableLighter(true);
 
     // コライダーの登録
     collisionManager_->RegisterCollider(collider_.get());
 
     /// パーティクルエミッターの初期化
     shotEmitter = std::make_unique<ParticleEmitter>();
-    shotEmitter->Initialize("Particle/ParticleSpark.obj", "resources/json/particles/shot.json", true);
-    //shotEmitter->SetEnableBillboard(true);
+    shotEmitter->Initialize("Particle/ParticleSpark.obj", "resources/json/particles/shot.json");
+    shotEmitter->SetEnableBillboard(true);
 }
 
 
@@ -108,8 +110,8 @@ void Player::Update()
     collider_->SetShapeData(&obb_);
 
     /// パーティクルエミッターの更新
-    //shotEmitter->SetPosition(translation_);
-    //shotEmitter->Update();
+    shotEmitter->SetPosition(translation_);
+    shotEmitter->Update();
 }
 
 
@@ -123,7 +125,7 @@ void Player::DrawLine()
 {
     if (isDrawCollisionArea_) collider_->DrawArea();
     // パーティクルエミッターの描画
-    //shotEmitter->Draw();
+    shotEmitter->Draw();
 }
 
 
@@ -180,7 +182,7 @@ void Player::ModifyGameEye(GameEye* _eye)
 {
     object_->SetGameEye(gameEye_);
     obb_.SetGameEye(gameEye_);
-    //shotEmitter->SetGameEye(gameEye_);
+    shotEmitter->SetGameEye(gameEye_);
 }
 
 void Player::OnCollisionTrigger(const Collider* _collider)

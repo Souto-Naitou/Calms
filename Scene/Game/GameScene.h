@@ -17,6 +17,7 @@
 #include <GameTimer/GameTimer.h>
 #include <InputGuide/InputGuide.h>
 #include <Features/Line/Line.h>
+#include <ScoreSystem/ScoreSystem.h>
 #include <list>
 #include <memory>
 
@@ -69,6 +70,12 @@ public:
     void Draw2dForeground() override;
 
 
+    /// <summary>
+    /// テキスト描画
+    /// </summary>
+    void DrawTexts() override;
+
+
 private:
     std::unique_ptr<Object3d>                   grid_               = {};       // !< グリッド
     std::unique_ptr<GameEye>                    gameEye_            = {};       // !< ゲームアイ
@@ -78,6 +85,7 @@ private:
     std::unique_ptr<ScreenToWorld>              screenToWorld_      = {};       // !< 座標変換
     std::unique_ptr<GameTimer>                  gameTimer_          = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                 inputGuide_         = {};       // !< 入力ガイド
+    std::unique_ptr<ScoreSystem>                scoreSystem_        = {};       // !< スコアシステム
 
     EnemyPopSystem                              enemyPopSystem_     = {};       // !< 敵生成システム
     DIContainer                                 gObjDIContainer_    = {};       // !< ゲームオブジェクトのDIコンテナ
@@ -90,6 +98,7 @@ private:
     bool                                        isChangingScene_    = false;    // !< シーン遷移中かどうか
     Line*                                       line_               = nullptr;  // !< エリア用ライン
     float                                       areaWidth_          = 25.0f;    // !< エリアの幅
+
 
 
 private: /// デバッグ用

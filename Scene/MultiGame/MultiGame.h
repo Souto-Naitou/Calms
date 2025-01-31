@@ -69,6 +69,10 @@ public:
     /// </summary>
     void Draw2dForeground() override;
 
+    /// <summary>
+    /// テキスト描画
+    /// </summary>
+    void DrawTexts() override;
 
 private:
     std::unique_ptr<Object3d>                   grid_               = {};       // !< グリッド

@@ -63,6 +63,7 @@
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -87,6 +88,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,6 +126,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Scene\Lobby\Lobby.cpp" />
     <ClCompile Include="Scene\MultiGame\MultiGame.cpp" />
     <ClCompile Include="Scene\Title\TitleScene.cpp" />
+    <ClCompile Include="ScoreSystem\ScoreSystem.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -159,6 +162,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Scene\Lobby\Lobby.h" />
     <ClInclude Include="Scene\MultiGame\MultiGame.h" />
     <ClInclude Include="Scene\Title\TitleScene.h" />
+    <ClInclude Include="ScoreSystem\ScoreSystem.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="UI\CountDown\CountDown.h" />
     <ClInclude Include="WinterGame\WinterGame.h" />

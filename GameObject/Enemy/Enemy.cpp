@@ -35,6 +35,7 @@ void Enemy::Initialize()
     object_->SetName("enemy");
     object_->SetTranslate(Vector3(0, 0.5f, 0));
     object_->SetRotate(Vector3(0, 0, 0));
+    object_->SetColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 
 
     /// コライダーの初期化
@@ -44,10 +45,11 @@ void Enemy::Initialize()
     collider_->SetOwner(this);
     collider_->SetShape(Shape::OBB);
     collider_->SetShapeData(&obb_);
-    collider_->SetRadius(2u);
+    collider_->SetRadius(2);
     collider_->SetMask(collisionManager_->GetNewMask("enemyDummy"));
     collider_->SetOnCollisionTrigger(std::bind(&Enemy::OnCollisionTrigger, this, std::placeholders::_1));
     collider_->SetOnCollision(std::bind(&Enemy::OnCollision, this, std::placeholders::_1));
+    collider_->SetEnableLighter(true);
 
 
     /// OBBの初期化
@@ -55,6 +57,18 @@ void Enemy::Initialize()
 
     // コライダーの登録
     collisionManager_->RegisterCollider(collider_.get());
+
+
+    /// パーティクルエミッタの初期化
+    hitParticle_ = std::make_unique<ParticleEmitter>();
+    hitParticle_->Initialize("Triangle/Triangle.obj", "resources/json/particles/Hit.json", true);
+    hitParticle_->SetEnableBillboard(true);
+    hitParticle_->SetPosition(translation_);
+
+    deathParticle_ = std::make_unique<ParticleEmitter>();
+    deathParticle_->Initialize("Triangle/Triangle.obj", "resources/json/particles/Death.json", true);
+    deathParticle_->SetEnableBillboard(true);
+    deathParticle_->SetPosition(translation_);
 }
 
 void Enemy::Finalize()
@@ -64,6 +78,12 @@ void Enemy::Finalize()
 
     object_->Finalize();
     object_.reset();
+
+    deathParticle_->SetPosition(translation_);
+    deathParticle_->Emit();
+
+    hitParticle_->Finalize();
+    deathParticle_->Finalize();
     BaseObject::Finalize();
 }
 
@@ -114,6 +134,9 @@ void Enemy::Update()
     obb_.SetSize(Vector3(0.5f, 0.5f, 0.5f));
 
     collider_->SetShapeData(&obb_);
+
+    hitParticle_->Update();
+    deathParticle_->Update();
 }
 
 void Enemy::Draw()
@@ -124,12 +147,16 @@ void Enemy::Draw()
 void Enemy::DrawLine()
 {
     if (isDrawCollisionArea_) collider_->DrawArea();
+    hitParticle_->Draw();
+    deathParticle_->Draw();
 }
 
 void Enemy::ModifyGameEye(GameEye* _eye)
 {
     if (object_) object_->SetGameEye(_eye);
     obb_.SetGameEye(gameEye_);
+    hitParticle_->SetGameEye(gameEye_);
+    deathParticle_->SetGameEye(gameEye_);
 }
 
 void Enemy::OnCollision(const Collider* _other)
@@ -150,8 +177,22 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
     {
         hp_ -= _other->GetOwner()->GetAttackPower();
         if (hp_ <= 0) isAlive_ = false;
-    }
 
+        /// ヒットパーティクルの再生
+        Vector3 hitPos = _other->GetOwner()->GetTranslation();
+
+        if (hitPos.x == 0 && hitPos.y == 0 && hitPos.z == 0)
+        {
+            assert(0);
+        }
+
+        hitParticle_->SetPosition(hitPos);
+        hitParticle_->Emit();
+
+        Vector3 dir = translation_ - hitPos;
+
+        accelerationRefl_ = dir * bulletReflectionPower_;
+    }
 }
 
 void Enemy::DebugWindow()
