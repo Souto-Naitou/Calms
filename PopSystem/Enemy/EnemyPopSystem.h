@@ -68,9 +68,11 @@ private:
 private:
     Timer                   timerOverall_           = {};                   // !< 全体用タイマー
     Timer                   timerPop_               = {};                   // !< 生成用タイマー
+    Timer                   timerPopDelay_          = {};                   // !< 遅延生成用タイマー
     float                   popInterval_            = 1.0f;                 // !< 生成間隔
     std::queue<Vector3>     popPoints_              = {};                   // !< 生成する位置のキュー
     uint32_t                popCount_               = 1;                    // !< 一度に生成する数
+    uint32_t                popDelayCount_          = 0;                    // !< 遅延生成する数
     bool                    isEnablePop_            = false;                // !< 生成フラグ
 
 

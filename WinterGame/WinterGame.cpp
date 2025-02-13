@@ -12,8 +12,8 @@ void WinterGame::Initialize()
     NimaFramework::Initialize();
 
     /// シーンファクトリの設定
-    pSceneFactory_ = new SceneFactory();
-    pSceneManager_->SetSceneFactory(pSceneFactory_);
+    pSceneFactory_ = std::make_unique<SceneFactory>();
+    pSceneManager_->SetSceneFactory(pSceneFactory_.get());
 
     /// 当たり判定マネージャの初期化
     pCollisionManager_ = CollisionManager::GetInstance();
@@ -38,9 +38,6 @@ void WinterGame::Finalize()
     NimaFramework::Finalize();
 
     pSceneManager_->Finalize();
-
-    /// シーンファクトリの解放
-    delete pSceneFactory_;
 }
 
 void WinterGame::Update()
@@ -69,7 +66,9 @@ void WinterGame::Draw()
     pSceneManager_->SceneDraw2dBackGround();
 
     /// 3D描画
-    pObject3dSystem_->PresentDraw();
+    pObject3dSystem_->DepthDrawSetting();
+    pSceneManager_->SceneDraw3d();
+    pObject3dSystem_->MainDrawSetting();
     pSceneManager_->SceneDraw3d();
 
     /// 中景スプライトの描画
@@ -77,7 +76,9 @@ void WinterGame::Draw()
     pSceneManager_->SceneDraw2dMidground();
 
     /// 中景3dオブジェクトの描画
-    pObject3dSystem_->PresentDraw();
+    pObject3dSystem_->DepthDrawSetting();
+    pSceneManager_->SceneDraw3dMidground();
+    pObject3dSystem_->MainDrawSetting();
     pSceneManager_->SceneDraw3dMidground();
 
     /// ライン描画

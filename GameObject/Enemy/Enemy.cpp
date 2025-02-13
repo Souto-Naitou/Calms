@@ -69,6 +69,10 @@ void Enemy::Initialize()
     deathParticle_->Initialize("Triangle/Triangle.obj", "resources/json/particles/Death.json", true);
     deathParticle_->SetEnableBillboard(true);
     deathParticle_->SetPosition(translation_);
+
+    /// オーディオの初期化
+    audioHit_ = AudioManager::GetInstance()->GetNewAudio("kill_snare.wav");
+    audioDeath_ = AudioManager::GetInstance()->GetNewAudio("hit_snare.wav");
 }
 
 void Enemy::Finalize()
@@ -84,6 +88,7 @@ void Enemy::Finalize()
 
     hitParticle_->Finalize();
     deathParticle_->Finalize();
+
     BaseObject::Finalize();
 }
 
@@ -176,7 +181,11 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
     if (_other->GetColliderID() == "playerBullet")
     {
         hp_ -= _other->GetOwner()->GetAttackPower();
-        if (hp_ <= 0) isAlive_ = false;
+        if (hp_ <= 0) 
+        {
+            isAlive_ = false;
+            audioDeath_->Play();
+        }
 
         /// ヒットパーティクルの再生
         Vector3 hitPos = _other->GetOwner()->GetTranslation();
@@ -192,6 +201,9 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
         Vector3 dir = translation_ - hitPos;
 
         accelerationRefl_ = dir * bulletReflectionPower_;
+
+        /// ヒット効果音
+        audioHit_->Play();
     }
 }
 

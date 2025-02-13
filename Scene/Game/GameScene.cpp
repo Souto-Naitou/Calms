@@ -9,7 +9,9 @@
 
 #include <Vector3.h>
 
+#ifdef _DEBUG
 #include <imgui.h>
+#endif // _DEBUG
 
 void GameScene::Initialize()
 {
@@ -20,7 +22,9 @@ void GameScene::Initialize()
     
 
     /// デバッグウィンドウを登録
+#ifdef _DEBUG
     pDebugManager_->SetComponent(name_, std::bind(&GameScene::DebugWindow, this));
+#endif // _DEBUG
 
 
     /// テキストの色を追加
@@ -173,7 +177,9 @@ void GameScene::Finalize()
     inputGuide_.reset();
     delete line_;
 
+#ifdef _DEBUG
     pDebugManager_->DeleteComponent(name_.c_str());
+#endif // _DEBUG
 }
 
 

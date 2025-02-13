@@ -56,14 +56,29 @@ void EnemyPopSystem::Update()
 
     if (timerPop_.GetNow() > popInterval_)
     {
-        for (uint32_t i = 0; i < popCount_; i++)
-        {
-            PopRandom();
-        }
+        //for (uint32_t i = 0; i < popCount_; i++)
+        //{
+        //    PopRandom();
+        //}
+
+        popDelayCount_ = popCount_;
+        timerPopDelay_.Start();
 
         timerPop_.Reset();
         timerPop_.Start();
     }
+
+    if ( timerPopDelay_.GetNow() > 0.2f )
+    {
+        timerPopDelay_.Reset();
+        timerPopDelay_.Start();
+        if ( popDelayCount_ > 0 )
+        {
+            PopRandom();
+            popDelayCount_--;
+        }
+    }
+
 }
 
 void EnemyPopSystem::DrawArea()

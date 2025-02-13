@@ -8,32 +8,18 @@
 
 #include <cassert>
 
-IScene* SceneFactory::CreateScene(const std::string& _sceneName)
+#define JUDGE_SCENE(class) if (_sceneName == #class) { return std::make_unique<class>(); }
+
+std::unique_ptr<IScene> SceneFactory::CreateScene(const std::string& _sceneName)
 {
-    IScene* pNewScene = nullptr;
+    JUDGE_SCENE(TitleScene)
+    else JUDGE_SCENE(GameScene)
+    else JUDGE_SCENE(ClearScene)
+    else JUDGE_SCENE(LobbyScene)
+    else JUDGE_SCENE(MultiGame)
 
-    if (_sceneName == "TitleScene")
-    {
-        pNewScene = new TitleScene();
-    }
-    else if (_sceneName == "GameScene")
-    {
-        pNewScene = new GameScene();
-    }
-    else if (_sceneName == "ClearScene")
-    {
-        pNewScene = new ClearScene();
-    }
-    else if (_sceneName == "LobbyScene")
-    {
-        pNewScene = new LobbyScene();
-    }
-    else if (_sceneName == "MultiGame")
-    {
-        pNewScene = new MultiGame();
-    }
+    assert(false && "シーンの生成に失敗しました");
 
-    assert(pNewScene);
+    return nullptr;
 
-    return pNewScene;
 }

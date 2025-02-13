@@ -11,6 +11,7 @@
 #include <Features/Primitive/OBB.h>
 #include <DeltaTimeManager/DeltaTimeManager.h>
 #include <Features/Particle/Emitter/ParticleEmitter.h>
+#include <Features/Audio/AudioManager.h>
 
 class Enemy : public BaseObject
 {
@@ -45,6 +46,9 @@ private:
     OBB obb_ = {};
     bool isDrawCollisionArea_ = false;
 
+    Audio* audioHit_ = nullptr;
+    Audio* audioDeath_ = nullptr;
+
     /// パーティクル
     std::unique_ptr<ParticleEmitter> hitParticle_ = nullptr;
     std::unique_ptr<ParticleEmitter> deathParticle_ = nullptr;
@@ -60,4 +64,5 @@ private:
 private: /// 他クラスの所有物
     CollisionManager* collisionManager_ = nullptr;
     DeltaTimeManager* deltaTimeManager_ = nullptr;
+    AudioManager* audioManager_ = nullptr;
 };

@@ -11,6 +11,8 @@
 #include <Collision/Shape.h>
 #include <DeltaTimeManager/DeltaTimeManager.h>
 #include <Features/Particle/Emitter/ParticleEmitter.h>
+#include <Features/Audio/AudioManager.h>
+#include <Features/Audio/Audio.h>
 
 class Player : public BaseObject
 {
@@ -59,6 +61,9 @@ private:
     /// パーティクルエミッター
     std::unique_ptr<ParticleEmitter> shotEmitter = nullptr;
 
+    /// オーディオ
+    Audio* audioShot_ = nullptr;
+
 private:
     void UpdateInputCommands();
     void DebugWindow();
@@ -71,4 +76,5 @@ private: /// 他クラスの所有物
     Input* input_ = nullptr;
     CollisionManager* collisionManager_ = nullptr;
     DeltaTimeManager* deltaTimeManager_ = nullptr;
+    AudioManager* audioManager_ = nullptr;
 };

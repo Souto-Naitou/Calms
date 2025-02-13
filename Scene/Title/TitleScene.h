@@ -6,6 +6,8 @@
 #include <Features/SceneTransition/SceneTransitionManager.h>
 #include <Features/Sprite/Sprite.h>
 #include <Features/Particle/Emitter/ParticleEmitter.h>
+#include <Features/Text/Text.h>
+#include <ScoreSystem/ScoreSystem.h>
 #include <memory>
 
 class TitleScene : public IScene
@@ -64,7 +66,8 @@ public:
 
 private:
     std::unique_ptr<GameEye>                    gameEye_            = {};           // !< ゲームアイ
-    Sprite*                                     pSpace_             = nullptr;
+    std::unique_ptr<Text>                       pTextTitle_         = nullptr;
+    std::unique_ptr<Text>                       pTextStart_         = nullptr;
     
 
 private:
