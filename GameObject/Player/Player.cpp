@@ -12,6 +12,7 @@ void Player::Initialize()
     input_ = Input::GetInstance();
     collisionManager_ = CollisionManager::GetInstance();
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
+    audioManager_ = AudioManager::GetInstance();
 
     
     /// タイマーの初期化
@@ -58,6 +59,8 @@ void Player::Initialize()
     shotEmitter = std::make_unique<ParticleEmitter>();
     shotEmitter->Initialize("Particle/ParticleSpark.obj", "resources/json/particles/shot.json");
     shotEmitter->SetEnableBillboard(true);
+
+    audioShot_ = audioManager_->GetNewAudio("hit_hat.wav");
 }
 
 
@@ -153,6 +156,7 @@ void Player::UpdateInputCommands()
     {
         if (timerShot_->GetNow() > shotInterval_)
         {
+            audioShot_->Play();
             isShot_ = true;
             timerShot_->Reset();
             timerShot_->Start();

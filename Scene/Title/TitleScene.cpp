@@ -8,26 +8,44 @@ void TitleScene::Initialize()
     pInput_ = Input::GetInstance();
     pSceneTransition_ = SceneTransitionManager::GetInstance();
 
+
     /// ゲームアイの初期化
     gameEye_ = std::make_unique<GameEye>();
     gameEye_->SetName("main");
     gameEye_->SetTranslate(Vector3(0, 15.0f, -30.0f));
     gameEye_->SetRotate(Vector3(-1.2f, 0, 0));
 
-    pSpace_ = new Sprite();
-    pSpace_->SetName("SpaceSprite");
-    pSpace_->Initialize("resources/images/spacepress.png");
-    pSpace_->SetAnchorPoint({ 0.5f, 0.5f });
-    pSpace_->SetPosition({ WinSystem::kClientWidth / 2, WinSystem::kClientHeight / 2 + 100 });
+    pTextTitle_ = std::make_unique<Text>();
+    pTextTitle_->Initialize();
+    pTextTitle_->SetText("Shooting");
+    pTextTitle_->SetMaxSize({ 1000, 300 });
+    pTextTitle_->SetPosition({ 0, -150 });
+    pTextTitle_->SetFontSize(99.9999f);
+    pTextTitle_->SetColorName("White");
+    pTextTitle_->SetAnchorPoint(TextStandardPoint::Center);
+    pTextTitle_->SetPivot(TextStandardPoint::Center);
+    pTextTitle_->SetName("Title");
+    pTextTitle_->SetFontFamily("Bahnschrift");
+
+    pTextStart_ = std::make_unique<Text>();
+    pTextStart_->Initialize();
+    pTextStart_->SetText("Press SPACE");
+    pTextStart_->SetMaxSize({ 1000, 300 });
+    pTextStart_->SetPosition({ 0, 200 });
+    pTextStart_->SetFontSize(50.0f);
+    pTextStart_->SetColorName("White");
+    pTextStart_->SetAnchorPoint(TextStandardPoint::Center);
+    pTextStart_->SetPivot(TextStandardPoint::Center);
+    pTextStart_->SetName("Start");
+    pTextStart_->SetFontFamily("Bahnschrift");
 }
 
 void TitleScene::Finalize()
 {
     gameEye_.reset();
 
-    pSpace_->Finalize();
-
-    delete pSpace_;
+    pTextTitle_->Finalize();
+    pTextStart_->Finalize();
 }
 
 void TitleScene::Update()
@@ -43,7 +61,9 @@ void TitleScene::Update()
         pSceneTransition_->ChangeScene("GameScene", std::make_unique<TransFadeInOut>());
     }
 
-    pSpace_->Update();
+
+    pTextTitle_->Update();
+    pTextStart_->Update();
 }
 
 void TitleScene::Draw2dBackGround()
@@ -56,7 +76,6 @@ void TitleScene::Draw3d()
 
 void TitleScene::Draw2dMidground()
 {
-    pSpace_->Draw();
 }
 
 void TitleScene::Draw3dMidground()
@@ -73,4 +92,6 @@ void TitleScene::Draw2dForeground()
 
 void TitleScene::DrawTexts()
 {
+    pTextTitle_->Draw();
+    pTextStart_->Draw();
 }

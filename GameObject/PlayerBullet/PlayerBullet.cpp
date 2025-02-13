@@ -10,8 +10,9 @@ void PlayerBullet::Initialize()
     collisionManager_ = CollisionManager::GetInstance();
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
 
-
-    name_ = "playerBullet";
+    std::stringstream ss;
+    ss << "playerBullet##0x" << std::hex << this;
+    name_ = ss.str();
 
 
     /// タイマーの初期化
