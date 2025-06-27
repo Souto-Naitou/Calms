@@ -29,7 +29,16 @@ void ScreenToWorld::Update()
     Vector3 mousePosFar = { (float)cursor.x, (float)cursor.y, 1.0f };
 
     Matrix4x4 vpMatrix = pGameEye_->GetViewProjectionMatrix();
-    Matrix4x4 viewportMatrix = Matrix4x4::ViewportMatrix(0,0, WinSystem::kClientWidth, WinSystem::kClientHeight, 0.0f, 1.0f);
+
+    Matrix4x4 viewportMatrix = Matrix4x4::ViewportMatrix(
+        0,
+        0,
+        static_cast<float>(WinSystem::clientWidth),
+        static_cast<float>(WinSystem::clientHeight),
+        0.0f,
+        1.0f
+    );
+
     Matrix4x4 vpvMatrix = vpMatrix * viewportMatrix;
     Matrix4x4 invVPVMatrix = vpvMatrix.Inverse();
 

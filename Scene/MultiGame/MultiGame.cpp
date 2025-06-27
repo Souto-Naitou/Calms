@@ -1,14 +1,14 @@
 #include "MultiGame.h"
 
-#include <Features/Model/ModelManager.h>
 #include <Features/SceneTransition/SceneTransitionManager.h>
 #include <Features/SceneTransition/TransFadeInOut.h>
 #include <MathExtension/mathExtension.h>
-#include <MultiDataManager/MultiDataManager.h>
+#include <Features/Object3d/Object3dSystem.h>
 
 #include <Vector3.h>
 
 #include <imgui.h>
+#include <Features/Sprite/SpriteSystem.h>
 
 void MultiGame::Initialize()
 {
@@ -50,9 +50,9 @@ void MultiGame::Initialize()
 
 
     /// ゲームアイをセット
-    grid_->SetGameEye(gameEye_.get());
-    player_->SetGameEye(gameEye_.get());
-    player2_->SetGameEye(gameEye_.get());
+    Object3dSystem::GetInstance()->SetGlobalEye(gameEye_.get());
+    SpriteSystem::GetInstance()->SetGlobalEye(gameEye_.get());
+    LineSystem::GetInstance()->SetGlobalEye(gameEye_.get());
 
 
     /// 平行光源の初期化
@@ -79,7 +79,6 @@ void MultiGame::Initialize()
     enemyPopSystem_.SetPopCount(2);
     enemyPopSystem_.SetPopRange(Vector3(-30.0f, 0.5f, -30.0f), Vector3(30.0f, 0.5f, 30.0f));
     enemyPopSystem_.SetIgnoreRange(3.0f);
-    enemyPopSystem_.SetGameEye(gameEye_.get());
 
 
     /// カウントダウンの初期化
@@ -116,7 +115,6 @@ void MultiGame::Initialize()
     line_ = new Line(4);
     line_->Initialize();
     line_->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f });
-    line_->SetGameEye(gameEye_.get());
 
     (*line_)[0] = Vector3(-areaWidth_, 0.5f, -areaWidth_);
     (*line_)[1] = Vector3(areaWidth_, 0.5f, -areaWidth_);
@@ -245,7 +243,7 @@ void MultiGame::Update()
 
 
     /// タイマーの更新
-    if (timer_.GetNow() > countDownOffset_ && !countDown_->IsStart())
+    if (timer_.GetNow<float>() > countDownOffset_ && !countDown_->IsStart())
     {
         countDown_->Start();
         timer_.Reset();
@@ -354,7 +352,6 @@ void MultiGame::CreatePlayerBullet()
     bullet->Initialize();
     bullet->SetTranslation(player_->GetTranslation());
     bullet->SetMoveVelocity(direction * 15.0f);
-    bullet->SetGameEye(gameEye_.get());
     bullet->SetIsDrawCollisionArea(isDisplayColliderPlayerBullet_);
     bullet->SetDIContainer(&gObjDIContainer_);
 
@@ -399,7 +396,6 @@ void MultiGame::UpdateEnemyPopSystem()
         enemy->SetTranslation(popPoint);
         enemy->SetLocationProvider(player_.get());
         enemy->SetDIContainer(&gObjDIContainer_);
-        enemy->SetGameEye(gameEye_.get());
         enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
         enemy_.push_back(std::move(enemy));
     }

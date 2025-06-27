@@ -102,9 +102,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Collision\Collider\Collider.cpp" />
-    <ClCompile Include="Collision\Manager\CollisionManager.cpp" />
-    <ClCompile Include="DeltaTimeManager\DeltaTimeManager.cpp" />
     <ClCompile Include="EventListener\EventListener.cpp" />
     <ClCompile Include="GameObject\BaseObject.cpp" />
     <ClCompile Include="GameObject\Enemy\Enemy.cpp" />
@@ -140,10 +137,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Collision\Collider\Collider.h" />
-    <ClInclude Include="Collision\Manager\CollisionManager.h" />
-    <ClInclude Include="Collision\Shape.h" />
-    <ClInclude Include="DeltaTimeManager\DeltaTimeManager.h" />
     <ClInclude Include="DIContainer\DIContainer.h" />
     <ClInclude Include="EventListener\EventListener.h" />
     <ClInclude Include="GameObject\BaseObject.h" />

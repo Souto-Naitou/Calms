@@ -2,14 +2,12 @@
 
 #include <GameObject/BaseObject.h>
 #include <Features/Object3d/Object3d.h>
-#include <Features/gameEye/GameEye.h>
 #include <memory>
 #include <Features/Input/Input.h>
 #include <Timer/Timer.h>
-#include <Collision/Manager/CollisionManager.h>
-#include <Collision/Collider/Collider.h>
-#include <Collision/Shape.h>
-#include <DeltaTimeManager/DeltaTimeManager.h>
+#include <Features/Collision/Manager/CollisionManager.h>
+#include <Features/Collision/Collider/Collider.h>
+#include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <Features/Particle/Emitter/ParticleEmitter.h>
 #include <Features/Audio/AudioManager.h>
 #include <Features/Audio/Audio.h>
@@ -17,11 +15,11 @@
 class Player : public BaseObject
 {
 public:
-    void Initialize();
-    void Finalize();
-    void Update();
-    void Draw();
-    void DrawLine();
+    void Initialize(bool _enableDebugWindow = true) override;
+    void Finalize() override;
+    void Update() override;
+    void Draw() override;
+    void DrawLine() override;
 
 
 public: /// Getter
@@ -67,9 +65,8 @@ private:
 private:
     void UpdateInputCommands();
     void DebugWindow();
-    void ModifyGameEye(GameEye* _eye) override;
-    void OnCollisionTrigger(const Collider* _collider);
-    void OnCollision(const Collider* _collider);
+    void OnCollisionTrigger(const Collider* _other);
+    void OnCollision(const Collider* _other);
 
 
 private: /// 他クラスの所有物

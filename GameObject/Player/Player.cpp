@@ -2,10 +2,10 @@
 
 #include <imgui.h>
 
-void Player::Initialize()
+void Player::Initialize(bool _enableDebugWindow)
 {
     // 基底クラスの初期化
-    BaseObject::Initialize();
+    BaseObject::Initialize(_enableDebugWindow);
 
 
     /// インスタンスの取得
@@ -17,6 +17,7 @@ void Player::Initialize()
     
     /// タイマーの初期化
     timerShot_ = std::make_unique<Timer>();
+    timerShot_->Start();
 
 
     /// パラメータの初期化
@@ -68,9 +69,6 @@ void Player::Finalize()
 {
     object_->Finalize();
     shotEmitter->Finalize();
-
-    object_.reset();
-    shotEmitter.reset();
     
     BaseObject::Finalize();
 }
@@ -154,7 +152,7 @@ void Player::UpdateInputCommands()
     isShot_ = false;
     if (input_->PushMouse(Input::MouseNum::Left))
     {
-        if (timerShot_->GetNow() > shotInterval_)
+        if (timerShot_->GetNow<float>() > shotInterval_)
         {
             audioShot_->Play();
             isShot_ = true;
@@ -182,27 +180,24 @@ void Player::DebugWindow()
 #endif
 }
 
-void Player::ModifyGameEye(GameEye* _eye)
+void Player::OnCollisionTrigger(const Collider* _other)
 {
-    object_->SetGameEye(gameEye_);
-    obb_.SetGameEye(gameEye_);
-    shotEmitter->SetGameEye(gameEye_);
-}
+    const BaseObject* otherOwner = static_cast<const BaseObject*>(_other->GetOwner());
 
-void Player::OnCollisionTrigger(const Collider* _collider)
-{
-    if (_collider->GetColliderID() == "enemy")
+    if (_other->GetColliderID() == "enemy")
     {
-        hp_ -= _collider->GetOwner()->GetAttackPower();
+        hp_ -= otherOwner->GetAttackPower();
     }
 }
 
 void Player::OnCollision(const Collider* _other)
 {
+    const BaseObject* otherOwner = static_cast<const BaseObject*>(_other->GetOwner());
+
     if (_other->GetColliderID() == "enemy")
     {
         /// 反発を速度に適用
-        Vector3 otherPos = _other->GetOwner()->GetTranslation();
+        Vector3 otherPos = otherOwner->GetTranslation();
         Vector3 dir = translation_ - otherPos;
 
         accelerationRefl_ = dir * reflectionPower_;

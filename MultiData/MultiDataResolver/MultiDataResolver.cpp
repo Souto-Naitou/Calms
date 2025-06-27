@@ -1,17 +1,14 @@
 #include "MultiDataResolver.h"
 #include <MultiDataManager/MultiDataManager.h>
-#include <Features/Particle/Manager/EmitterManager.h>
 #include <imgui.h>
 #include <DebugTools/DebugManager/DebugManager.h>
+#include <Utility/JSONConvTypeFuncs/JSONConvTypeFuncs.h>
 
 void MultiDataResolver::Initialize()
 {
     MultiDataManager::GetInstance()->GetTCPData(&host_, &client_, &hostOrClient_);
 
-    DebugManager::GetInstance()->SetComponent("#Window", name_, std::bind(&MultiDataResolver::DebugWindow, this));
-
-    jsonParser_ = new Json::Parser();
-    jsonSaver_ = Json::Saver::GetInstance();
+    DebugManager::GetInstance()->SetComponent("Network", name_, std::bind(&MultiDataResolver::DebugWindow, this));
 }
 
 void MultiDataResolver::Start()
@@ -25,30 +22,30 @@ void MultiDataResolver::Start()
                 break;
             }
 
-            Sleep(16);
+            ::Sleep(16);
 
 
             if (hostOrClient_ == 0)
             {
-                PackageJsonData_Host();
+                this->PackageJsonData_Host();
                 if (!host_->Send(0, sendBuffer_.c_str(), static_cast<int>(sendBuffer_.size())))
                 {
-                    OutputDebugStringA("Send Error\n");
+                    ::OutputDebugStringA("Send Error\n");
                     break;
                 }
 
                 receiveBuffer_ = host_->Receive(0);
-                ParseJsonData_Host();
+                this->DeserializeJsonData_Host();
             }
             else
             {
                 receiveBuffer_ = client_->Receive();
-                ParseJsonData_Client();
+                this->DeserializeJsonData_Client();
 
-                PackageJsonData_Client();
+                this->PackageJsonData_Client();
                 if (!client_->Send(sendBuffer_))
                 {
-                    OutputDebugStringA("Send Error\n");
+                    ::OutputDebugStringA("Send Error\n");
                     break;
                 }
             }
@@ -59,7 +56,7 @@ void MultiDataResolver::Start()
     /// スレッドの生成
     if (networkThread_ == nullptr)
     {
-        networkThread_ = new std::thread(pFunc);
+        networkThread_ = std::make_unique<std::thread>(pFunc);
     }
 }
 
@@ -69,10 +66,7 @@ void MultiDataResolver::Finalize()
     {
         threadStopRequest_ = true;
         networkThread_->join();
-        delete networkThread_;
-        networkThread_ = nullptr;
     }
-    delete jsonParser_;
 
     if (hostOrClient_ == 0)
     {
@@ -85,7 +79,7 @@ void MultiDataResolver::Finalize()
         delete client_;
     }
 
-    DebugManager::GetInstance()->DeleteComponent("#Window", name_.c_str());
+    DebugManager::GetInstance()->DeleteComponent("Network", name_);
 }
 
 Vector3 MultiDataResolver::PopPlayer2Position()
@@ -121,88 +115,62 @@ Vector3 MultiDataResolver::PopPlayer2Position()
 void MultiDataResolver::PackageJsonData_Host()
 {
     /// ゲームデータをJSONにパッケージング
-    Json::Object root = {};
+    json root = {};
 
 
     /// [Global]
-    Json::Object global = {};
-    global["nowTime"] = std::make_shared<Json::Value>(Json::Value::Type::Int, static_cast<int>(nowGameTime_));
-
-    root["Global"] = std::make_shared<Json::Value>(Json::Value::Type::Object, global);
+    json& global = root["Global"];
+    global["nowTime"] = nowGameTime_;
 
 
     /// [Player]
-    Json::Object player = {};
-    player["position"] = EmitterManager::ParseVector3(position_Player_);
-
-    root["Player"] = std::make_shared<Json::Value>(Json::Value::Type::Object, player);
+    json& player = root["Player"];
+    player["position"] = position_Player_;
 
 
-    sendJson_.type = Json::Value::Type::Object;
-    sendJson_.value = root;
+    sendJson_ = root;
+
 
     /// 送信データの生成
-    sendBuffer_ = jsonSaver_->GetString(sendJson_, 0, false);
+    sendBuffer_ = sendJson_.dump(4);
 }
 
 void MultiDataResolver::PackageJsonData_Client()
 {
     /// ゲームデータをJSONにパッケージング
-    Json::Object root = {};
+    json root = {};
+
 
     /// [Player]
-    Json::Object player = {};
-    player["position"] = EmitterManager::ParseVector3(position_Player_);
-
-    root["Player"] = std::make_shared<Json::Value>(Json::Value::Type::Object, player);
+    json& player = root["Player"];
+    player["position"] = position_Player_;
 
 
-    sendJson_.type = Json::Value::Type::Object;
-    sendJson_.value = root;
+    sendJson_ = root;
+
 
     /// 送信データの生成
-    sendBuffer_ = jsonSaver_->GetString(sendJson_, 0, false);
+    sendBuffer_ = sendJson_.dump(4);
 }
 
-void MultiDataResolver::ParseJsonData_Host()
+void MultiDataResolver::DeserializeJsonData_Host()
 {
-    /// パースして取得
-    jsonParser_->Initialize();
-    jsonParser_->SetJsonString(receiveBuffer_);
-    jsonParser_->Run();
-    receiveJson_ = jsonParser_->GetData();
+    /// デシリアライズ
+    receiveJson_ = receiveBuffer_;
 
-    Json::Value player = receiveJson_["Player"];
-
-    Json::Object pos = player["position"];
-
-    qPos_P2.push(EmitterManager::ParseVector3(pos));
+    qPos_P2.push(receiveJson_["Player"]["position"]);
 }
 
-void MultiDataResolver::ParseJsonData_Client()
+void MultiDataResolver::DeserializeJsonData_Client()
 {
-    /// パースして取得
-    jsonParser_->Initialize();
-    jsonParser_->SetJsonString(receiveBuffer_);
-    jsonParser_->Run();
-    receiveJson_ = jsonParser_->GetData();
-
-
-    /// [Global]
-    Json::Value global = receiveJson_["Global"];
+    /// デシリアライズ
+    receiveJson_ = receiveBuffer_;
 
     /// [Global:NowTime]
-    nowGameTime_ = static_cast<int>(global["nowTime"]);
-
-
-    /// [Player]
-    Json::Value player = receiveJson_["Player"];
+    nowGameTime_ = receiveJson_["Global"]["nowTime"];
 
     /// [Player:Position]
-    Json::Object pos = player["position"];
-
-
-    qPos_P2.push(EmitterManager::ParseVector3(pos));
+    qPos_P2.push(receiveJson_["Player"]["position"]);
 }
 
 void MultiDataResolver::DebugWindow()

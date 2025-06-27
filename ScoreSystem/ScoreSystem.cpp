@@ -11,9 +11,8 @@ void ScoreSystem::Initialize()
     pScore_ = std::make_unique<Text>();
     pScore_->Initialize();
     pScore_->SetName("Score");
-    pScore_->SetPosition({ -350, 0 });
-    pScore_->SetAnchorPoint(TextStandardPoint::Center);
-    pScore_->SetPivot(TextStandardPoint::Center);
+    pScore_->SetAnchorPoint(TextStandardPoint::CenterLeft);
+    pScore_->SetPivot(TextStandardPoint::CenterLeft);
     pScore_->SetMaxSize({ 400, 100 });
     pScore_->SetFontSize(48);
     pScore_->SetColorName("HarfWhite");
@@ -44,6 +43,8 @@ void ScoreSystem::Update()
     score_ += addScore;
 
     
+    pScore_->SetPosition(Vector2(pName_->GetSize().x / 2.0f, 0.0f));
+
     pName_->Update();
     pScore_->Update();
 }

@@ -11,7 +11,7 @@ class BaseObject
 public:
     BaseObject() = default;
     virtual ~BaseObject() = default;
-    virtual void Initialize();
+    virtual void Initialize(bool _enableDebugWindow = true);
     virtual void Finalize();
     virtual void Update() = 0;
     virtual void Draw() = 0;
@@ -32,7 +32,6 @@ public: /// Getter
 
 public: /// Setter
     void SetName(const std::string& _name) { name_ = _name; }
-    void SetGameEye(GameEye* _gameEye) { gameEye_ = _gameEye; ModifyGameEye(_gameEye); }
     void SetRotation(const Vector3& _rotation) { rotation_ = _rotation; }
     void SetScale(const Vector3& _scale) { scale_ = _scale; }
     void SetTranslation(const Vector3& _translation) { translation_ = _translation; }
@@ -45,28 +44,28 @@ public: /// Setter
 protected:
     std::string name_ = "unnamed";
 
-    bool isAlive_ = true;
+    bool    isEnableDebugWindow_    = true;
+    bool    isAlive_                = true;
 
-    float hp_ = 0.0f;
+    float   hp_                     = 0.0f;
 
-    Vector3 rotation_ = {};
-    Vector3 scale_ = {};
-    Vector3 translation_ = {};
-    Vector3 velocity_ = {};
-    Vector3 acceleration_ = {};
+    Vector3 rotation_               = {};
+    Vector3 scale_                  = {};
+    Vector3 translation_            = {};
+    Vector3 velocity_               = {};
+    Vector3 acceleration_           = {};
 
-    float friction_ = 1.0f;
-    float attackPower_ = 0.0f;
+    float   friction_               = 1.0f;
+    float   attackPower_            = 0.0f;
 
 
 protected:
     void UpdateTransform(float _dt);
     virtual void DebugWindow();
-    virtual void ModifyGameEye(GameEye* _eye) = 0;
 
 
 protected: /// 他クラスの所有物
-    GameEye* gameEye_ = nullptr;
+    GameEye** ppGameEye_ = nullptr;
     DIContainer* diContainer_ = nullptr;
     DirectionalLight* directionalLight_ = nullptr;
     PointLight* pointLight_ = nullptr;

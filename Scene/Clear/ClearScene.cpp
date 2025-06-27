@@ -12,13 +12,13 @@ void ClearScene::Initialize()
     pSpace_->SetName("SpaceSprite");
     pSpace_->Initialize("spacePress.png");
     pSpace_->SetAnchorPoint({ 0.5f, 0.5f });
-    pSpace_->SetPosition({ WinSystem::kClientWidth / 2, WinSystem::kClientHeight / 2 + 100 });
+    pSpace_->SetPosition({ WinSystem::clientWidth / 2, WinSystem::clientHeight / 2 + 100 });
 
     pClear_ = new Sprite();
     pClear_->SetName("ClearSprite");
     pClear_->Initialize("clear.png");
     pClear_->SetAnchorPoint({ 0.5f, 0.5f });
-    pClear_->SetPosition({ WinSystem::kClientWidth/2, WinSystem::kClientHeight/2});
+    pClear_->SetPosition({ WinSystem::clientWidth / 2, WinSystem::clientHeight / 2 });
 }
 
 void ClearScene::Finalize()
@@ -43,8 +43,6 @@ void ClearScene::Update()
 
 void ClearScene::Draw2dBackGround()
 {
-    pClear_->Draw();
-    pSpace_->Draw();
 }
 
 void ClearScene::Draw3d()
@@ -65,6 +63,8 @@ void ClearScene::DrawLine()
 
 void ClearScene::Draw2dForeground()
 {
+    pClear_->Draw();
+    pSpace_->Draw();
 }
 
 void ClearScene::DrawTexts()

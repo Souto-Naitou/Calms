@@ -41,6 +41,6 @@ private:
     bool isEnd_ = false;
     bool isNextScene_ = false;
 
-    std::array<Sprite*, 10> tensPlaceNums_;
-    std::array<Sprite*, 10> onesPlaceNums_;
+    std::array<Sprite*, 10> tensPlaceNums_ = {};
+    std::array<Sprite*, 10> onesPlaceNums_ = {};
 };

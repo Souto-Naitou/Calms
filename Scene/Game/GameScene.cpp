@@ -1,11 +1,13 @@
 #include "GameScene.h"
 
-#include <Features/Model/ModelManager.h>
 #include <Features/SceneTransition/SceneTransitionManager.h>
 #include <Features/SceneTransition/TransFadeInOut.h>
 #include <Features/Text/TextSystem.h>
 #include <MathExtension/mathExtension.h>
 #include <Features/Particle/ParticleManager.h>
+#include <Features/Object3d/Object3dSystem.h>
+#include <Features/Sprite/SpriteSystem.h>
+#include <Timer/Timer.h>
 
 #include <Vector3.h>
 
@@ -16,15 +18,14 @@
 void GameScene::Initialize()
 {
     /// インスタンスの取得
-    pDebugManager_ = DebugManager::GetInstance();
+    pDebugManager_    = DebugManager::GetInstance();
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
-    randomGenerator_ = RandomGenerator::GetInstance();
-    
+    randomGenerator_  = RandomGenerator::GetInstance();
 
     /// デバッグウィンドウを登録
-#ifdef _DEBUG
+    #ifdef _DEBUG
     pDebugManager_->SetComponent(name_, std::bind(&GameScene::DebugWindow, this));
-#endif // _DEBUG
+    #endif // _DEBUG
 
 
     /// テキストの色を追加
@@ -54,20 +55,22 @@ void GameScene::Initialize()
 
 
     /// ゲームアイをセット
-    grid_->SetGameEye(gameEye_.get());
-    player_->SetGameEye(gameEye_.get());
+    Object3dSystem::GetInstance()->SetGlobalEye(gameEye_.get());
+    SpriteSystem::GetInstance()->SetGlobalEye(gameEye_.get());
+    LineSystem::GetInstance()->SetGlobalEye(gameEye_.get());
+    ParticleSystem::GetInstance()->SetGlobalEye(gameEye_.get());
 
 
     /// 平行光源の初期化
     directionalLight_.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
     directionalLight_.direction = Vector3(0.0f, -1.0f, -0.0f);
-    directionalLight_.intensity = 0.2f;
+    directionalLight_.intensity = 3.0f;
 
 
     /// ポイントライトの初期化
     pointLight_.enablePointLight = 1;
     pointLight_.color = Vector4(0.8f, 0.7f, 0.3f, 1.0f);
-    pointLight_.intensity = 5.0f;
+    pointLight_.intensity = 7.5f;
     pointLight_.position = Vector3(0.0f, 0.0f, 2.0f);
 
 
@@ -80,7 +83,6 @@ void GameScene::Initialize()
     enemyPopSystem_.Initialize();
     enemyPopSystem_.SetPopRange(Vector3(-30.0f, 0.5f, -30.0f), Vector3(30.0f, 0.5f, 30.0f));
     enemyPopSystem_.SetIgnoreRange(3.0f);
-    enemyPopSystem_.SetGameEye(gameEye_.get());
 
 
     /// カウントダウンの初期化
@@ -122,7 +124,6 @@ void GameScene::Initialize()
     line_ = new Line(4);
     line_->Initialize();
     line_->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f });
-    line_->SetGameEye(gameEye_.get());
 
     (*line_)[0] = Vector3(-areaWidth_, 0.5f, -areaWidth_);
     (*line_)[1] = Vector3(areaWidth_, 0.5f, -areaWidth_);
@@ -135,6 +136,17 @@ void GameScene::Initialize()
 
     (*line_)[6] = Vector3(-areaWidth_, 0.5f, areaWidth_);
     (*line_)[7] = Vector3(-areaWidth_, 0.5f, -areaWidth_);
+
+    fpsText_ = std::make_unique<Text>();
+    fpsText_->Initialize();
+    fpsText_->SetPosition(Vector2(10.0f, 10.0f));
+    fpsText_->SetFontSize(20.0f);
+    fpsText_->SetColorName("White");
+    fpsText_->SetAnchorPoint(TextStandardPoint::TopLeft);
+    fpsText_->SetPivot(TextStandardPoint::TopLeft);
+    fpsText_->SetMaxSize(Vector2(200.0f, 100.0f));
+    fpsText_->SetText("FPS: 0.0");
+    fpsText_->SetName("FPS");
 }
 
 void GameScene::Finalize()
@@ -142,9 +154,8 @@ void GameScene::Finalize()
     for (auto& enemy : enemy_)
     {
         enemy->Finalize();
-        enemy.reset();
     }
-    
+
     grid_->Finalize();
     player_->Finalize();
 
@@ -156,6 +167,7 @@ void GameScene::Finalize()
 
     CollisionManager::GetInstance()->ClearCollider();
 
+    fpsText_->Finalize();
     enemyPopSystem_.Finalize();
     countDown_->Finalize();
     screenToWorld_->Finalize();
@@ -165,21 +177,11 @@ void GameScene::Finalize()
     scoreSystem_->Finalize();
     ParticleManager::GetInstance()->ReleaseAllParticle();
 
-    /// 解放を明示しないと何故かリークする
-    enemy_.clear();
-    grid_.reset();
-    gameEye_.reset();
-    player_.reset();
-    playerBullets_.clear();
-    countDown_.reset();
-    screenToWorld_.reset();
-    gameTimer_.reset();
-    inputGuide_.reset();
     delete line_;
 
-#ifdef _DEBUG
-    pDebugManager_->DeleteComponent(name_.c_str());
-#endif // _DEBUG
+    #ifdef _DEBUG
+    pDebugManager_->DeleteComponent(name_);
+    #endif // _DEBUG
 }
 
 
@@ -205,7 +207,7 @@ void GameScene::Update()
     /// 敵生成システムの更新
     UpdateEnemyPopSystem();
 
-    
+
     for (auto& enemy : enemy_)
     {
         enemy->Update();
@@ -247,7 +249,7 @@ void GameScene::Update()
 
 
     /// タイマーの更新
-    if (timer_.GetNow() > countDownOffset_ && !countDown_->IsStart())
+    if (timer_.GetNow<float>() > countDownOffset_ && !countDown_->IsStart())
     {
         countDown_->Start();
         timer_.Reset();
@@ -270,6 +272,10 @@ void GameScene::Update()
     line_->Update();
 
     scoreSystem_->Update();
+
+    /// テキストの更新
+    fpsText_->SetText("FPS: " + std::to_string(pDebugManager_->GetFPS()));
+    fpsText_->Update();
 }
 
 
@@ -281,15 +287,7 @@ void GameScene::Draw2dBackGround()
 void GameScene::Draw3d()
 {
     grid_->Draw();
-}
 
-void GameScene::Draw2dMidground()
-{
-    gameTimer_->Draw();
-}
-
-void GameScene::Draw3dMidground()
-{
     player_->Draw();
 
     for (auto& enemy : enemy_)
@@ -303,6 +301,15 @@ void GameScene::Draw3dMidground()
     }
 
     screenToWorld_->Draw();
+}
+
+void GameScene::Draw2dMidground()
+{
+    gameTimer_->Draw();
+}
+
+void GameScene::Draw3dMidground()
+{
 }
 
 void GameScene::DrawLine()
@@ -331,6 +338,7 @@ void GameScene::Draw2dForeground()
 void GameScene::DrawTexts()
 {
     scoreSystem_->DrawTxt();
+    fpsText_->Draw();
 }
 
 void GameScene::CreatePlayerBullet()
@@ -344,10 +352,9 @@ void GameScene::CreatePlayerBullet()
     direction = direction.Normalize();
 
     auto bullet = std::make_unique<PlayerBullet>();
-    bullet->Initialize();
+    bullet->Initialize(false);
     bullet->SetTranslation(player_->GetTranslation());
     bullet->SetMoveVelocity(direction * 15.0f);
-    bullet->SetGameEye(gameEye_.get());
     bullet->SetIsDrawCollisionArea(isDisplayColliderPlayerBullet_);
     bullet->SetDIContainer(&gObjDIContainer_);
 
@@ -390,13 +397,17 @@ void GameScene::UpdateEnemyPopSystem()
     enemyPopSystem_.Update();
     while (enemyPopSystem_.IsExistPopRequest())
     {
+        if (enemy_.size() >= kMaxEnemyCount_)
+        {
+            break; // 最大数に達している場合は生成しない
+        }
+
         auto popPoint = enemyPopSystem_.GetPopPoint();
         auto enemy = std::make_unique<Enemy>();
-        enemy->Initialize();
+        enemy->Initialize(false);
         enemy->SetTranslation(popPoint);
         enemy->SetLocationProvider(player_.get());
         enemy->SetDIContainer(&gObjDIContainer_);
-        enemy->SetGameEye(gameEye_.get());
         enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
         enemy_.push_back(std::move(enemy));
     }
@@ -427,7 +438,7 @@ void GameScene::PlayerSlowUpdate()
 
 void GameScene::DebugWindow()
 {
-#ifdef _DEBUG
+    #ifdef _DEBUG
     ImGui::SeparatorText("Collider Debug");
     if (ImGui::Checkbox("Enemy", &isDisplayColliderEnemy_))
     {
@@ -459,5 +470,5 @@ void GameScene::DebugWindow()
     {
         deltaTimeManager_->SetDeltaTime(1, 1.0f / framerate_);
     }
-#endif
+    #endif
 }

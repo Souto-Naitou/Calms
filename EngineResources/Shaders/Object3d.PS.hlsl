@@ -53,6 +53,7 @@ struct PixelShaderOutput
 Texture2D<float4> gTexture : register(t0);
 SamplerState gSampler : register(s0);
 
+[earlydepthstencil]
 PixelShaderOutput main(VertexShaderOutput input)
 {
     PixelShaderOutput output;
@@ -111,10 +112,10 @@ PixelShaderOutput main(VertexShaderOutput input)
         output.color = gMaterial.color * textureColor;
     }
 
-    if (textureColor.a <= 0.f || output.color.a <= 0.f)
-    {
-        discard;
-    }
+    //if (textureColor.a <= 0.f || output.color.a <= 0.f)
+    //{
+    //    discard;
+    //}
 
     return output;
 }

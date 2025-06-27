@@ -2,9 +2,9 @@
 
 #include <imgui.h>
 
-void PlayerBullet::Initialize()
+void PlayerBullet::Initialize(bool _enableDebugWindow)
 {
-    BaseObject::Initialize();
+    BaseObject::Initialize(_enableDebugWindow);
 
     /// インスタンスの取得
     collisionManager_ = CollisionManager::GetInstance();
@@ -22,7 +22,7 @@ void PlayerBullet::Initialize()
 
     /// オブジェクトの初期化
     object_ = std::make_unique<Object3d>();
-    object_->Initialize("Cube.obj");
+    object_->Initialize("Cube.obj", false);
     object_->SetScale(Vector3(0.3f, 0.3f, 0.3f));
     object_->SetTranslate(Vector3(0, 0.5f, 0));
     object_->SetRotate(Vector3(0, 0, 0));
@@ -39,7 +39,7 @@ void PlayerBullet::Initialize()
 
 
     /// コライダーの初期化
-    collider_ = std::make_unique<Collider>();
+    collider_ = std::make_unique<Collider>(false);
     collider_->SetColliderID("playerBullet");
     collider_->SetAttribute(collisionManager_->GetNewAttribute("playerBullet"));
     collider_->SetOwner(this);
@@ -67,7 +67,7 @@ void PlayerBullet::Finalize()
 void PlayerBullet::Update()
 {
     // 生存フラグの更新
-    if (timer_->GetNow() > lifeTimeLimit_)
+    if (timer_->GetNow<float>() > lifeTimeLimit_)
     {
         isAlive_ = false;
     }
@@ -113,13 +113,6 @@ void PlayerBullet::Draw()
 void PlayerBullet::DrawLine()
 {
     if (isDrawCollisionArea_) collider_->DrawArea();
-}
-
-
-void PlayerBullet::ModifyGameEye(GameEye* _eye)
-{
-    object_->SetGameEye(_eye);
-    obb_.SetGameEye(gameEye_);
 }
 
 void PlayerBullet::OnCollisionTrigger(const Collider* _other)

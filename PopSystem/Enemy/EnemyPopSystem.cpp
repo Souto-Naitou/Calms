@@ -2,22 +2,24 @@
 
 #include <imgui.h>
 #include <DebugTools/DebugManager/DebugManager.h>
+#include <Utility/JSONIO/JSONIO.h>
 
 void EnemyPopSystem::Initialize()
 {
     /// インスタンスの取得
     randomGenerator_ = RandomGenerator::GetInstance();
+    jsonIO_ = JSONIO::GetInstance();
 
     /// Jsonファイルの読み込み
     filePathSearcher_.Initialize();
     // 検索パスの追加
     filePathSearcher_.AddSearchPath("Resources/Json");
     // 読み込み
-    jsonPopTimeTable_ = jsonLoader_[filePathSearcher_.GetFilePath(kJsonFileName_)];
+    jsonPopTimeTable_ = JSONIO::GetInstance()->Load(filePathSearcher_.GetFilePath(kJsonFileName_));
 
 
     /// ポップデータの初期化
-    InitPopData();
+    this->InitPopData();
 
 
     /// デバッグウィンドウを登録
@@ -54,7 +56,7 @@ void EnemyPopSystem::Update()
 
     UpdatePop();
 
-    if (timerPop_.GetNow() > popInterval_)
+    if (timerPop_.GetNow<float>() > popInterval_)
     {
         //for (uint32_t i = 0; i < popCount_; i++)
         //{
@@ -68,13 +70,13 @@ void EnemyPopSystem::Update()
         timerPop_.Start();
     }
 
-    if ( timerPopDelay_.GetNow() > 0.2f )
+    if ( timerPopDelay_.GetNow<float>() > 0.2f )
     {
         timerPopDelay_.Reset();
         timerPopDelay_.Start();
         if ( popDelayCount_ > 0 )
         {
-            PopRandom();
+            this->PopRandom();
             popDelayCount_--;
         }
     }
@@ -127,7 +129,7 @@ void EnemyPopSystem::DrawArea()
 
 void EnemyPopSystem::ManualPop()
 {
-    PopRandom();
+    this->PopRandom();
     return;
 }
 
@@ -191,17 +193,14 @@ void EnemyPopSystem::PopRandom()
 void EnemyPopSystem::DebugWindow()
 {
 #ifdef _DEBUG
-    ImGui::Text("Overall Time: %.1f", timerOverall_.GetNow());
+    ImGui::Text("Overall Time: %.1f", timerOverall_.GetNow<float>());
     ImGui::Text(popData_[popDataIndex_].name.c_str());
-    ImGui::Text("Pop Time: %.2f", timerPop_.GetNow());
+    ImGui::Text("Pop Time: %.2f", timerPop_.GetNow<float>());
 
     if (ImGui::Button("Reload PopTimeTable"))
     {
-        jsonLoader_.ReloadFile(filePathSearcher_.GetFilePath(kJsonFileName_));
-        jsonPopTimeTable_ = jsonLoader_[filePathSearcher_.GetFilePath(kJsonFileName_)];
-        InitPopData();
-        timerOverall_.Reset();
-        timerOverall_.Start();
+        /// Jsonファイルの再読み込み
+        this->ReloadJsonData();
     }
 
     ImGui::Separator();
@@ -216,16 +215,9 @@ void EnemyPopSystem::DebugWindow()
 #endif
 }
 
-void EnemyPopSystem::ModifyGameEye(GameEye* _eye)
-{
-    linesArea_->SetGameEye(_eye);
-
-    linesIgnoreCircle_->SetGameEye(_eye);
-}
-
 void EnemyPopSystem::InitPopData()
 {
-    Json::Array enemyTimeTable = (jsonPopTimeTable_["Enemy"])["TimeTable"];
+    json& enemyTimeTable = jsonPopTimeTable_["Enemy"]["TimeTable"];
 
     popData_.clear();
     popData_.reserve(enemyTimeTable.size());
@@ -235,12 +227,12 @@ void EnemyPopSystem::InitPopData()
     {
         PopData data = {};
 
-        data.name = (*time)["name"];
-        data.beginTime = (*time)["beginTime"];
-        data.endTime = (*time)["endTime"];
-        data.enemyType = (*time)["enemyType"];
-        data.enemyCount = (*time)["enemyCount"];
-        data.interval = (*time)["interval"];
+        data.name = time["name"];
+        data.beginTime = time["beginTime"];
+        data.endTime = time["endTime"];
+        data.enemyType = time["enemyType"];
+        data.enemyCount = time["enemyCount"];
+        data.interval = time["interval"];
 
         popData_.push_back(data);
     }
@@ -261,7 +253,7 @@ void EnemyPopSystem::UpdatePop()
         return;
     }
 
-    double nowTime = timerOverall_.GetNow();
+    double nowTime = timerOverall_.GetNow<float>();
 
     /// 終了時間を過ぎたら次のデータへ
     if (popData_[popDataIndex_].endTime < nowTime)
@@ -281,4 +273,14 @@ void EnemyPopSystem::UpdatePop()
         popInterval_ = static_cast<float>(popData_[popDataIndex_].interval);
         popCount_ = popData_[popDataIndex_].enemyCount;
     }
+}
+
+void EnemyPopSystem::ReloadJsonData()
+{
+    auto path = filePathSearcher_.GetFilePath(kJsonFileName_);
+    jsonPopTimeTable_ = jsonIO_->Unload(path);
+    jsonPopTimeTable_ = jsonIO_->Load(path);
+    this->InitPopData();
+    timerOverall_.Reset();
+    timerOverall_.Start();
 }

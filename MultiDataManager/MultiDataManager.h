@@ -35,8 +35,8 @@ public:
     void GetTCPData(TCP::Host** _ppHost, TCP::Client** _ppClient, int* _pHostOrClient_);
 
 private:
-    TCP::Host* host_;
-    TCP::Client* client_;
+    TCP::Host* host_ = nullptr;
+    TCP::Client* client_ = nullptr;
 
     int hostOrClient_ = 0;
 };

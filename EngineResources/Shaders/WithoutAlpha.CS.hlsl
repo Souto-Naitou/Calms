@@ -10,10 +10,7 @@ void CSMain(uint3 dtid : SV_DispatchThreadID)
 {
     // ピクセルカラーを取得
     float4 color = inputTexture.Load(int3(dtid.xy, 0));
-    
-    // グレースケール変換
-    float gray = dot(color.rgb, float3(0.299, 0.587, 0.114));
-    
+        
     // 出力テクスチャに書き込み
-    outputTexture[dtid.xy] = float4(gray, gray, gray, 1.0);
+    outputTexture[dtid.xy] = float4(color.xyz, 1.0);
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Framework/NimaFramework.h>
-#include <Collision/Manager/CollisionManager.h>
+#include <Features/Collision/Manager/CollisionManager.h>
 
 class WinterGame : public NimaFramework
 {

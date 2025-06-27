@@ -1,0 +1,74 @@
+{
+    "version" : 1,
+    "emitterLifeTime" : 1.500000,
+    "emitterName" : "Firework",
+    "emitInterval" : 1.000000,
+    "velocityRandomRangeBegin" : {
+        "x" : -2.550000,
+        "y" : 0.000000,
+        "z" : -2.450000
+    },
+    "startScale" : {
+        "x" : 0.100000,
+        "y" : 0.100000,
+        "z" : 0.100000
+    },
+    "resistance" : {
+        "x" : 0.000000,
+        "y" : 0.000000,
+        "z" : 0.000000
+    },
+    "endScale" : {
+        "x" : 0.000000,
+        "y" : 0.000000,
+        "z" : 0.000000
+    },
+    "gravity" : {
+        "x" : 0.000000,
+        "y" : 0.000000,
+        "z" : 0.000000
+    },
+    "scaleDelayTime" : 0.000000,
+    "particleLifeTime" : 0.500000,
+    "emitNum" : 20,
+    "enableRandomEmit" : false,
+    "beginPosition" : {
+        "x" : 0.000000,
+        "y" : 0.000000,
+        "z" : 0.000000
+    },
+    "endPosition" : {
+        "x" : 0.000000,
+        "y" : 5.000000,
+        "z" : 0.000000
+    },
+    "emitPositionFixed" : {
+        "x" : 0.000000,
+        "y" : 0.000000,
+        "z" : 0.000000
+    },
+    "enableRandomVelocity" : true,
+    "velocityRandomRangeEnd" : {
+        "x" : 2.560000,
+        "y" : 0.000000,
+        "z" : 2.550000
+    },
+    "velocityFixed" : {
+        "x" : 0.000000,
+        "y" : 1.000000,
+        "z" : 0.000000
+    },
+    "beginColor" : {
+        "r" : 0.592157,
+        "b" : 0.000000,
+        "g" : 0.000000,
+        "a" : 1.000000
+    },
+    "endColor" : {
+        "r" : 0.494118,
+        "b" : 0.000000,
+        "g" : 0.000000,
+        "a" : 1.000000
+    },
+    "alphaDeltaValue" : 0.000000
+}

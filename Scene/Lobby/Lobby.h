@@ -5,8 +5,6 @@
 
 #include <thread>
 
-#include <JsonParser/JsonLoader.h>
-
 
 class LobbyScene : public IScene
 {

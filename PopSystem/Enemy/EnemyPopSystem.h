@@ -5,12 +5,11 @@
 #include <Vector3.h>
 #include <Features/GameEye/GameEye.h>
 #include <Features/Line/Line.h>
-#include <JsonParser/JsonLoader.h>
-#include <JsonParser/json.h>
 #include <Utility/FilePathSearcher/FilePathSearcher.h>
 #include <queue>
-#include <array>
 #include <string>
+#include <Utility/JSONIO/JSONIO.h>
+#include <nlohmann/json.hpp>
 
 class EnemyPopSystem
 {
@@ -26,27 +25,21 @@ public:
     };
 
 public:
-    void Initialize();
-    void Finalize();
-    void Update();
-    void DrawArea();
-
-    void ManualPop();
-    void ManualPop(const Vector3& _position);
-
-    bool IsExistPopRequest() const { return !popPoints_.empty(); }
+    void    Initialize();
+    void    Finalize();
+    void    Update();
+    void    DrawArea();
+    void    ManualPop();
+    void    ManualPop(const Vector3& _position);
+    bool    IsExistPopRequest() const { return !popPoints_.empty(); }
     Vector3 GetPopPoint();
+    void    StartPop();
+    void    StopPop();
+    bool    IsEnablePop() const { return isEnablePop_; }
 
-    void StartPop();
-    void StopPop();
-
-    bool IsEnablePop() const { return isEnablePop_; }
-
-public: /// Setter
+    /// Setter
     void SetPopInterval(float _interval) { popInterval_ = _interval; }
     void SetPopCount(uint32_t _count) { popCount_ = _count; }
-    void SetGameEye(GameEye* _eye) { ModifyGameEye(_eye); }
-
     void SetPopRange(const Vector3& _begin, const Vector3& _end)
     {
         popRangeBegin_ = _begin;
@@ -58,14 +51,15 @@ public: /// Setter
     
 
 private:
+    // Internal functions
     void PopRandom();  // ランダム生成
     void DebugWindow();
-    void ModifyGameEye(GameEye* _eye);
     void InitPopData();
     void UpdatePop();
+    void ReloadJsonData();
 
-
-private:
+    // Common methods
+    using json = nlohmann::json;
     Timer                   timerOverall_           = {};                   // !< 全体用タイマー
     Timer                   timerPop_               = {};                   // !< 生成用タイマー
     Timer                   timerPopDelay_          = {};                   // !< 遅延生成用タイマー
@@ -78,7 +72,7 @@ private:
 
     /// Json
     const std::string       kJsonFileName_          = "PopTimeTable.json";  // !< Jsonファイルパス
-    Json::Value             jsonPopTimeTable_       = {};                   // !< Jsonデータ
+    json                    jsonPopTimeTable_       = {};                   // !< Jsonデータ
     FilePathSearcher        filePathSearcher_       = {};                   // !< ファイルパス検索
     std::vector<PopData>    popData_                = {};                   // !< 生成データ
     size_t                  popDataIndex_           = 0;                    // !< 生成データのインデックス
@@ -102,5 +96,5 @@ private:
 
 private:
     RandomGenerator*        randomGenerator_        = nullptr;              // !< ランダム生成器
-    JsonLoader&             jsonLoader_             = JsonLoader::GetInstance(); // !< Jsonローダー
+    JSONIO*                 jsonIO_                 = nullptr;              // !< Json入出力
 };

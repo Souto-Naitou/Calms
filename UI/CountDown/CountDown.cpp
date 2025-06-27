@@ -11,7 +11,7 @@ void CountDown::Initialize()
         numbers_[i] = new Sprite();
     }
 
-    Vector2 clientSize = { static_cast<float>(WinSystem::kClientWidth), static_cast<float>(WinSystem::kClientHeight) };
+    Vector2 clientSize = { static_cast<float>(WinSystem::clientWidth), static_cast<float>(WinSystem::clientHeight) };
 
     numbers_[0]->Initialize("number_1.png");
     numbers_[0]->SetName("countDown_1");
@@ -56,7 +56,7 @@ void CountDown::Update()
 {
     if (isEnd_ || isInit_) return;
 
-    if (timer_.GetNow() > changeInterval_ && !isDrawStart_)
+    if (timer_.GetNow<float>() > changeInterval_ && !isDrawStart_)
     {
         currentNumber_--;
         timer_.Reset();
@@ -71,7 +71,7 @@ void CountDown::Update()
         startTimer_.Start();
     }
 
-    if (startTimer_.GetNow() > startDuration_ && startTimer_.GetIsStart())
+    if (startTimer_.GetNow<float>() > startDuration_ && startTimer_.GetIsStart())
     {
         isEnd_ = true;
     }
@@ -79,15 +79,15 @@ void CountDown::Update()
     /// 透明度を変更
     if (!isDrawStart_)
     {
-        opacity_ = Math::Lerp(1.0f, 0.0f, static_cast<float>(timer_.GetNow() / changeInterval_));
+        opacity_ = Math::Lerp(1.0f, 0.0f, static_cast<float>(timer_.GetNow<float>() / changeInterval_));
         numbers_[currentNumber_]->SetColor({ 1.0f, 1.0f, 1.0f, opacity_ });
         numbers_[currentNumber_]->Update();
     }
     else
     {
-        if (startTimer_.GetNow() > startDuration_ - 1.0)
+        if (startTimer_.GetNow<float>() > startDuration_ - 1.0)
         {
-            opacity_ = Math::Lerp(1.0f, 0.0f, static_cast<float>(startTimer_.GetNow() - (startDuration_ - 1.0) / 1.0));
+            opacity_ = Math::Lerp(1.0f, 0.0f, static_cast<float>(startTimer_.GetNow<float>() - (startDuration_ - 1.0) / 1.0));
         }
         else
         {

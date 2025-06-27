@@ -1,6 +1,6 @@
 #include "GameTimer.h"
 #include <Core/Win32/WinSystem.h>
-#include <DeltaTimeManager/DeltaTimeManager.h>
+#include <Features/DeltaTimeManager/DeltaTimeManager.h>
 
 void GameTimer::Reset()
 {
@@ -57,7 +57,7 @@ void GameTimer::Update()
     {
         if (isUseSystemClock_)
         {
-            nowTime_ = pTimer_->GetNow();
+            nowTime_ = pTimer_->GetNow<float>();
         }
         else
         {
@@ -96,8 +96,8 @@ void GameTimer::Draw()
     if (ones_place < 0) ones_place = 0;
 
     tensPlaceNums_[tens_place]->SetPosition({
-        WinSystem::kClientWidth / 2 - tensPlaceNums_[tens_place]->GetSize().x / 3.0f,
-        static_cast<float>(WinSystem::kClientHeight / 4)
+        WinSystem::clientWidth / 2 - tensPlaceNums_[tens_place]->GetSize().x / 3.0f,
+        static_cast<float>(WinSystem::clientHeight / 4)
         }
     );
 
@@ -106,8 +106,8 @@ void GameTimer::Draw()
 
 
     onesPlaceNums_[ones_place]->SetPosition({
-        WinSystem::kClientWidth / 2 + onesPlaceNums_[ones_place]->GetSize().x / 3.0f,
-        static_cast<float>(WinSystem::kClientHeight / 4)
+        WinSystem::clientWidth / 2 + onesPlaceNums_[ones_place]->GetSize().x / 3.0f,
+        static_cast<float>(WinSystem::clientHeight / 4)
         }
     );
 
