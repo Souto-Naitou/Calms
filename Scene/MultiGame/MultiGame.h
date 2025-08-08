@@ -11,7 +11,7 @@
 #include <PopSystem/Enemy/EnemyPopSystem.h>
 #include <DebugTools/DebugManager/DebugManager.h>
 #include <UI/CountDown/CountDown.h>
-#include <DeltaTimeManager/DeltaTimeManager.h>
+#include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <GameObject/ScreenToWorld/ScreenToWorld.h>
 #include <Features/RandomGenerator/RandomGenerator.h>
 #include <GameTimer/GameTimer.h>

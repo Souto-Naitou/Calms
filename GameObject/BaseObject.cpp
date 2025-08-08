@@ -4,14 +4,21 @@
 #include <MathExtension/mathExtension.h>
 #include <imgui.h>
 
-void BaseObject::Initialize()
+void BaseObject::Initialize(bool _enableDebugWindow)
 {
-    DebugManager::GetInstance()->SetComponent("GameObject", name_, std::bind(&BaseObject::DebugWindow, this));
+    isEnableDebugWindow_ = _enableDebugWindow;
+    if (isEnableDebugWindow_)
+    {
+        DebugManager::GetInstance()->SetComponent("GameObject", name_, std::bind(&BaseObject::DebugWindow, this));
+    }
 }
 
 void BaseObject::Finalize()
 {
-    DebugManager::GetInstance()->DeleteComponent("GameObject", name_.c_str());
+    if (isEnableDebugWindow_)
+    {
+        DebugManager::GetInstance()->DeleteComponent("GameObject", name_);
+    }
 }
 
 void BaseObject::UpdateTransform(float _dt)

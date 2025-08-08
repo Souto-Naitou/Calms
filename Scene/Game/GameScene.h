@@ -11,13 +11,14 @@
 #include <PopSystem/Enemy/EnemyPopSystem.h>
 #include <DebugTools/DebugManager/DebugManager.h>
 #include <UI/CountDown/CountDown.h>
-#include <DeltaTimeManager/DeltaTimeManager.h>
+#include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <GameObject/ScreenToWorld/ScreenToWorld.h>
 #include <Features/RandomGenerator/RandomGenerator.h>
 #include <GameTimer/GameTimer.h>
 #include <InputGuide/InputGuide.h>
 #include <Features/Line/Line.h>
 #include <ScoreSystem/ScoreSystem.h>
+#include <Features/Text/Text.h>
 #include <list>
 #include <memory>
 
@@ -86,6 +87,7 @@ private:
     std::unique_ptr<GameTimer>                  gameTimer_          = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                 inputGuide_         = {};       // !< 入力ガイド
     std::unique_ptr<ScoreSystem>                scoreSystem_        = {};       // !< スコアシステム
+    std::unique_ptr<Text>                       fpsText_            = {};       // !< テキスト
 
     EnemyPopSystem                              enemyPopSystem_     = {};       // !< 敵生成システム
     DIContainer                                 gObjDIContainer_    = {};       // !< ゲームオブジェクトのDIコンテナ
@@ -99,6 +101,7 @@ private:
     Line*                                       line_               = nullptr;  // !< エリア用ライン
     float                                       areaWidth_          = 25.0f;    // !< エリアの幅
 
+    const uint32_t                              kMaxEnemyCount_     = 30;       // !< 最大敵数
 
 
 private: /// デバッグ用

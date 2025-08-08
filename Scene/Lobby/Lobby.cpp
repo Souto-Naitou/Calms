@@ -6,6 +6,9 @@
 #include <Features/SceneTransition/SceneTransitionManager.h>
 #include <Features/SceneTransition/TransFadeInOut.h>
 #include <imgui.h>
+#include <Utility/JSONIO/JSONIO.h>
+
+using json = nlohmann::json;
 
 void LobbyScene::Initialize()
 {
@@ -14,14 +17,14 @@ void LobbyScene::Initialize()
 
 
     /// WSADataの初期化
-    HRESULT hr = WSAStartup(MAKEWORD(2, 0), &wsaData_);
+    HRESULT hr = ::WSAStartup(MAKEWORD(2, 0), &wsaData_);
     if (!SUCCEEDED(hr))
     {
         throw std::runtime_error("WSAStartup failed");
         return;
     }
 
-    Json::Value connInfo = JsonLoader::GetInstance()["Resources/Json/ipaddr.json"];
+    json connInfo = JSONIO::GetInstance()->Load("Resources/Json/ipaddr.json");
 
     isEnableJson_ = connInfo["ENABLE"];
 
@@ -52,7 +55,7 @@ void LobbyScene::Finalize()
         MultiDataManager::GetInstance()->SetTCPData(client_);
     }
 
-    DeleteNetworkThread();
+    this->DeleteNetworkThread();
 
     DebugManager::GetInstance()->DeleteComponent("Scene", windowName_.c_str());
 }
@@ -62,7 +65,7 @@ void LobbyScene::Update()
     /// == ネットワークスレッドの開始 ==
     ///     ホストオープンリクエストがあるか、クライアント接続リクエストがあるか
     ///     どちらかがあればスレッドを開始する
-    BeginNetworkThread();
+    this->BeginNetworkThread();
 
     if (isConnected_)
     {

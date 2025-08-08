@@ -1,0 +1,15 @@
+{
+    "settings": {
+        "common": {
+            "window_title": "Nima Engine",
+            "start_scene" : "TitleScene",
+            "screen_width": 1600,
+            "screen_height": 900
+        },
+        "path" : {
+            "model" : ["Resources/Models"],
+            "texture" : ["Resources/Images"],
+            "audio" : ["Resources/Sounds"]
+        }
+    }
+}

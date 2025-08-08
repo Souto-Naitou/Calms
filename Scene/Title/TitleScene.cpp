@@ -1,6 +1,8 @@
 #include "TitleScene.h"
 #include <Features/SceneTransition/TransFadeInOut.h>
-#include <Core/Win32/WinSystem.h>
+#include <Features/Sprite/SpriteSystem.h>
+#include <Features/Object3d/Object3dSystem.h>
+#include <Features/Line/LineSystem.h>
 
 void TitleScene::Initialize()
 {
@@ -14,6 +16,11 @@ void TitleScene::Initialize()
     gameEye_->SetName("main");
     gameEye_->SetTranslate(Vector3(0, 15.0f, -30.0f));
     gameEye_->SetRotate(Vector3(-1.2f, 0, 0));
+
+    /// ゲームアイをセット
+    Object3dSystem::GetInstance()->SetGlobalEye(gameEye_.get());
+    SpriteSystem::GetInstance()->SetGlobalEye(gameEye_.get());
+    LineSystem::GetInstance()->SetGlobalEye(gameEye_.get());
 
     pTextTitle_ = std::make_unique<Text>();
     pTextTitle_->Initialize();

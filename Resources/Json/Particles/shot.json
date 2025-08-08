@@ -1,4 +1,5 @@
 {
+    "version" : 1,
     "emitterLifeTime" : 0.000000,
     "emitterName" : "Shot",
     "emitInterval" : 0.020000,

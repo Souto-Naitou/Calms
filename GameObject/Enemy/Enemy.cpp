@@ -2,16 +2,16 @@
 
 #include <imgui.h>
 
-void Enemy::Initialize()
+void Enemy::Initialize(bool _enableDebugWindow)
 {
     /// 基底クラスの初期化
-    BaseObject::Initialize();
+    BaseObject::Initialize(_enableDebugWindow);
 
 
     /// インスタンスの取得
     collisionManager_ = CollisionManager::GetInstance();
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
-
+    ppGameEye_        = Object3dSystem::GetInstance()->GetGlobalEye();
 
     /// パラメータの初期化
     name_ = "enemy";
@@ -22,16 +22,16 @@ void Enemy::Initialize()
 
 
     /// パラメータの初期化
-    friction_ = 0.95f;
-    moveSpeed_ = 10.0f;
+    friction_    = 0.95f;
+    moveSpeed_   = 10.0f;
     translation_ = Vector3(0, 0.5f, 0);
     attackPower_ = 10.0f;
-    hp_ = 50.0f;
+    hp_          = 50.0f;
 
 
     /// オブジェクトの初期化
     object_ = std::make_unique<Object3d>();
-    object_->Initialize("Cube.obj");
+    object_->Initialize("Cube.obj", false);
     object_->SetName("enemy");
     object_->SetTranslate(Vector3(0, 0.5f, 0));
     object_->SetRotate(Vector3(0, 0, 0));
@@ -61,17 +61,17 @@ void Enemy::Initialize()
 
     /// パーティクルエミッタの初期化
     hitParticle_ = std::make_unique<ParticleEmitter>();
-    hitParticle_->Initialize("Triangle/Triangle.obj", "resources/json/particles/Hit.json", true);
+    hitParticle_->Initialize("Box/Box.obj", "", "resources/json/particles/Box.json");
     hitParticle_->SetEnableBillboard(true);
     hitParticle_->SetPosition(translation_);
 
     deathParticle_ = std::make_unique<ParticleEmitter>();
-    deathParticle_->Initialize("Triangle/Triangle.obj", "resources/json/particles/Death.json", true);
+    deathParticle_->Initialize("Triangle/Triangle.obj", "", "resources/json/particles/Death.json");
     deathParticle_->SetEnableBillboard(true);
     deathParticle_->SetPosition(translation_);
 
     /// オーディオの初期化
-    audioHit_ = AudioManager::GetInstance()->GetNewAudio("kill_snare.wav");
+    audioHit_   = AudioManager::GetInstance()->GetNewAudio("kill_snare.wav");
     audioDeath_ = AudioManager::GetInstance()->GetNewAudio("hit_snare.wav");
 }
 
@@ -156,20 +156,14 @@ void Enemy::DrawLine()
     deathParticle_->Draw();
 }
 
-void Enemy::ModifyGameEye(GameEye* _eye)
-{
-    if (object_) object_->SetGameEye(_eye);
-    obb_.SetGameEye(gameEye_);
-    hitParticle_->SetGameEye(gameEye_);
-    deathParticle_->SetGameEye(gameEye_);
-}
-
 void Enemy::OnCollision(const Collider* _other)
 {
     if (_other->GetColliderID() == "enemy")
     {
+        const BaseObject* otherOwner = static_cast<const BaseObject*>(_other->GetOwner());
+
         /// 反発を速度に適用
-        Vector3 otherPos = _other->GetOwner()->GetTranslation();
+        Vector3 otherPos = otherOwner->GetTranslation();
         Vector3 dir = translation_ - otherPos;
 
         accelerationRefl_ = dir * reflectionPower_;
@@ -180,7 +174,9 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
 {
     if (_other->GetColliderID() == "playerBullet")
     {
-        hp_ -= _other->GetOwner()->GetAttackPower();
+        const BaseObject* otherOwner = static_cast<const BaseObject*>(_other->GetOwner());
+
+        hp_ -= otherOwner->GetAttackPower();
         if (hp_ <= 0) 
         {
             isAlive_ = false;
@@ -188,7 +184,7 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
         }
 
         /// ヒットパーティクルの再生
-        Vector3 hitPos = _other->GetOwner()->GetTranslation();
+        Vector3 hitPos = otherOwner->GetTranslation();
 
         if (hitPos.x == 0 && hitPos.y == 0 && hitPos.z == 0)
         {
@@ -204,6 +200,8 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
 
         /// ヒット効果音
         audioHit_->Play();
+
+        (*ppGameEye_)->Shake(0.1f);
     }
 }
 

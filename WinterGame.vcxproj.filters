@@ -28,9 +28,6 @@
     <Filter Include="GameObject\Enemy">
       <UniqueIdentifier>{4d23f7ae-e8c6-41ef-a58f-cd83eb389201}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Collision">
-      <UniqueIdentifier>{358766f1-f9ea-418b-ba8d-ae816f7b6d25}</UniqueIdentifier>
-    </Filter>
     <Filter Include="DIContainer">
       <UniqueIdentifier>{a054c6e7-0a23-441a-8a5f-995110a91dd8}</UniqueIdentifier>
     </Filter>
@@ -48,9 +45,6 @@
     </Filter>
     <Filter Include="UI\CountDown">
       <UniqueIdentifier>{537eb468-a26f-41f8-97a1-eb5d138e5beb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="DeltaTimeManager">
-      <UniqueIdentifier>{88b53fff-6bff-4e83-821b-8fa959597194}</UniqueIdentifier>
     </Filter>
     <Filter Include="GameObject\ScreenToWorld">
       <UniqueIdentifier>{fc9ef5a7-41f0-4008-9361-cecdf65911e5}</UniqueIdentifier>
@@ -106,12 +100,6 @@
     <ClCompile Include="GameObject\Enemy\Enemy.cpp">
       <Filter>GameObject\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="Collision\Collider\Collider.cpp">
-      <Filter>Collision</Filter>
-    </ClCompile>
-    <ClCompile Include="Collision\Manager\CollisionManager.cpp">
-      <Filter>Collision</Filter>
-    </ClCompile>
     <ClCompile Include="EventListener\EventListener.cpp">
       <Filter>EventListener</Filter>
     </ClCompile>
@@ -120,9 +108,6 @@
     </ClCompile>
     <ClCompile Include="UI\CountDown\CountDown.cpp">
       <Filter>UI\CountDown</Filter>
-    </ClCompile>
-    <ClCompile Include="DeltaTimeManager\DeltaTimeManager.cpp">
-      <Filter>DeltaTimeManager</Filter>
     </ClCompile>
     <ClCompile Include="Scene\Clear\ClearScene.cpp">
       <Filter>Scene\Clear</Filter>
@@ -178,12 +163,6 @@
     <ClInclude Include="GameObject\Enemy\Enemy.h">
       <Filter>GameObject\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="Collision\Collider\Collider.h">
-      <Filter>Collision</Filter>
-    </ClInclude>
-    <ClInclude Include="Collision\Manager\CollisionManager.h">
-      <Filter>Collision</Filter>
-    </ClInclude>
     <ClInclude Include="DIContainer\DIContainer.h">
       <Filter>DIContainer</Filter>
     </ClInclude>
@@ -193,14 +172,8 @@
     <ClInclude Include="EventListener\EventListener.h">
       <Filter>EventListener</Filter>
     </ClInclude>
-    <ClInclude Include="Collision\Shape.h">
-      <Filter>Collision</Filter>
-    </ClInclude>
     <ClInclude Include="UI\CountDown\CountDown.h">
       <Filter>UI\CountDown</Filter>
-    </ClInclude>
-    <ClInclude Include="DeltaTimeManager\DeltaTimeManager.h">
-      <Filter>DeltaTimeManager</Filter>
     </ClInclude>
     <ClInclude Include="GameObject\ScreenToWorld\ScreenToWorld.h">
       <Filter>GameObject\ScreenToWorld</Filter>
