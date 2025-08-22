@@ -2,6 +2,10 @@
 
 #include <Framework/NimaFramework.h>
 #include <Features/Collision/Manager/CollisionManager.h>
+#include <memory>
+#include <Features/Model/Loader/IModelLoader.h>
+#include <Features/Model/ModelStorage.h>
+#include <Features/Model/ModelManager.h>
 
 class WinterGame : public NimaFramework
 {
@@ -30,5 +34,9 @@ public:
 
 
 private: /// ゲーム内オブジェクト
+    std::unique_ptr<IModelLoader> pModelLoader_ = nullptr; // !< モデルローダー
+    std::unique_ptr<ModelStorage> pModelStorage_ = nullptr; // !< モデルストレージ
+    std::unique_ptr<ModelManager> pModelManager_ = nullptr; // !< モデルマネージャー
+
     CollisionManager* pCollisionManager_ = nullptr;
 };

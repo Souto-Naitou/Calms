@@ -1,8 +1,9 @@
 #pragma once
 
 #include <Features/Sprite/Sprite.h>
-#include <Timer/Timer.h>
+#include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <array>
+#include <memory>
 
 class CountDown
 {
@@ -17,11 +18,11 @@ public:
     bool IsEnd() const { return isEnd_; }
 
 private:
-    Timer timer_ = {};
-    Timer startTimer_ = {};
+    TimeMeasurer timer_ = {};
+    TimeMeasurer startTimer_ = {};
 
-    std::array<Sprite*, 3> numbers_;
-    Sprite* start_ = nullptr;
+    std::array<std::unique_ptr<Sprite>, 3> numbers_;
+    std::unique_ptr<Sprite> start_ = nullptr;
 
     int currentNumber_ = 2;
 

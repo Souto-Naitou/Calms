@@ -5,7 +5,7 @@
 #include <Vector3.h>
 #include <memory>
 #include <Features/GameEye/GameEye.h>
-#include <Timer/Timer.h>
+#include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Collision/Collider/Collider.h>
 #include <Features/Collision/Manager/CollisionManager.h>
 #include <Features/Primitive/OBB.h>
@@ -16,6 +16,17 @@
 class Enemy : public BaseObject
 {
 public:
+    struct Desc
+    {
+        IModel* pModelSelfBody = nullptr;               // 本体モデル
+        IModel* pModelParticleHit = nullptr;            // ヒットパーティクルモデル
+        IModel* pModelParticleDeath = nullptr;          // デスパーティクルモデル
+    };
+
+public:
+    Enemy(const Desc& _desc);
+
+
     void Initialize(bool _enableDebugWindow = true) override;
     void Finalize() override;
     void Update() override;
@@ -29,8 +40,21 @@ public: /// Setter
 
 
 private:
-    std::unique_ptr<Object3d>   object_     = {};
-    std::unique_ptr<Timer>      timer_      = {};
+    void InitializeObjects();
+    void InitializeCollider();
+    void InitializeParticleEmitters();
+
+    void UpdateTransform();
+    void UpdateLights();
+    void UpdateCollider();
+    void UpdateObjects();
+
+    void OnCollision(const Collider* _other);
+    void OnCollisionTrigger(const Collider* _other);
+    void DebugWindow() override;
+
+    std::unique_ptr<Object3d>           objectSelfBody_     = {};
+    std::unique_ptr<TimeMeasurer>       timeMeasurer_       = {};
 
     float           lifeTimeLimit_              = 3.0f;
     Vector3         accelerationRefl_           = {};
@@ -52,14 +76,11 @@ private:
     Audio* audioDeath_  = nullptr;
 
     /// パーティクル
-    std::unique_ptr<ParticleEmitter>    hitParticle_    = nullptr;
-    std::unique_ptr<ParticleEmitter>    deathParticle_  = nullptr;
-
-
-private:
-    void OnCollision(const Collider* _other);
-    void OnCollisionTrigger(const Collider* _other);
-    void DebugWindow() override;
+    std::unique_ptr<ParticleEmitter>    pParticleHit_               = nullptr;
+    std::unique_ptr<ParticleEmitter>    pParticleDeath_             = nullptr;
+    std::unique_ptr<IModel>             pModelSelfBody_             = nullptr;
+    IModel*                             pModelParticleHit_          = nullptr;
+    IModel*                             pModelParticleDeath_        = nullptr;
 
 
 private: /// 他クラスの所有物

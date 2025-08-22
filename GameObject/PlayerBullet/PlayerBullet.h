@@ -5,7 +5,7 @@
 #include <Vector3.h>
 #include <memory>
 #include <Features/GameEye/GameEye.h>
-#include <Timer/Timer.h>
+#include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Collision/Collider/Collider.h>
 #include <Features/Collision/Manager/CollisionManager.h>
 #include <Features/Primitive/OBB.h>
@@ -15,6 +15,9 @@
 class PlayerBullet : public BaseObject
 {
 public:
+    PlayerBullet(IModel* _pModelSelfBody)
+        : pModelSelfBody_(_pModelSelfBody) {};
+
     void Initialize(bool _enableDebugWindow = true) override;
     void Finalize() override;
     void Update() override;
@@ -28,8 +31,19 @@ public: /// Setter
 
 
 private:
-    std::unique_ptr<Object3d> object_ = nullptr;
-    std::unique_ptr<Timer> timer_ = nullptr;
+    /// コールバック関数
+    void OnCollisionTrigger(const Collider* _other);
+    void DebugWindow() override;
+
+    /// 内部関数
+    void ObjectsInitialize();
+    void ObjectsUpdate();
+    void CollidersInitialize();
+
+    std::unique_ptr<TimeMeasurer> timer_ = nullptr;
+    
+    IModel* pModelSelfBody_ = nullptr;
+    std::unique_ptr<Object3d> pObjectSelfBody_ = nullptr;
     
     /// パラメータ
     float lifeTimeLimit_ = 8.0f;
@@ -42,9 +56,6 @@ private:
     /// フラグ
     bool isDrawCollisionArea_ = false;
 
-private:
-    void OnCollisionTrigger(const Collider* _other);
-    void DebugWindow() override;
 
 private: /// 他クラスの所有物
     CollisionManager* collisionManager_ = nullptr;

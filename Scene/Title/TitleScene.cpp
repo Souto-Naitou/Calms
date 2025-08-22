@@ -73,30 +73,6 @@ void TitleScene::Update()
     pTextStart_->Update();
 }
 
-void TitleScene::Draw2dBackGround()
-{
-}
-
-void TitleScene::Draw3d()
-{
-}
-
-void TitleScene::Draw2dMidground()
-{
-}
-
-void TitleScene::Draw3dMidground()
-{
-}
-
-void TitleScene::DrawLine()
-{
-}
-
-void TitleScene::Draw2dForeground()
-{
-}
-
 void TitleScene::DrawTexts()
 {
     pTextTitle_->Draw();

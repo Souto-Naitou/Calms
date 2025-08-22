@@ -120,8 +120,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Scene\Clear\ClearScene.cpp" />
     <ClCompile Include="Scene\Factory\SceneFactory.cpp" />
     <ClCompile Include="Scene\Game\GameScene.cpp" />
-    <ClCompile Include="Scene\Lobby\Lobby.cpp" />
-    <ClCompile Include="Scene\MultiGame\MultiGame.cpp" />
     <ClCompile Include="Scene\Title\TitleScene.cpp" />
     <ClCompile Include="ScoreSystem\ScoreSystem.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -152,8 +150,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Scene\Clear\ClearScene.h" />
     <ClInclude Include="Scene\Factory\SceneFactory.h" />
     <ClInclude Include="Scene\Game\GameScene.h" />
-    <ClInclude Include="Scene\Lobby\Lobby.h" />
-    <ClInclude Include="Scene\MultiGame\MultiGame.h" />
     <ClInclude Include="Scene\Title\TitleScene.h" />
     <ClInclude Include="ScoreSystem\ScoreSystem.h" />
     <ClInclude Include="stdafx.h" />

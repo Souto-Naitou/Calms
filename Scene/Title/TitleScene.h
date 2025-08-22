@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Interfaces/IScene.h>
+#include <Scene/SceneBase.h>
 #include <Features/GameEye/GameEye.h>
 #include <Features/Input/Input.h>
 #include <Features/SceneTransition/SceneTransitionManager.h>
@@ -10,9 +10,11 @@
 #include <ScoreSystem/ScoreSystem.h>
 #include <memory>
 
-class TitleScene : public IScene
+class TitleScene : public SceneBase
 {
 public:
+    TitleScene(ISceneArgs* _pArg) : SceneBase(_pArg) {};
+
     /// <summary>
     /// 初期化
     /// </summary>
@@ -28,35 +30,7 @@ public:
     /// </summary>
     void Update() override;
 
-    /// <summary>
-    /// 背景描画
-    /// </summary>
-    void Draw2dBackGround() override;
-
-    /// <summary>
-    /// 3D描画
-    /// </summary>
-    void Draw3d() override;
-
-    /// <summary>
-    /// 中景描画
-    /// </summary>
-    void Draw2dMidground() override;
-
-    /// <summary>
-    /// 3D中景描画
-    /// </summary>
-    void Draw3dMidground() override;
-
-    /// <summary>
-    /// ライン描画
-    /// </summary>
-    void DrawLine() override;
-
-    /// <summary>
-    /// 前景描画
-    /// </summary>
-    void Draw2dForeground() override;
+    void Draw() override {};
 
     /// <summary>
     /// テキスト描画

@@ -58,12 +58,6 @@
     <Filter Include="Scene\Clear">
       <UniqueIdentifier>{e038e2c1-eee8-42e3-8c9b-f54ae3698b78}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\Lobby">
-      <UniqueIdentifier>{b3e92359-b782-496d-8f89-5556be172543}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scene\MultiGame">
-      <UniqueIdentifier>{965bb4e1-6b00-406f-9b2e-1349f6e9118a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="MultiData">
       <UniqueIdentifier>{ea193379-2d59-4248-a97b-42bd27ab419f}</UniqueIdentifier>
     </Filter>
@@ -120,12 +114,6 @@
     </ClCompile>
     <ClCompile Include="GameObject\ScreenToWorld\ScreenToWorld.cpp">
       <Filter>GameObject\ScreenToWorld</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\Lobby\Lobby.cpp">
-      <Filter>Scene\Lobby</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\MultiGame\MultiGame.cpp">
-      <Filter>Scene\MultiGame</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="MultiData\MultiDataResolver\MultiDataResolver.cpp">
@@ -187,13 +175,7 @@
     <ClInclude Include="Scene\Clear\ClearScene.h">
       <Filter>Scene\Clear</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\Lobby\Lobby.h">
-      <Filter>Scene\Lobby</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Scene\MultiGame\MultiGame.h">
-      <Filter>Scene\MultiGame</Filter>
-    </ClInclude>
     <ClInclude Include="MultiDataManager\MultiDataManager.h">
       <Filter>MultiData</Filter>
     </ClInclude>

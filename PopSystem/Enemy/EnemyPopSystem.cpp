@@ -11,11 +11,11 @@ void EnemyPopSystem::Initialize()
     jsonIO_ = JSONIO::GetInstance();
 
     /// Jsonファイルの読み込み
-    filePathSearcher_.Initialize();
+    pathResolver_.Initialize();
     // 検索パスの追加
-    filePathSearcher_.AddSearchPath("Resources/Json");
+    pathResolver_.AddSearchPath("Resources/Json");
     // 読み込み
-    jsonPopTimeTable_ = JSONIO::GetInstance()->Load(filePathSearcher_.GetFilePath(kJsonFileName_));
+    jsonPopTimeTable_ = JSONIO::GetInstance()->Load(pathResolver_.GetFilePath(kJsonFileName_));
 
 
     /// ポップデータの初期化
@@ -27,11 +27,11 @@ void EnemyPopSystem::Initialize()
 
 
     /// ラインの初期化
-    linesArea_ = new Line(4);
+    linesArea_ = std::make_unique<Line>(4);
     linesArea_->Initialize();
     linesArea_->SetColor(Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 
-    linesIgnoreCircle_ = new Line(16);
+    linesIgnoreCircle_ = std::make_unique<Line>(16);
     linesIgnoreCircle_->Initialize();
     linesIgnoreCircle_->SetColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 }
@@ -39,10 +39,7 @@ void EnemyPopSystem::Initialize()
 void EnemyPopSystem::Finalize()
 {   
     linesArea_->Finalize();
-    delete linesArea_;
-
     linesIgnoreCircle_->Finalize();
-    delete linesIgnoreCircle_;
 
     DebugManager::GetInstance()->DeleteComponent(name_.c_str());
 }
@@ -277,7 +274,7 @@ void EnemyPopSystem::UpdatePop()
 
 void EnemyPopSystem::ReloadJsonData()
 {
-    auto path = filePathSearcher_.GetFilePath(kJsonFileName_);
+    auto path = pathResolver_.GetFilePath(kJsonFileName_);
     jsonPopTimeTable_ = jsonIO_->Unload(path);
     jsonPopTimeTable_ = jsonIO_->Load(path);
     this->InitPopData();

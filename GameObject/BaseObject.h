@@ -60,7 +60,7 @@ protected:
 
 
 protected:
-    void UpdateTransform(float _dt);
+    void UpdatePhysics(float _dt);
     virtual void DebugWindow();
 
 

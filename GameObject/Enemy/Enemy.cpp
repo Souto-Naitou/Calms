@@ -1,12 +1,20 @@
 #include "Enemy.h"
 
 #include <imgui.h>
+#include <Features/Model/Helper/ModelHelper.h>
+#include <Utility/Debug/dbgutl.h>
+
+Enemy::Enemy(const Desc& _desc)
+{
+    pModelSelfBody_ = _desc.pModelSelfBody->Cloned();
+    pModelParticleHit_ = _desc.pModelParticleHit;
+    pModelParticleDeath_ = _desc.pModelParticleDeath;
+}
 
 void Enemy::Initialize(bool _enableDebugWindow)
 {
     /// 基底クラスの初期化
     BaseObject::Initialize(_enableDebugWindow);
-
 
     /// インスタンスの取得
     collisionManager_ = CollisionManager::GetInstance();
@@ -14,30 +22,105 @@ void Enemy::Initialize(bool _enableDebugWindow)
     ppGameEye_        = Object3dSystem::GetInstance()->GetGlobalEye();
 
     /// パラメータの初期化
-    name_ = "enemy";
+    name_           = utl::debug::generate_name("enemy", this);
+    friction_       = 0.95f;
+    moveSpeed_      = 10.0f;
+    translation_    = Vector3(0, 0.5f, 0);
+    attackPower_    = 10.0f;
+    hp_             = 50.0f;
 
-    std::stringstream ss;
-    ss << "##0x" << std::hex << this;
-    name_ += ss.str();
+    // オブジェクトの初期化
+    this->InitializeObjects();
 
+    // コライダーの初期化
+    this->InitializeCollider();
 
-    /// パラメータの初期化
-    friction_    = 0.95f;
-    moveSpeed_   = 10.0f;
-    translation_ = Vector3(0, 0.5f, 0);
-    attackPower_ = 10.0f;
-    hp_          = 50.0f;
+    // OBBの初期化
+    obb_.Initialize();
 
+    // コライダーの登録
+    collisionManager_->RegisterCollider(collider_.get());
+
+    // パーティクルエミッターの初期化
+    this->InitializeParticleEmitters();
+
+    /// オーディオの初期化
+    audioHit_   = AudioManager::GetInstance()->GetNewAudio("Effect", "kill_snare.wav");
+    audioDeath_ = AudioManager::GetInstance()->GetNewAudio("Effect", "hit_snare.wav");
+    audioHit_->SetVolume(0.2f);
+    audioDeath_->SetVolume(0.2f);
+}
+
+void Enemy::Finalize()
+{
+    /// コライダーの削除
+    collisionManager_->DeleteCollider(collider_.get());
+
+    objectSelfBody_->Finalize();
+    objectSelfBody_.reset();
+
+    pParticleDeath_->SetPosition(translation_);
+    pParticleDeath_->Emit();
+
+    pParticleHit_->Finalize();
+    pParticleDeath_->Finalize();
+
+    BaseObject::Finalize();
+}
+
+void Enemy::Update()
+{
+    // 変形情報の更新 (プレイヤーに向かって追尾・向き変更)
+    this->UpdateTransform();
+
+    // 物理演算の更新
+    BaseObject::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
+
+    // ライトの更新
+    this->UpdateLights();
+
+    // オブジェクトの更新
+    this->UpdateObjects();
+
+    // コライダーの更新
+    this->UpdateCollider();
+
+    // パーティクルの更新
+    pParticleHit_->Update();
+    pParticleDeath_->Update();
+}
+
+void Enemy::Draw()
+{
+    if (objectSelfBody_) objectSelfBody_->Draw();
+}
+
+void Enemy::DrawLine()
+{
+    if (isDrawCollisionArea_) collider_->DrawArea();
+    pParticleHit_->Draw();
+    pParticleDeath_->Draw();
+}
+
+void Enemy::InitializeObjects()
+{
+    if (pModelSelfBody_ == nullptr)
+    {
+        Logger::GetInstance()->LogError(__FILE__, __FUNCTION__, "pModelSelfBody_ がnullptrです");
+    }
 
     /// オブジェクトの初期化
-    object_ = std::make_unique<Object3d>();
-    object_->Initialize("Cube.obj", false);
-    object_->SetName("enemy");
-    object_->SetTranslate(Vector3(0, 0.5f, 0));
-    object_->SetRotate(Vector3(0, 0, 0));
-    object_->SetColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+    objectSelfBody_ = std::make_unique<Object3d>();
+    objectSelfBody_->Initialize(false);
+    objectSelfBody_->SetName("enemy");
+    objectSelfBody_->SetTranslate(Vector3(0, 0.5f, 0));
+    objectSelfBody_->SetRotate(Vector3(0, 0, 0));
+    objectSelfBody_->SetModel(pModelSelfBody_.get());
+    objectSelfBody_->GetOption().materialData->color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+}
 
-
+void Enemy::InitializeCollider()
+{
     /// コライダーの初期化
     collider_ = std::make_unique<Collider>();
     collider_->SetColliderID("enemy");
@@ -50,49 +133,23 @@ void Enemy::Initialize(bool _enableDebugWindow)
     collider_->SetOnCollisionTrigger(std::bind(&Enemy::OnCollisionTrigger, this, std::placeholders::_1));
     collider_->SetOnCollision(std::bind(&Enemy::OnCollision, this, std::placeholders::_1));
     collider_->SetEnableLighter(true);
-
-
-    /// OBBの初期化
-    obb_.Initialize();
-
-    // コライダーの登録
-    collisionManager_->RegisterCollider(collider_.get());
-
-
-    /// パーティクルエミッタの初期化
-    hitParticle_ = std::make_unique<ParticleEmitter>();
-    hitParticle_->Initialize("Box/Box.obj", "", "resources/json/particles/Box.json");
-    hitParticle_->SetEnableBillboard(true);
-    hitParticle_->SetPosition(translation_);
-
-    deathParticle_ = std::make_unique<ParticleEmitter>();
-    deathParticle_->Initialize("Triangle/Triangle.obj", "", "resources/json/particles/Death.json");
-    deathParticle_->SetEnableBillboard(true);
-    deathParticle_->SetPosition(translation_);
-
-    /// オーディオの初期化
-    audioHit_   = AudioManager::GetInstance()->GetNewAudio("kill_snare.wav");
-    audioDeath_ = AudioManager::GetInstance()->GetNewAudio("hit_snare.wav");
 }
 
-void Enemy::Finalize()
+void Enemy::InitializeParticleEmitters()
 {
-    /// コライダーの削除
-    collisionManager_->DeleteCollider(collider_.get());
+    /// パーティクルエミッタの初期化
+    pParticleHit_ = std::make_unique<ParticleEmitter>();
+    pParticleHit_->Initialize(pModelParticleHit_ , "resources/json/particles/Box.json");
+    pParticleHit_->SetEnableBillboard(true);
+    pParticleHit_->SetPosition(translation_);
 
-    object_->Finalize();
-    object_.reset();
-
-    deathParticle_->SetPosition(translation_);
-    deathParticle_->Emit();
-
-    hitParticle_->Finalize();
-    deathParticle_->Finalize();
-
-    BaseObject::Finalize();
+    pParticleDeath_ = std::make_unique<ParticleEmitter>();
+    pParticleDeath_->Initialize(pModelParticleDeath_, "resources/json/particles/Death.json");
+    pParticleDeath_->SetEnableBillboard(true);
+    pParticleDeath_->SetPosition(translation_);
 }
 
-void Enemy::Update()
+void Enemy::UpdateTransform()
 {
     if (locationProvider_) positionTarget_ = locationProvider_->GetTranslation().xz();
     distanceToTarget = positionTarget_ - translation_.xz();
@@ -113,47 +170,38 @@ void Enemy::Update()
     {
         rotation_ = Vector3(0, -velocity_.xz().Theta(), 0);
     }
+}
 
-    BaseObject::UpdateTransform(deltaTimeManager_->GetDeltaTime(1));
-
-    object_->SetTranslate(translation_);
-    object_->SetRotate(rotation_);
-
+void Enemy::UpdateLights()
+{
     if (!directionalLight_) 
     {
         directionalLight_ = diContainer_->Resolve<DirectionalLight>();
-        object_->SetDirectionalLight(directionalLight_);
+        objectSelfBody_->SetDirectionalLight(directionalLight_);
     }
 
     if (!pointLight_)
     {
         pointLight_ = diContainer_->Resolve<PointLight>();
-        object_->SetPointLight(pointLight_);
+        objectSelfBody_->SetPointLight(pointLight_);
     }
+}
 
-    object_->Update();
-
+void Enemy::UpdateCollider()
+{
     /// コライダーの更新
     obb_.SetCenter(translation_);
-    obb_.SetOrientations(object_->GetRotateMatrix());
+    obb_.SetOrientations(objectSelfBody_->GetRotateMatrix());
     obb_.SetSize(Vector3(0.5f, 0.5f, 0.5f));
 
     collider_->SetShapeData(&obb_);
-
-    hitParticle_->Update();
-    deathParticle_->Update();
 }
 
-void Enemy::Draw()
+void Enemy::UpdateObjects()
 {
-    if (object_) object_->Draw();
-}
-
-void Enemy::DrawLine()
-{
-    if (isDrawCollisionArea_) collider_->DrawArea();
-    hitParticle_->Draw();
-    deathParticle_->Draw();
+    objectSelfBody_->SetTranslate(translation_);
+    objectSelfBody_->SetRotate(rotation_);
+    objectSelfBody_->Update();
 }
 
 void Enemy::OnCollision(const Collider* _other)
@@ -191,8 +239,8 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
             assert(0);
         }
 
-        hitParticle_->SetPosition(hitPos);
-        hitParticle_->Emit();
+        pParticleHit_->SetPosition(hitPos);
+        pParticleHit_->Emit();
 
         Vector3 dir = translation_ - hitPos;
 

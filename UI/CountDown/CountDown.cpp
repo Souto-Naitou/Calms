@@ -8,7 +8,7 @@ void CountDown::Initialize()
     /// 数字 1 - 3 (256 x 256)
     for (int i = 0; i < 3; i++)
     {
-        numbers_[i] = new Sprite();
+        numbers_[i] = std::make_unique<Sprite>();
     }
 
     Vector2 clientSize = { static_cast<float>(WinSystem::clientWidth), static_cast<float>(WinSystem::clientHeight) };
@@ -28,7 +28,7 @@ void CountDown::Initialize()
     numbers_[2]->SetAnchorPoint({ 0.5f, 0.5f });
     numbers_[2]->SetPosition(clientSize / 2.0f);
 
-    start_ = new Sprite();
+    start_ = std::make_unique<Sprite>();
     start_->Initialize("start.png");
     start_->SetName("start");
     start_->SetAnchorPoint({ 0.5f, 0.5f });
@@ -45,11 +45,9 @@ void CountDown::Finalize()
     for (int i = 0; i < 3; i++)
     {
         numbers_[i]->Finalize();
-        delete numbers_[i];
     }
 
     start_->Finalize();
-    delete start_;
 }
 
 void CountDown::Update()

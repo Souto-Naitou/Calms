@@ -1,11 +1,11 @@
 #pragma once
 
 #include <Features/RandomGenerator/RandomGenerator.h>
-#include <Timer/Timer.h>
+#include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Vector3.h>
 #include <Features/GameEye/GameEye.h>
 #include <Features/Line/Line.h>
-#include <Utility/FilePathSearcher/FilePathSearcher.h>
+#include <Utility/PathResolver/PathResolver.h>
 #include <queue>
 #include <string>
 #include <Utility/JSONIO/JSONIO.h>
@@ -60,9 +60,9 @@ private:
 
     // Common methods
     using json = nlohmann::json;
-    Timer                   timerOverall_           = {};                   // !< 全体用タイマー
-    Timer                   timerPop_               = {};                   // !< 生成用タイマー
-    Timer                   timerPopDelay_          = {};                   // !< 遅延生成用タイマー
+    TimeMeasurer                   timerOverall_           = {};                   // !< 全体用タイマー
+    TimeMeasurer                   timerPop_               = {};                   // !< 生成用タイマー
+    TimeMeasurer                   timerPopDelay_          = {};                   // !< 遅延生成用タイマー
     float                   popInterval_            = 1.0f;                 // !< 生成間隔
     std::queue<Vector3>     popPoints_              = {};                   // !< 生成する位置のキュー
     uint32_t                popCount_               = 1;                    // !< 一度に生成する数
@@ -73,7 +73,7 @@ private:
     /// Json
     const std::string       kJsonFileName_          = "PopTimeTable.json";  // !< Jsonファイルパス
     json                    jsonPopTimeTable_       = {};                   // !< Jsonデータ
-    FilePathSearcher        filePathSearcher_       = {};                   // !< ファイルパス検索
+    PathResolver            pathResolver_           = {};                   // !< ファイルパス検索
     std::vector<PopData>    popData_                = {};                   // !< 生成データ
     size_t                  popDataIndex_           = 0;                    // !< 生成データのインデックス
 
@@ -89,8 +89,8 @@ private:
 
 
     /// デバッグ用
-    Line*                   linesArea_              = {};                   // !< エリアライン
-    Line*                   linesIgnoreCircle_      = {};                   // !< 禁止エリアライン
+    std::unique_ptr<Line>   linesArea_              = {};                   // !< エリアライン
+    std::unique_ptr<Line>   linesIgnoreCircle_      = {};                   // !< 禁止エリアライン
     std::string             name_                   = "EnemyPopSystem";     // !< 名前
     bool                    isDisplayArea_          = false;                // !< 生成範囲表示フラグ
 

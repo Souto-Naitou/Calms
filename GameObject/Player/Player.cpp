@@ -1,6 +1,7 @@
 #include "Player.h"
 
 #include <imgui.h>
+#include <Features/Model/ObjModel.h>
 
 void Player::Initialize(bool _enableDebugWindow)
 {
@@ -16,7 +17,7 @@ void Player::Initialize(bool _enableDebugWindow)
 
     
     /// タイマーの初期化
-    timerShot_ = std::make_unique<Timer>();
+    timerShot_ = std::make_unique<TimeMeasurer>();
     timerShot_->Start();
 
 
@@ -29,12 +30,15 @@ void Player::Initialize(bool _enableDebugWindow)
 
 
     /// オブジェクトの初期化
+    auto originalModel = pModelManager_->Load("Cube/Cube.obj");
+    pModelSelfBody_ = originalModel->Cloned();
     object_ = std::make_unique<Object3d>();
-    object_->Initialize("Cube.obj");
+    object_->Initialize();
     object_->SetName("player");
     object_->SetTranslate(Vector3(0, 0.5f, 0));
     object_->SetRotate(Vector3(0, 0, 0));
-    object_->SetColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+    object_->GetOption().materialData->color = Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+    object_->SetModel(pModelSelfBody_.get());
 
 
     /// OBBの初期化
@@ -56,19 +60,23 @@ void Player::Initialize(bool _enableDebugWindow)
     // コライダーの登録
     collisionManager_->RegisterCollider(collider_.get());
 
-    /// パーティクルエミッターの初期化
-    shotEmitter = std::make_unique<ParticleEmitter>();
-    shotEmitter->Initialize("Particle/ParticleSpark.obj", "resources/json/particles/shot.json");
-    shotEmitter->SetEnableBillboard(true);
+    pModelSpark_ = std::make_unique<ObjModel>();
+    pModelSpark_->Clone(pModelManager_->Load("Particle/ParticleSpark.obj"));
 
-    audioShot_ = audioManager_->GetNewAudio("hit_hat.wav");
+    /// パーティクルエミッターの初期化
+    shotEmitter_ = std::make_unique<ParticleEmitter>();
+    shotEmitter_->Initialize(pModelSpark_.get(), "resources/json/particles/shot.json");
+    shotEmitter_->SetEnableBillboard(true);
+
+    audioShot_ = audioManager_->GetNewAudio("Effect", "hit_hat.wav");
+    audioShot_->SetVolume(0.2f);
 }
 
 
 void Player::Finalize()
 {
     object_->Finalize();
-    shotEmitter->Finalize();
+    shotEmitter_->Finalize();
     
     BaseObject::Finalize();
 }
@@ -84,7 +92,7 @@ void Player::Update()
     accelerationRefl_ = Vector3(0, 0, 0);
 
     // 座標更新
-    BaseObject::UpdateTransform(deltaTimeManager_->GetDeltaTime(1));
+    BaseObject::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
 
     // 座標の反映
     object_->SetTranslate(translation_);
@@ -111,8 +119,8 @@ void Player::Update()
     collider_->SetShapeData(&obb_);
 
     /// パーティクルエミッターの更新
-    shotEmitter->SetPosition(translation_);
-    shotEmitter->Update();
+    shotEmitter_->SetPosition(translation_);
+    shotEmitter_->Update();
 }
 
 
@@ -126,7 +134,7 @@ void Player::DrawLine()
 {
     if (isDrawCollisionArea_) collider_->DrawArea();
     // パーティクルエミッターの描画
-    shotEmitter->Draw();
+    shotEmitter_->Draw();
 }
 
 
@@ -159,7 +167,7 @@ void Player::UpdateInputCommands()
             timerShot_->Reset();
             timerShot_->Start();
         }
-        shotEmitter->Emit();
+        shotEmitter_->Emit();
     }
 
     isSlow_ = false;

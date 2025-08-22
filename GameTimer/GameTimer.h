@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Timer/Timer.h>
+#include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Sprite/Sprite.h>
 #include <array>
 
@@ -27,8 +27,12 @@ public: /// Setter
     bool SetIsEnd(bool _isEnd) { isEnd_ = _isEnd; }
 
 private:
+    void CurrentTimeUpdate();
+    void SpriteUpdate();
+
+private:
     /// タイマー
-    Timer* pTimer_ = nullptr;
+    std::unique_ptr<TimeMeasurer> pTimer_ = nullptr;
     double nowTime_ = 0.0;
 
     bool isStart_ = false;
@@ -41,6 +45,10 @@ private:
     bool isEnd_ = false;
     bool isNextScene_ = false;
 
-    std::array<Sprite*, 10> tensPlaceNums_ = {};
-    std::array<Sprite*, 10> onesPlaceNums_ = {};
+    std::array<std::unique_ptr<Sprite>, 10> tensPlaceNums_ = {};
+    std::array<std::unique_ptr<Sprite>, 10> onesPlaceNums_ = {};
+
+    // 表示するスプライトのインデックス
+    uint32_t indexTensPlace_ = 0;
+    uint32_t indexOnesPlace_ = 0;
 };

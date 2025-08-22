@@ -21,7 +21,7 @@ void BaseObject::Finalize()
     }
 }
 
-void BaseObject::UpdateTransform(float _dt)
+void BaseObject::UpdatePhysics(float _dt)
 {
     // 加速度から速度を更新
     velocity_ += acceleration_ * _dt;

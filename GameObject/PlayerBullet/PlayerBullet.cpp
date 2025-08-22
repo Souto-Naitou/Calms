@@ -14,49 +14,30 @@ void PlayerBullet::Initialize(bool _enableDebugWindow)
     ss << "playerBullet##0x" << std::hex << this;
     name_ = ss.str();
 
-
     /// タイマーの初期化
-    timer_ = std::make_unique<Timer>();
+    timer_ = std::make_unique<TimeMeasurer>();
     timer_->Start();
 
-
-    /// オブジェクトの初期化
-    object_ = std::make_unique<Object3d>();
-    object_->Initialize("Cube.obj", false);
-    object_->SetScale(Vector3(0.3f, 0.3f, 0.3f));
-    object_->SetTranslate(Vector3(0, 0.5f, 0));
-    object_->SetRotate(Vector3(0, 0, 0));
-
+    // オブジェクトの初期化
+    this->ObjectsInitialize();
 
     /// パラメータの初期化
     friction_ = 1.0f;
     hp_ = 100.0f;
     attackPower_ = 5.0f;
 
-
-    /// OBBの初期化
+    // OBBの初期化
     obb_.Initialize();
 
-
-    /// コライダーの初期化
-    collider_ = std::make_unique<Collider>(false);
-    collider_->SetColliderID("playerBullet");
-    collider_->SetAttribute(collisionManager_->GetNewAttribute("playerBullet"));
-    collider_->SetOwner(this);
-    collider_->SetShape(Shape::OBB);
-    collider_->SetRadius(1);
-    collider_->SetMask(collisionManager_->GetNewMask("playerBullet", "player"));
-    collider_->SetOnCollisionTrigger(std::bind(&PlayerBullet::OnCollisionTrigger, this, std::placeholders::_1));
-    collider_->SetEnableLighter(true);
-
-    collisionManager_->RegisterCollider(collider_.get());
+    // コライダーの初期化
+    this->CollidersInitialize();
 }
 
 
 void PlayerBullet::Finalize()
 {
-    object_->Finalize();
-    object_.reset();
+    pObjectSelfBody_->Finalize();
+    pObjectSelfBody_.reset();
 
     collisionManager_->DeleteCollider(collider_.get());
 
@@ -76,29 +57,14 @@ void PlayerBullet::Update()
     velocity_ = moveVelocity_;
 
     // 位置の更新
-    BaseObject::UpdateTransform(deltaTimeManager_->GetDeltaTime(1));
-
-    // 位置の反映
-    object_->SetTranslate(translation_);
+    BaseObject::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
 
     // オブジェクトの更新
-    if (!directionalLight_)
-    {
-        directionalLight_ = diContainer_->Resolve<DirectionalLight>();
-        object_->SetDirectionalLight(directionalLight_);
-    }
+    this->ObjectsUpdate();
 
-    if (!pointLight_)
-    {
-        pointLight_ = diContainer_->Resolve<PointLight>();
-        object_->SetPointLight(pointLight_);
-    }
-
-    object_->Update();
-
-
+    // OBBの更新
     obb_.SetCenter(translation_);
-    obb_.SetOrientations(object_->GetRotateMatrix());
+    obb_.SetOrientations(pObjectSelfBody_->GetRotateMatrix());
     obb_.SetSize(Vector3(0.3f, 0.3f, 0.3f));
 
     collider_->SetShapeData(&obb_);
@@ -107,7 +73,7 @@ void PlayerBullet::Update()
 
 void PlayerBullet::Draw()
 {
-    object_->Draw();
+    pObjectSelfBody_->Draw();
 }
 
 void PlayerBullet::DrawLine()
@@ -129,4 +95,52 @@ void PlayerBullet::DebugWindow()
     BaseObject::DebugWindow();
     ImGui::Checkbox("Draw2D Collision Area", &isDrawCollisionArea_);
 #endif
+}
+
+void PlayerBullet::ObjectsInitialize()
+{
+    /// オブジェクトの初期化
+    pObjectSelfBody_ = std::make_unique<Object3d>();
+    pObjectSelfBody_->Initialize(false);
+    pObjectSelfBody_->SetScale(Vector3(0.3f, 0.3f, 0.3f));
+    pObjectSelfBody_->SetTranslate(Vector3(0, 0.5f, 0));
+    pObjectSelfBody_->SetRotate(Vector3(0, 0, 0));
+    pObjectSelfBody_->SetModel(pModelSelfBody_);
+}
+
+void PlayerBullet::ObjectsUpdate()
+{
+    // 位置の反映
+    pObjectSelfBody_->SetTranslate(translation_);
+
+    // オブジェクトの更新
+    if (!directionalLight_)
+    {
+        directionalLight_ = diContainer_->Resolve<DirectionalLight>();
+        pObjectSelfBody_->SetDirectionalLight(directionalLight_);
+    }
+
+    if (!pointLight_)
+    {
+        pointLight_ = diContainer_->Resolve<PointLight>();
+        pObjectSelfBody_->SetPointLight(pointLight_);
+    }
+
+    pObjectSelfBody_->Update();
+}
+
+void PlayerBullet::CollidersInitialize()
+{
+    /// コライダーの初期化
+    collider_ = std::make_unique<Collider>(false);
+    collider_->SetColliderID("playerBullet");
+    collider_->SetAttribute(collisionManager_->GetNewAttribute("playerBullet"));
+    collider_->SetOwner(this);
+    collider_->SetShape(Shape::OBB);
+    collider_->SetRadius(1);
+    collider_->SetMask(collisionManager_->GetNewMask("playerBullet", "player"));
+    collider_->SetOnCollisionTrigger(std::bind(&PlayerBullet::OnCollisionTrigger, this, std::placeholders::_1));
+    collider_->SetEnableLighter(true);
+
+    collisionManager_->RegisterCollider(collider_.get());
 }

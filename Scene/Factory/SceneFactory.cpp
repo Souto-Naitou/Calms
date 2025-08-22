@@ -3,23 +3,38 @@
 #include <Scene/Title/TitleScene.h>
 #include <Scene/Game/GameScene.h>
 #include <Scene/Clear/ClearScene.h>
-#include <Scene/Lobby/Lobby.h>
-#include <Scene/MultiGame/MultiGame.h>
+#include <Utility/ConvertString/ConvertString.h>
 
 #include <cassert>
+#include <format>
 
-#define JUDGE_SCENE(class) if (_sceneName == #class) { return std::make_unique<class>(); }
+#define JUDGE_SCENE(class, arg) if (_sceneName == #class) { return std::make_unique<class>(arg); }
 
-std::unique_ptr<IScene> SceneFactory::CreateScene(const std::string& _sceneName)
+SceneFactory::SceneFactory()
 {
-    JUDGE_SCENE(TitleScene)
-    else JUDGE_SCENE(GameScene)
-    else JUDGE_SCENE(ClearScene)
-    else JUDGE_SCENE(LobbyScene)
-    else JUDGE_SCENE(MultiGame)
+    // シーンの登録
+    sceneCreators_["TitleScene"] = [](ISceneArgs* args) { return std::make_unique<TitleScene>(args); };
+    sceneCreators_["GameScene"] = [](ISceneArgs* args) { return std::make_unique<GameScene>(args); };
+    sceneCreators_["ClearScene"] = [](ISceneArgs* args) { return std::make_unique<ClearScene>(args); };
+}
 
-    assert(false && "シーンの生成に失敗しました");
+std::unique_ptr<SceneBase> SceneFactory::CreateScene(const std::string& _sceneName, ISceneArgs* _pArgs)
+{
+    // シーン名に応じてシーンを生成
+    try
+    {
+        return sceneCreators_.at(_sceneName)(_pArgs);
+    }
+    catch (const std::exception& e)
+    {
+        MessageBoxW(
+            nullptr,
+            std::format(L"シーン名 {} は登録されていません。", ConvertString(_sceneName)).c_str(),
+            L"Scene Creation Error",
+            MB_OK | MB_ICONERROR
+        );
+        assert(false && e.what());
+    }
 
     return nullptr;
-
 }

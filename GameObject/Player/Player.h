@@ -4,17 +4,22 @@
 #include <Features/Object3d/Object3d.h>
 #include <memory>
 #include <Features/Input/Input.h>
-#include <Timer/Timer.h>
+#include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Collision/Manager/CollisionManager.h>
 #include <Features/Collision/Collider/Collider.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <Features/Particle/Emitter/ParticleEmitter.h>
 #include <Features/Audio/AudioManager.h>
 #include <Features/Audio/Audio.h>
+#include <Features/Model/ModelManager.h>
+#include <Features/Model/IModel.h>
 
 class Player : public BaseObject
 {
 public:
+    Player(ModelManager* _pModelManager)
+        : pModelManager_(_pModelManager) {};
+
     void Initialize(bool _enableDebugWindow = true) override;
     void Finalize() override;
     void Update() override;
@@ -33,8 +38,9 @@ public: /// Setter
 
 
 private:
-    std::unique_ptr<Object3d> object_ = {};
-    std::unique_ptr<Timer> timerShot_ = {};
+    std::unique_ptr<IModel>         pModelSelfBody_ = nullptr;
+    std::unique_ptr<Object3d>       object_ = {};
+    std::unique_ptr<TimeMeasurer>   timerShot_ = {};
     float movePower_ = 0.0f;
 
     /// 射撃
@@ -57,7 +63,8 @@ private:
     bool enableInput_ = true;
 
     /// パーティクルエミッター
-    std::unique_ptr<ParticleEmitter> shotEmitter = nullptr;
+    std::unique_ptr<ParticleEmitter> shotEmitter_ = nullptr;
+    std::shared_ptr<IModel> pModelSpark_ = nullptr;
 
     /// オーディオ
     Audio* audioShot_ = nullptr;
@@ -74,4 +81,5 @@ private: /// 他クラスの所有物
     CollisionManager* collisionManager_ = nullptr;
     DeltaTimeManager* deltaTimeManager_ = nullptr;
     AudioManager* audioManager_ = nullptr;
+    ModelManager* pModelManager_ = nullptr;
 };
