@@ -106,6 +106,7 @@ void PlayerBullet::ObjectsInitialize()
     pObjectSelfBody_->SetTranslate(Vector3(0, 0.5f, 0));
     pObjectSelfBody_->SetRotate(Vector3(0, 0, 0));
     pObjectSelfBody_->SetModel(pModelSelfBody_);
+    pObjectSelfBody_->GetOption().materialData->environmentCoefficient = 0.0f;
 }
 
 void PlayerBullet::ObjectsUpdate()

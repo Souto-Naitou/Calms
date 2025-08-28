@@ -84,7 +84,7 @@ private:
 
 
 private: /// 他クラスの所有物
-    CollisionManager*   collisionManager_ = nullptr;
-    DeltaTimeManager*   deltaTimeManager_ = nullptr;
-    AudioManager*       audioManager_     = nullptr;
+    CollisionManager*   collisionManager_   = nullptr;
+    DeltaTimeManager*   deltaTimeManager_   = nullptr;
+    AudioManager*       audioManager_       = nullptr;
 };

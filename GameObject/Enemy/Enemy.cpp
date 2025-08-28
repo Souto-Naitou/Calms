@@ -59,11 +59,11 @@ void Enemy::Finalize()
     objectSelfBody_->Finalize();
     objectSelfBody_.reset();
 
-    pParticleDeath_->SetPosition(translation_);
-    pParticleDeath_->Emit();
+    //pParticleDeath_->SetPosition(translation_);
+    //pParticleDeath_->Emit();
 
-    pParticleHit_->Finalize();
-    pParticleDeath_->Finalize();
+    //pParticleHit_->Finalize();
+    //pParticleDeath_->Finalize();
 
     BaseObject::Finalize();
 }
@@ -86,8 +86,8 @@ void Enemy::Update()
     this->UpdateCollider();
 
     // パーティクルの更新
-    pParticleHit_->Update();
-    pParticleDeath_->Update();
+    //pParticleHit_->Update();
+    //pParticleDeath_->Update();
 }
 
 void Enemy::Draw()
@@ -98,8 +98,8 @@ void Enemy::Draw()
 void Enemy::DrawLine()
 {
     if (isDrawCollisionArea_) collider_->DrawArea();
-    pParticleHit_->Draw();
-    pParticleDeath_->Draw();
+    //pParticleHit_->Draw();
+    //pParticleDeath_->Draw();
 }
 
 void Enemy::InitializeObjects()
@@ -116,7 +116,9 @@ void Enemy::InitializeObjects()
     objectSelfBody_->SetTranslate(Vector3(0, 0.5f, 0));
     objectSelfBody_->SetRotate(Vector3(0, 0, 0));
     objectSelfBody_->SetModel(pModelSelfBody_.get());
-    objectSelfBody_->GetOption().materialData->color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+    auto& option = objectSelfBody_->GetOption();
+    option.materialData->environmentCoefficient = 0.0f;
+    option.materialData->color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
 void Enemy::InitializeCollider()
@@ -138,15 +140,15 @@ void Enemy::InitializeCollider()
 void Enemy::InitializeParticleEmitters()
 {
     /// パーティクルエミッタの初期化
-    pParticleHit_ = std::make_unique<ParticleEmitter>();
-    pParticleHit_->Initialize(pModelParticleHit_ , "resources/json/particles/Box.json");
-    pParticleHit_->SetEnableBillboard(true);
-    pParticleHit_->SetPosition(translation_);
+    //pParticleHit_ = std::make_unique<ParticleEmitter>();
+    //pParticleHit_->Initialize(pModelParticleHit_ , "resources/json/particles/Box.json");
+    //pParticleHit_->SetEnableBillboard(true);
+    //pParticleHit_->SetPosition(translation_);
 
-    pParticleDeath_ = std::make_unique<ParticleEmitter>();
-    pParticleDeath_->Initialize(pModelParticleDeath_, "resources/json/particles/Death.json");
-    pParticleDeath_->SetEnableBillboard(true);
-    pParticleDeath_->SetPosition(translation_);
+    //pParticleDeath_ = std::make_unique<ParticleEmitter>();
+    //pParticleDeath_->Initialize(pModelParticleDeath_, "resources/json/particles/Death.json");
+    //pParticleDeath_->SetEnableBillboard(true);
+    //pParticleDeath_->SetPosition(translation_);
 }
 
 void Enemy::UpdateTransform()
@@ -239,8 +241,8 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
             assert(0);
         }
 
-        pParticleHit_->SetPosition(hitPos);
-        pParticleHit_->Emit();
+        //pParticleHit_->SetPosition(hitPos);
+        //pParticleHit_->Emit();
 
         Vector3 dir = translation_ - hitPos;
 

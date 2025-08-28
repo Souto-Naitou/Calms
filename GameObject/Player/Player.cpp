@@ -28,34 +28,14 @@ void Player::Initialize(bool _enableDebugWindow)
     translation_ = Vector3(0, 0.5f, 0);
     hp_ = 100.0f;
 
-
-    /// オブジェクトの初期化
-    auto originalModel = pModelManager_->Load("Cube/Cube.obj");
-    pModelSelfBody_ = originalModel->Cloned();
-    object_ = std::make_unique<Object3d>();
-    object_->Initialize();
-    object_->SetName("player");
-    object_->SetTranslate(Vector3(0, 0.5f, 0));
-    object_->SetRotate(Vector3(0, 0, 0));
-    object_->GetOption().materialData->color = Vector4(0.0f, 1.0f, 0.0f, 1.0f);
-    object_->SetModel(pModelSelfBody_.get());
-
+    // オブジェクトの初期化
+    this->ObjectsInitialize();
 
     /// OBBの初期化
     obb_.Initialize();
 
-
-    /// コライダーの初期化
-    collider_ = std::make_unique<Collider>();
-    collider_->SetColliderID("player");
-    collider_->SetAttribute(collisionManager_->GetNewAttribute("player"));
-    collider_->SetOwner(this);
-    collider_->SetShape(Shape::OBB);
-    collider_->SetRadius(2u);
-    collider_->SetMask(collisionManager_->GetNewMask("player"));
-    collider_->SetOnCollision(std::bind(&Player::OnCollision, this, std::placeholders::_1));
-    collider_->SetOnCollisionTrigger(std::bind(&Player::OnCollisionTrigger, this, std::placeholders::_1));
-    collider_->SetEnableLighter(true);
+    // コライダーの初期化
+    this->ColliderInitialize();
 
     // コライダーの登録
     collisionManager_->RegisterCollider(collider_.get());
@@ -137,6 +117,36 @@ void Player::DrawLine()
     shotEmitter_->Draw();
 }
 
+void Player::ObjectsInitialize()
+{
+    /// オブジェクトの初期化
+    auto originalModel = pModelManager_->Load("Cube/Cube.obj");
+    pModelSelfBody_ = originalModel->Cloned();
+    object_ = std::make_unique<Object3d>();
+    object_->Initialize();
+    object_->SetName("player");
+    object_->SetTranslate(Vector3(0, 0.5f, 0));
+    object_->SetRotate(Vector3(0, 0, 0));
+    object_->SetModel(pModelSelfBody_.get());
+    auto& option = object_->GetOption();
+    option.materialData->environmentCoefficient = 0.0f;
+    option.materialData->color = Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+}
+
+void Player::ColliderInitialize()
+{
+    /// コライダーの初期化
+    collider_ = std::make_unique<Collider>();
+    collider_->SetColliderID("player");
+    collider_->SetAttribute(collisionManager_->GetNewAttribute("player"));
+    collider_->SetOwner(this);
+    collider_->SetShape(Shape::OBB);
+    collider_->SetRadius(2u);
+    collider_->SetMask(collisionManager_->GetNewMask("player"));
+    collider_->SetOnCollision(std::bind(&Player::OnCollision, this, std::placeholders::_1));
+    collider_->SetOnCollisionTrigger(std::bind(&Player::OnCollisionTrigger, this, std::placeholders::_1));
+    collider_->SetEnableLighter(true);
+}
 
 void Player::UpdateInputCommands()
 {

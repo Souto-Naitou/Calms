@@ -23,6 +23,7 @@
 #include <memory>
 #include <Features/Model/ModelManager.h>
 #include <Core/DirectX12/TextureManager.h>
+#include <vector>
 
 class GameScene : public SceneBase
 {
@@ -63,7 +64,7 @@ private:
     std::unique_ptr<Object3d>                   grid_               = {};       // !< グリッド
     std::unique_ptr<GameEye>                    gameEye_            = {};       // !< ゲームアイ
     std::unique_ptr<Player>                     player_             = {};       // !< プレイヤー
-    std::list<std::unique_ptr<Enemy>>           enemy_              = {};       // !< 敵s
+    std::vector<std::unique_ptr<Enemy>>         enemies_            = {};       // !< 敵s
     std::list<std::unique_ptr<PlayerBullet>>    playerBullets_      = {};       // !< プレイヤー弾s
     std::unique_ptr<ScreenToWorld>              screenToWorld_      = {};       // !< 座標変換
     std::unique_ptr<GameTimer>                  gameTimer_          = {};       // !< ゲームタイマー
@@ -103,7 +104,7 @@ private:
     void RemovePlayerBullet();
 
     void RemoveEnemy();
-    void UpdateEnemyPopSystem();
+    void EnemyPopSystemUpdate();
 
     void PlayerSlowUpdate();
 

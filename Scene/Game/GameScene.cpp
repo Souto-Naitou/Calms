@@ -40,6 +40,9 @@ void GameScene::Initialize()
 
     /// グリッドの初期化
     grid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
+    grid_->GetOption().lightingData->enableLighting = false;
+    grid_->SetPointLight(&pointLight_);
+    grid_->SetDirectionalLight(&directionalLight_);
 
     /// ゲームアイの初期化
     gameEye_ = std::make_unique<GameEye>();
@@ -147,11 +150,14 @@ void GameScene::Initialize()
     fpsText_->SetMaxSize(Vector2(200.0f, 100.0f));
     fpsText_->SetText("FPS: 0.0");
     fpsText_->SetName("FPS");
+
+    // 敵の予約
+    enemies_.reserve(kMaxEnemyCount_);
 }
 
 void GameScene::Finalize()
 {
-    for (auto& enemy : enemy_)
+    for (auto& enemy : enemies_)
     {
         enemy->Finalize();
     }
@@ -182,7 +188,6 @@ void GameScene::Finalize()
     #endif // _DEBUG
 }
 
-
 void GameScene::Update()
 {
     gameEye_->Update();
@@ -203,10 +208,10 @@ void GameScene::Update()
     PlayerSlowUpdate();
 
     /// 敵生成システムの更新
-    UpdateEnemyPopSystem();
+    EnemyPopSystemUpdate();
 
 
-    for (auto& enemy : enemy_)
+    for (auto& enemy : enemies_)
     {
         enemy->Update();
     }
@@ -285,7 +290,7 @@ void GameScene::Draw()
 
     player_->Draw();
 
-    for (auto& enemy : enemy_)
+    for (auto& enemy : enemies_)
     {
         enemy->Draw();
     }
@@ -303,7 +308,7 @@ void GameScene::Draw()
     pLineSystem_->PresentDraw();
 
     player_->DrawLine();
-    for (auto& enemy : enemy_)
+    for (auto& enemy : enemies_)
     {
         enemy->DrawLine();
     }
@@ -363,25 +368,29 @@ void GameScene::RemovePlayerBullet()
 
 void GameScene::RemoveEnemy()
 {
-    enemy_.remove_if([&](const std::unique_ptr<Enemy>& _enemy)
-    {
-        if (!_enemy->IsAlive())
-        {
-            _enemy->Finalize();
-            scoreSystem_->CountEnemyDeath();
-            return true;
-        }
-        return false;
-    });
+    enemies_.erase(
+        std::remove_if(enemies_.begin(), enemies_.end(),
+            [&](auto& e) {
+                bool isDead = !e->IsAlive();
+                if (isDead)
+                {
+                    e->Finalize();
+                    scoreSystem_->CountEnemyDeath();
+                }
+                return isDead;
+            }
+        ),
+        enemies_.end()
+    );
 }
 
-void GameScene::UpdateEnemyPopSystem()
+void GameScene::EnemyPopSystemUpdate()
 {
     enemyPopSystem_.SetIgnorePosition(player_->GetTranslation());
     enemyPopSystem_.Update();
     while (enemyPopSystem_.IsExistPopRequest())
     {
-        if (enemy_.size() >= kMaxEnemyCount_)
+        if (enemies_.size() >= kMaxEnemyCount_)
         {
             break; // 最大数に達している場合は生成しない
         }
@@ -400,7 +409,7 @@ void GameScene::UpdateEnemyPopSystem()
         enemy->SetLocationProvider(player_.get());
         enemy->SetDIContainer(&gObjDIContainer_);
         enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
-        enemy_.emplace_back(std::move(enemy));
+        enemies_.emplace_back(std::move(enemy));
     }
 }
 
@@ -433,7 +442,7 @@ void GameScene::DebugWindow()
     ImGui::SeparatorText("Collider Debug");
     if (ImGui::Checkbox("Enemy", &isDisplayColliderEnemy_))
     {
-        for (auto& enemy : enemy_)
+        for (auto& enemy : enemies_)
         {
             enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
         }

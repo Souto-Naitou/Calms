@@ -38,6 +38,15 @@ public: /// Setter
 
 
 private:
+    void DebugWindow();
+    void OnCollisionTrigger(const Collider* _other);
+    void OnCollision(const Collider* _other);
+
+    void ObjectsInitialize();
+    void ColliderInitialize();
+
+    void UpdateInputCommands();
+
     std::unique_ptr<IModel>         pModelSelfBody_ = nullptr;
     std::unique_ptr<Object3d>       object_ = {};
     std::unique_ptr<TimeMeasurer>   timerShot_ = {};
@@ -68,12 +77,6 @@ private:
 
     /// オーディオ
     Audio* audioShot_ = nullptr;
-
-private:
-    void UpdateInputCommands();
-    void DebugWindow();
-    void OnCollisionTrigger(const Collider* _other);
-    void OnCollision(const Collider* _other);
 
 
 private: /// 他クラスの所有物
