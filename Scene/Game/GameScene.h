@@ -1,18 +1,18 @@
 #pragma once
 
-#include <Interfaces/IScene.h>
+#include <Scene/SceneBase.h>
 #include <DIContainer/DIContainer.h>
 #include <Features/Object3d/Object3d.h>
 #include <Features/GameEye/GameEye.h>
-#include <GameObject/Player/Player.h>
-#include <GameObject/PlayerBullet/PlayerBullet.h>
-#include <GameObject/Enemy/Enemy.h>
+#include <Entity/Player/Player.h>
+#include <Entity/PlayerBullet/PlayerBullet.h>
+#include <Entity/Enemy/Enemy.h>
 #include <Common/structs.h>
 #include <PopSystem/Enemy/EnemyPopSystem.h>
 #include <DebugTools/DebugManager/DebugManager.h>
 #include <UI/CountDown/CountDown.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
-#include <GameObject/ScreenToWorld/ScreenToWorld.h>
+#include <Entity/ScreenToWorld/ScreenToWorld.h>
 #include <Features/RandomGenerator/RandomGenerator.h>
 #include <GameTimer/GameTimer.h>
 #include <InputGuide/InputGuide.h>
@@ -21,10 +21,15 @@
 #include <Features/Text/Text.h>
 #include <list>
 #include <memory>
+#include <Features/Model/ModelManager.h>
+#include <Core/DirectX12/TextureManager.h>
+#include <vector>
 
-class GameScene : public IScene
+class GameScene : public SceneBase
 {
 public:
+    GameScene(ISceneArgs* _args) : SceneBase(_args) {};
+
     /// <summary>
     /// 初期化
     /// </summary>
@@ -40,35 +45,11 @@ public:
     /// </summary>
     void Update() override;
 
-    /// <summary>
-    /// 背景描画
-    /// </summary>
-    void Draw2dBackGround() override;
 
     /// <summary>
-    /// 3D描画
+    /// 描画(テキスト描画を除く)
     /// </summary>
-    void Draw3d() override;
-
-    /// <summary>
-    /// 中景描画
-    /// </summary>
-    void Draw2dMidground() override;
-
-    /// <summary>
-    /// 3D中景描画
-    /// </summary>
-    void Draw3dMidground() override;
-
-    /// <summary>
-    /// ライン描画
-    /// </summary>
-    void DrawLine() override;
-
-    /// <summary>
-    /// 前景描画
-    /// </summary>
-    void Draw2dForeground() override;
+    void Draw() override;
 
 
     /// <summary>
@@ -78,10 +59,12 @@ public:
 
 
 private:
+    
+
     std::unique_ptr<Object3d>                   grid_               = {};       // !< グリッド
     std::unique_ptr<GameEye>                    gameEye_            = {};       // !< ゲームアイ
     std::unique_ptr<Player>                     player_             = {};       // !< プレイヤー
-    std::list<std::unique_ptr<Enemy>>           enemy_              = {};       // !< 敵s
+    std::vector<std::unique_ptr<Enemy>>         enemies_            = {};       // !< 敵s
     std::list<std::unique_ptr<PlayerBullet>>    playerBullets_      = {};       // !< プレイヤー弾s
     std::unique_ptr<ScreenToWorld>              screenToWorld_      = {};       // !< 座標変換
     std::unique_ptr<GameTimer>                  gameTimer_          = {};       // !< ゲームタイマー
@@ -94,11 +77,11 @@ private:
     DirectionalLight                            directionalLight_   = {};       // !< ディレクショナルライト
     PointLight                                  pointLight_         = {};       // !< ポイントライト
     std::unique_ptr<CountDown>                  countDown_          = {};       // !< カウントダウン
-    Timer                                       timer_              = {};       // !< タイマー
+    TimeMeasurer                                timer_              = {};       // !< タイマー
     double                                      countDownOffset_    = 2.0;      // !< カウントダウンのオフセット
 
     bool                                        isChangingScene_    = false;    // !< シーン遷移中かどうか
-    Line*                                       line_               = nullptr;  // !< エリア用ライン
+    std::unique_ptr<Line>                       lines_              = nullptr;  // !< エリア用ライン
     float                                       areaWidth_          = 25.0f;    // !< エリアの幅
 
     const uint32_t                              kMaxEnemyCount_     = 30;       // !< 最大敵数
@@ -121,7 +104,7 @@ private:
     void RemovePlayerBullet();
 
     void RemoveEnemy();
-    void UpdateEnemyPopSystem();
+    void EnemyPopSystemUpdate();
 
     void PlayerSlowUpdate();
 
@@ -131,4 +114,7 @@ private:
 private:
     DeltaTimeManager* deltaTimeManager_ = nullptr;
     RandomGenerator* randomGenerator_ = nullptr;
+    ModelManager* pModelManager_ = nullptr;
+    LineSystem* pLineSystem_ = nullptr;
+    TextureManager* pTextureManager_ = nullptr;
 };

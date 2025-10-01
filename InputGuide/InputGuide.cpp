@@ -2,15 +2,15 @@
 
 void InputGuide::Initialize()
 {
-    leftclick_ = new Sprite();
-    leftclick_->SetName("leftclick");
+    leftclick_ = std::make_unique<Sprite>();
     leftclick_->Initialize("leftclick.png");
+    leftclick_->SetName("leftclick");
     leftclick_->SetAnchorPoint({ 0.0f, 0.5f });
     leftclick_->SetPosition({ 42.0f, 835.0f });
 
-    shift_ = new Sprite();
-    shift_->SetName("shift");
+    shift_ = std::make_unique<Sprite>();
     shift_->Initialize("shift.png");
+    shift_->SetName("shift");
     shift_->SetAnchorPoint({ 0.0f, 0.5f });
     shift_->SetPosition({ 42.0f, 764.0f });
 }
@@ -30,8 +30,6 @@ void InputGuide::Draw()
 void InputGuide::Finalize()
 {
     leftclick_->Finalize();
-    delete leftclick_;
 
     shift_->Finalize();
-    delete shift_;
 }

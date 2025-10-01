@@ -1,19 +1,18 @@
 #pragma once
 
-#include <Interfaces/IScene.h>
+#include <Scene/SceneBase.h>
 #include <Features/Sprite/Sprite.h>
+#include <memory>
 
-class ClearScene : public IScene
+class ClearScene : public SceneBase
 {
+public:
+    ClearScene(ISceneArgs* _pArgs) : SceneBase(_pArgs) {};
+
     void Initialize() override;
     void Finalize() override;
     void Update() override;
-    void Draw2dBackGround() override;
-    void Draw3d() override;
-    void Draw2dMidground() override;
-    void Draw3dMidground() override;
-    void DrawLine() override;
-    void Draw2dForeground() override;
+    void Draw() override;
 
     /// <summary>
     /// テキスト描画
@@ -21,6 +20,6 @@ class ClearScene : public IScene
     void DrawTexts() override;
 
 private:
-    Sprite* pClear_ = nullptr;
-    Sprite* pSpace_ = nullptr;
+    std::unique_ptr<Sprite> pClear_ = nullptr;
+    std::unique_ptr<Sprite> pSpace_ = nullptr;
 };

@@ -16,6 +16,7 @@
     <ProjectGuid>{a0ecbc58-fe34-477c-b275-299ed2583c53}</ProjectGuid>
     <RootNamespace>WinterGame</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Calms</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -102,12 +103,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Entity\EntityBase.cpp" />
+    <ClCompile Include="Entity\Enemy\Enemy.cpp" />
+    <ClCompile Include="Entity\PlayerBullet\PlayerBullet.cpp" />
+    <ClCompile Include="Entity\Player\Player.cpp" />
+    <ClCompile Include="Entity\ScreenToWorld\ScreenToWorld.cpp" />
+    <ClCompile Include="Entity\Status\EntityStats.cpp" />
     <ClCompile Include="EventListener\EventListener.cpp" />
-    <ClCompile Include="GameObject\BaseObject.cpp" />
-    <ClCompile Include="GameObject\Enemy\Enemy.cpp" />
-    <ClCompile Include="GameObject\PlayerBullet\PlayerBullet.cpp" />
-    <ClCompile Include="GameObject\Player\Player.cpp" />
-    <ClCompile Include="GameObject\ScreenToWorld\ScreenToWorld.cpp" />
     <ClCompile Include="GameTimer\GameTimer.cpp" />
     <ClCompile Include="InputGuide\InputGuide.cpp" />
     <ClCompile Include="main.cpp">
@@ -120,8 +122,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="Scene\Clear\ClearScene.cpp" />
     <ClCompile Include="Scene\Factory\SceneFactory.cpp" />
     <ClCompile Include="Scene\Game\GameScene.cpp" />
-    <ClCompile Include="Scene\Lobby\Lobby.cpp" />
-    <ClCompile Include="Scene\MultiGame\MultiGame.cpp" />
     <ClCompile Include="Scene\Title\TitleScene.cpp" />
     <ClCompile Include="ScoreSystem\ScoreSystem.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -138,12 +138,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DIContainer\DIContainer.h" />
+    <ClInclude Include="Entity\EntityBase.h" />
+    <ClInclude Include="Entity\Enemy\Enemy.h" />
+    <ClInclude Include="Entity\PlayerBullet\PlayerBullet.h" />
+    <ClInclude Include="Entity\Player\Player.h" />
+    <ClInclude Include="Entity\ScreenToWorld\ScreenToWorld.h" />
+    <ClInclude Include="Entity\Status\EntityStats.h" />
     <ClInclude Include="EventListener\EventListener.h" />
-    <ClInclude Include="GameObject\BaseObject.h" />
-    <ClInclude Include="GameObject\Enemy\Enemy.h" />
-    <ClInclude Include="GameObject\PlayerBullet\PlayerBullet.h" />
-    <ClInclude Include="GameObject\Player\Player.h" />
-    <ClInclude Include="GameObject\ScreenToWorld\ScreenToWorld.h" />
     <ClInclude Include="GameTimer\GameTimer.h" />
     <ClInclude Include="InputGuide\InputGuide.h" />
     <ClInclude Include="MultiDataManager\MultiDataManager.h" />
@@ -152,8 +153,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="Scene\Clear\ClearScene.h" />
     <ClInclude Include="Scene\Factory\SceneFactory.h" />
     <ClInclude Include="Scene\Game\GameScene.h" />
-    <ClInclude Include="Scene\Lobby\Lobby.h" />
-    <ClInclude Include="Scene\MultiGame\MultiGame.h" />
     <ClInclude Include="Scene\Title\TitleScene.h" />
     <ClInclude Include="ScoreSystem\ScoreSystem.h" />
     <ClInclude Include="stdafx.h" />

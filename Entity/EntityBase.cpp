@@ -1,50 +1,44 @@
-#include "BaseObject.h"
+#include "EntityBase.h"
 
 #include <DebugTools/DebugManager/DebugManager.h>
 #include <MathExtension/mathExtension.h>
 #include <imgui.h>
 
-void BaseObject::Initialize(bool _enableDebugWindow)
+void EntityBase::Initialize(bool enableDebugWindow)
 {
-    isEnableDebugWindow_ = _enableDebugWindow;
+    isEnableDebugWindow_ = enableDebugWindow;
     if (isEnableDebugWindow_)
     {
-        DebugManager::GetInstance()->SetComponent("GameObject", name_, std::bind(&BaseObject::DebugWindow, this));
+        pDebugEntry_ = std::make_unique<DebugEntry<EntityBase>>("GameObject", this);
     }
 }
 
-void BaseObject::Finalize()
-{
-    if (isEnableDebugWindow_)
-    {
-        DebugManager::GetInstance()->DeleteComponent("GameObject", name_);
-    }
-}
-
-void BaseObject::UpdateTransform(float _dt)
+void EntityBase::UpdatePhysics(float dt)
 {
     // 加速度から速度を更新
-    velocity_ += acceleration_ * _dt;
+    velocity_ += acceleration_ * dt;
 
     /// 摩擦をかける
     Math::clamp(friction_, 0.0f, 1.0f);
     velocity_ *= friction_;
 
     // 速度から位置を更新
-    translation_ += velocity_ * _dt;
+    translation_ += velocity_ * dt;
 
     // 加速度をリセット
     acceleration_ = {};
 }
 
-void BaseObject::DebugWindow()
+void EntityBase::ImGui()
 {
-#ifdef DEBUG
+#ifdef _DEBUG
+
     ImGui::DragFloat3("Scale", &scale_.x, 0.12f);
     ImGui::DragFloat3("Rotation", &rotation_.x, 0.12f);
     ImGui::DragFloat3("Translation", &translation_.x, 0.12f);
     ImGui::DragFloat3("Velocity", &velocity_.x, 0.12f);
     ImGui::DragFloat3("Acceleration", &acceleration_.x, 0.12f);
     ImGui::SliderFloat("Friction", &friction_, 0.0f, 1.0f);
+
 #endif // DEBUG
 }

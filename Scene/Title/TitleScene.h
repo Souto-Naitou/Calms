@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Interfaces/IScene.h>
+#include <Scene/SceneBase.h>
 #include <Features/GameEye/GameEye.h>
 #include <Features/Input/Input.h>
 #include <Features/SceneTransition/SceneTransitionManager.h>
@@ -9,10 +9,14 @@
 #include <Features/Text/Text.h>
 #include <ScoreSystem/ScoreSystem.h>
 #include <memory>
+#include <Features/Cubemap/Skybox.h>
+#include <Features/Cubemap/CubemapSystem.h>
 
-class TitleScene : public IScene
+class TitleScene : public SceneBase
 {
 public:
+    TitleScene(ISceneArgs* _pArg) : SceneBase(_pArg) {};
+
     /// <summary>
     /// 初期化
     /// </summary>
@@ -29,34 +33,9 @@ public:
     void Update() override;
 
     /// <summary>
-    /// 背景描画
+    /// 描画(テキスト描画を除く)
     /// </summary>
-    void Draw2dBackGround() override;
-
-    /// <summary>
-    /// 3D描画
-    /// </summary>
-    void Draw3d() override;
-
-    /// <summary>
-    /// 中景描画
-    /// </summary>
-    void Draw2dMidground() override;
-
-    /// <summary>
-    /// 3D中景描画
-    /// </summary>
-    void Draw3dMidground() override;
-
-    /// <summary>
-    /// ライン描画
-    /// </summary>
-    void DrawLine() override;
-
-    /// <summary>
-    /// 前景描画
-    /// </summary>
-    void Draw2dForeground() override;
+    void Draw() override;
 
     /// <summary>
     /// テキスト描画
@@ -65,12 +44,18 @@ public:
 
 
 private:
-    std::unique_ptr<GameEye>                    gameEye_            = {};           // !< ゲームアイ
-    std::unique_ptr<Text>                       pTextTitle_         = nullptr;
-    std::unique_ptr<Text>                       pTextStart_         = nullptr;
-    
+    void InitializeSprites();
+    void InitializeTexts();
+
+    std::unique_ptr<GameEye>    gameEye_                = {};           // !< ゲームアイ
+    std::unique_ptr<Text>       pTextTitle_             = nullptr;      // !< タイトルテキスト
+    std::unique_ptr<Text>       pTextStart_             = nullptr;      // !< ボタンテキスト
+    std::unique_ptr<Sprite>     pSpriteBackground_      = nullptr;      // !< 背景スプライト
+    std::unique_ptr<Sprite>     pSpriteFilterImediate_  = nullptr;      // !< フィルタースプライト(即座にフェードインアウト)
+    std::unique_ptr<Skybox>     pSkybox_                = nullptr;      // !< スカイボックス
 
 private:
-    Input*                                      pInput_             = nullptr;      // !< 入力
-    SceneTransitionManager*                     pSceneTransition_   = nullptr;      // !< シーン遷移
+    Input*                      pInput_             = nullptr;      // !< 入力
+    SceneTransitionManager*     pSceneTransition_   = nullptr;      // !< シーン遷移
+    CubemapSystem*              pCubemapSystem_     = nullptr;      // !< キューブマップシステム
 };

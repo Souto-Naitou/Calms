@@ -12,7 +12,7 @@ struct DissolveOption
     float4 colorEdge;
 };
 
-ConstantBuffer<DissolveOption> gOptions : register(b0); // カーネルのサイズを指定する定数バッファ
+ConstantBuffer<DissolveOption> gOptions : register(b0);
 
 struct PixelShaderOutput
 {

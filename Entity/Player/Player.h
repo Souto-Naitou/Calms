@@ -1,25 +1,31 @@
 #pragma once
 
-#include <GameObject/BaseObject.h>
+#include <Entity/EntityBase.h>
 #include <Features/Object3d/Object3d.h>
 #include <memory>
 #include <Features/Input/Input.h>
-#include <Timer/Timer.h>
+#include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Collision/Manager/CollisionManager.h>
 #include <Features/Collision/Collider/Collider.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <Features/Particle/Emitter/ParticleEmitter.h>
 #include <Features/Audio/AudioManager.h>
 #include <Features/Audio/Audio.h>
+#include <Features/Model/ModelManager.h>
+#include <Features/Model/IModel.h>
 
-class Player : public BaseObject
+class Player : public EntityBase
 {
 public:
-    void Initialize(bool _enableDebugWindow = true) override;
+    Player(ModelManager* pModelManager)
+        : pModelManager_(pModelManager) {};
+
+    void Initialize(bool enableDebugWindow = true) override;
     void Finalize() override;
     void Update() override;
     void Draw() override;
     void DrawLine() override;
+    void ImGui() override;
 
 
 public: /// Getter
@@ -28,13 +34,22 @@ public: /// Getter
 
 
 public: /// Setter
-    void SetIsDrawCollisionArea(bool _isDraw) { isDrawCollisionArea_ = _isDraw; }
-    void SetEnableInput(bool _enable) { enableInput_ = _enable; }
+    void SetIsDrawCollisionArea(bool isDraw) { isDrawCollisionArea_ = isDraw; }
+    void SetEnableInput(bool enable) { enableInput_ = enable; }
 
 
 private:
-    std::unique_ptr<Object3d> object_ = {};
-    std::unique_ptr<Timer> timerShot_ = {};
+    void OnCollisionTrigger(const Collider* other);
+    void OnCollision(const Collider* other);
+
+    void ObjectsInitialize();
+    void ColliderInitialize();
+
+    void UpdateInputCommands();
+
+    std::unique_ptr<IModel>         pModelSelfBody_ = nullptr;
+    std::unique_ptr<Object3d>       object_ = {};
+    std::unique_ptr<TimeMeasurer>   timerShot_ = {};
     float movePower_ = 0.0f;
 
     /// 射撃
@@ -57,16 +72,11 @@ private:
     bool enableInput_ = true;
 
     /// パーティクルエミッター
-    std::unique_ptr<ParticleEmitter> shotEmitter = nullptr;
+    std::unique_ptr<ParticleEmitter> shotEmitter_ = nullptr;
+    std::shared_ptr<IModel> pModelSpark_ = nullptr;
 
     /// オーディオ
     Audio* audioShot_ = nullptr;
-
-private:
-    void UpdateInputCommands();
-    void DebugWindow();
-    void OnCollisionTrigger(const Collider* _other);
-    void OnCollision(const Collider* _other);
 
 
 private: /// 他クラスの所有物
@@ -74,4 +84,5 @@ private: /// 他クラスの所有物
     CollisionManager* collisionManager_ = nullptr;
     DeltaTimeManager* deltaTimeManager_ = nullptr;
     AudioManager* audioManager_ = nullptr;
+    ModelManager* pModelManager_ = nullptr;
 };

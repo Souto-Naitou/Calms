@@ -3,6 +3,7 @@
 #include <Common/define.h>
 #include <Features/SceneManager/SceneManager.h>
 #include <Scene/Factory/SceneFactory.h>
+#include <Features/Model/Helper/ModelHelper.h>
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -13,7 +14,7 @@ void WinterGame::Initialize()
 
     #ifdef _DEBUG
     pImGuiManager_->EnableDocking();
-    #endif  
+    #endif
     
     /// シーンファクトリの設定
     pSceneFactory_ = std::make_unique<SceneFactory>();
@@ -23,12 +24,16 @@ void WinterGame::Initialize()
     pCollisionManager_ = CollisionManager::GetInstance();
     pCollisionManager_->Initialize();
 
-    /// モデルを全てロード
-    pModelManager_->LoadAllModel();
+    /// モデルローダー、ストレージ、マネージャの初期化
+    pModelLoader_ = Helper::Model::CreateLoader<ModelLoaderAssimp>(pDirectX_.get());
+    pModelStorage_ = Helper::Model::CreateStorage();
+    pModelManager_ = Helper::Model::CreateManager(pModelLoader_.get(), pModelStorage_.get());
 
-    // Dissolve用のテクスチャをロード
+    // モデルマネージャをシーンマネージャにセット
+    pSceneManager_->SetModelManager(pModelManager_.get());
+
+    /// Dissolve用のテクスチャをロード
     pTextureManager_->LoadTexture("noise0.png");
-    pPEDissolve_->SetTextureResource(pTextureManager_->GetTextureResource("noise0.png"));
 }
 
 void WinterGame::Finalize()
@@ -44,7 +49,6 @@ void WinterGame::Update()
 
     /// 基底クラスの更新処理
     NimaFramework::Update();
-
 }
 
 void WinterGame::Draw()

@@ -16,18 +16,6 @@
     <Filter Include="Scene\Game">
       <UniqueIdentifier>{caef7934-734a-4ac8-9c48-d59212b0d380}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameObject">
-      <UniqueIdentifier>{04dfdcfc-59e1-403a-9266-6a4aaee534b6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GameObject\Player">
-      <UniqueIdentifier>{9c09af10-26f5-42dc-8a06-e0fbf245b9c6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GameObject\PlayerBullet">
-      <UniqueIdentifier>{2eeb9b05-afc1-4862-a621-00288d2a243f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GameObject\Enemy">
-      <UniqueIdentifier>{4d23f7ae-e8c6-41ef-a58f-cd83eb389201}</UniqueIdentifier>
-    </Filter>
     <Filter Include="DIContainer">
       <UniqueIdentifier>{a054c6e7-0a23-441a-8a5f-995110a91dd8}</UniqueIdentifier>
     </Filter>
@@ -46,9 +34,6 @@
     <Filter Include="UI\CountDown">
       <UniqueIdentifier>{537eb468-a26f-41f8-97a1-eb5d138e5beb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameObject\ScreenToWorld">
-      <UniqueIdentifier>{fc9ef5a7-41f0-4008-9361-cecdf65911e5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="GameTimer">
       <UniqueIdentifier>{7e57411c-5795-47fe-bd26-eaea6b828de2}</UniqueIdentifier>
     </Filter>
@@ -58,12 +43,6 @@
     <Filter Include="Scene\Clear">
       <UniqueIdentifier>{e038e2c1-eee8-42e3-8c9b-f54ae3698b78}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\Lobby">
-      <UniqueIdentifier>{b3e92359-b782-496d-8f89-5556be172543}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scene\MultiGame">
-      <UniqueIdentifier>{965bb4e1-6b00-406f-9b2e-1349f6e9118a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="MultiData">
       <UniqueIdentifier>{ea193379-2d59-4248-a97b-42bd27ab419f}</UniqueIdentifier>
     </Filter>
@@ -72,6 +51,24 @@
     </Filter>
     <Filter Include="ScoreSystem">
       <UniqueIdentifier>{1a901cd6-b7ad-42da-adc5-24619b1aa5db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity">
+      <UniqueIdentifier>{04dfdcfc-59e1-403a-9266-6a4aaee534b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Player">
+      <UniqueIdentifier>{9c09af10-26f5-42dc-8a06-e0fbf245b9c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\PlayerBullet">
+      <UniqueIdentifier>{2eeb9b05-afc1-4862-a621-00288d2a243f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Enemy">
+      <UniqueIdentifier>{4d23f7ae-e8c6-41ef-a58f-cd83eb389201}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\ScreenToWorld">
+      <UniqueIdentifier>{fc9ef5a7-41f0-4008-9361-cecdf65911e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Stats">
+      <UniqueIdentifier>{3673aaf9-50f9-4d17-a06b-99dda8e55965}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -87,18 +84,6 @@
     </ClCompile>
     <ClCompile Include="Scene\Game\GameScene.cpp">
       <Filter>Scene\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\Player\Player.cpp">
-      <Filter>GameObject\Player</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\BaseObject.cpp">
-      <Filter>GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\PlayerBullet\PlayerBullet.cpp">
-      <Filter>GameObject\PlayerBullet</Filter>
-    </ClCompile>
-    <ClCompile Include="GameObject\Enemy\Enemy.cpp">
-      <Filter>GameObject\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="EventListener\EventListener.cpp">
       <Filter>EventListener</Filter>
@@ -118,15 +103,6 @@
     <ClCompile Include="InputGuide\InputGuide.cpp">
       <Filter>UI\InputGuide</Filter>
     </ClCompile>
-    <ClCompile Include="GameObject\ScreenToWorld\ScreenToWorld.cpp">
-      <Filter>GameObject\ScreenToWorld</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\Lobby\Lobby.cpp">
-      <Filter>Scene\Lobby</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\MultiGame\MultiGame.cpp">
-      <Filter>Scene\MultiGame</Filter>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="MultiData\MultiDataResolver\MultiDataResolver.cpp">
       <Filter>MultiData\MultiDataResolver</Filter>
@@ -136,6 +112,24 @@
     </ClCompile>
     <ClCompile Include="ScoreSystem\ScoreSystem.cpp">
       <Filter>ScoreSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Enemy\Enemy.cpp">
+      <Filter>Entity\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Player\Player.cpp">
+      <Filter>Entity\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\PlayerBullet\PlayerBullet.cpp">
+      <Filter>Entity\PlayerBullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\ScreenToWorld\ScreenToWorld.cpp">
+      <Filter>Entity\ScreenToWorld</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\EntityBase.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity\Status\EntityStats.cpp">
+      <Filter>Entity\Stats</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,18 +145,6 @@
     <ClInclude Include="Scene\Game\GameScene.h">
       <Filter>Scene\Game</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject\BaseObject.h">
-      <Filter>GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\Player\Player.h">
-      <Filter>GameObject\Player</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\PlayerBullet\PlayerBullet.h">
-      <Filter>GameObject\PlayerBullet</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject\Enemy\Enemy.h">
-      <Filter>GameObject\Enemy</Filter>
-    </ClInclude>
     <ClInclude Include="DIContainer\DIContainer.h">
       <Filter>DIContainer</Filter>
     </ClInclude>
@@ -175,9 +157,6 @@
     <ClInclude Include="UI\CountDown\CountDown.h">
       <Filter>UI\CountDown</Filter>
     </ClInclude>
-    <ClInclude Include="GameObject\ScreenToWorld\ScreenToWorld.h">
-      <Filter>GameObject\ScreenToWorld</Filter>
-    </ClInclude>
     <ClInclude Include="GameTimer\GameTimer.h">
       <Filter>GameTimer</Filter>
     </ClInclude>
@@ -187,13 +166,7 @@
     <ClInclude Include="Scene\Clear\ClearScene.h">
       <Filter>Scene\Clear</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\Lobby\Lobby.h">
-      <Filter>Scene\Lobby</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Scene\MultiGame\MultiGame.h">
-      <Filter>Scene\MultiGame</Filter>
-    </ClInclude>
     <ClInclude Include="MultiDataManager\MultiDataManager.h">
       <Filter>MultiData</Filter>
     </ClInclude>
@@ -202,6 +175,24 @@
     </ClInclude>
     <ClInclude Include="ScoreSystem\ScoreSystem.h">
       <Filter>ScoreSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity\Enemy\Enemy.h">
+      <Filter>Entity\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity\Player\Player.h">
+      <Filter>Entity\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity\PlayerBullet\PlayerBullet.h">
+      <Filter>Entity\PlayerBullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity\ScreenToWorld\ScreenToWorld.h">
+      <Filter>Entity\ScreenToWorld</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity\EntityBase.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity\Status\EntityStats.h">
+      <Filter>Entity\Stats</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,11 +1,13 @@
 #include "Player.h"
 
 #include <imgui.h>
+#include <Features/Model/ObjModel.h>
 
-void Player::Initialize(bool _enableDebugWindow)
+void Player::Initialize(bool enableDebugWindow)
 {
     // 基底クラスの初期化
-    BaseObject::Initialize(_enableDebugWindow);
+    EntityBase::Initialize(enableDebugWindow);
+    pDebugEntry_->SetName("Player");
 
 
     /// インスタンスの取得
@@ -16,61 +18,47 @@ void Player::Initialize(bool _enableDebugWindow)
 
     
     /// タイマーの初期化
-    timerShot_ = std::make_unique<Timer>();
+    timerShot_ = std::make_unique<TimeMeasurer>();
     timerShot_->Start();
 
 
     /// パラメータの初期化
-    name_ = "player";
     movePower_ = 20.0f;
     friction_ = 0.95f;
     translation_ = Vector3(0, 0.5f, 0);
-    hp_ = 100.0f;
+    stats_.Initalize(100.0f, 0.0f, 20.0f);
 
-
-    /// オブジェクトの初期化
-    object_ = std::make_unique<Object3d>();
-    object_->Initialize("Cube.obj");
-    object_->SetName("player");
-    object_->SetTranslate(Vector3(0, 0.5f, 0));
-    object_->SetRotate(Vector3(0, 0, 0));
-    object_->SetColor(Vector4(0.0f, 1.0f, 0.0f, 1.0f));
-
+    // オブジェクトの初期化
+    this->ObjectsInitialize();
 
     /// OBBの初期化
     obb_.Initialize();
 
-
-    /// コライダーの初期化
-    collider_ = std::make_unique<Collider>();
-    collider_->SetColliderID("player");
-    collider_->SetAttribute(collisionManager_->GetNewAttribute("player"));
-    collider_->SetOwner(this);
-    collider_->SetShape(Shape::OBB);
-    collider_->SetRadius(2u);
-    collider_->SetMask(collisionManager_->GetNewMask("player"));
-    collider_->SetOnCollision(std::bind(&Player::OnCollision, this, std::placeholders::_1));
-    collider_->SetOnCollisionTrigger(std::bind(&Player::OnCollisionTrigger, this, std::placeholders::_1));
-    collider_->SetEnableLighter(true);
+    // コライダーの初期化
+    this->ColliderInitialize();
 
     // コライダーの登録
     collisionManager_->RegisterCollider(collider_.get());
 
-    /// パーティクルエミッターの初期化
-    shotEmitter = std::make_unique<ParticleEmitter>();
-    shotEmitter->Initialize("Particle/ParticleSpark.obj", "resources/json/particles/shot.json");
-    shotEmitter->SetEnableBillboard(true);
+    pModelSpark_ = std::make_unique<ObjModel>();
+    pModelSpark_->Clone(pModelManager_->Load("Particle/ParticleSpark.obj"));
 
-    audioShot_ = audioManager_->GetNewAudio("hit_hat.wav");
+    /// パーティクルエミッターの初期化
+    shotEmitter_ = std::make_unique<ParticleEmitter>();
+    shotEmitter_->Initialize(pModelSpark_.get(), "resources/json/particles/shot.json");
+    shotEmitter_->SetEnableBillboard(true);
+
+    audioShot_ = audioManager_->GetNewAudio("Effect", "hit_hat.wav");
+    audioShot_->SetVolume(0.1f);
 }
 
 
 void Player::Finalize()
 {
     object_->Finalize();
-    shotEmitter->Finalize();
+    shotEmitter_->Finalize();
     
-    BaseObject::Finalize();
+    EntityBase::Finalize();
 }
 
 
@@ -84,7 +72,7 @@ void Player::Update()
     accelerationRefl_ = Vector3(0, 0, 0);
 
     // 座標更新
-    BaseObject::UpdateTransform(deltaTimeManager_->GetDeltaTime(1));
+    EntityBase::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
 
     // 座標の反映
     object_->SetTranslate(translation_);
@@ -111,8 +99,8 @@ void Player::Update()
     collider_->SetShapeData(&obb_);
 
     /// パーティクルエミッターの更新
-    shotEmitter->SetPosition(translation_);
-    shotEmitter->Update();
+    shotEmitter_->SetPosition(translation_);
+    shotEmitter_->Update();
 }
 
 
@@ -126,9 +114,39 @@ void Player::DrawLine()
 {
     if (isDrawCollisionArea_) collider_->DrawArea();
     // パーティクルエミッターの描画
-    shotEmitter->Draw();
+    shotEmitter_->Draw();
 }
 
+void Player::ObjectsInitialize()
+{
+    /// オブジェクトの初期化
+    auto originalModel = pModelManager_->Load("Cube/Cube.obj");
+    pModelSelfBody_ = originalModel->Cloned();
+    object_ = std::make_unique<Object3d>();
+    object_->Initialize();
+    object_->SetName("player");
+    object_->SetTranslate(Vector3(0, 0.5f, 0));
+    object_->SetRotate(Vector3(0, 0, 0));
+    object_->SetModel(pModelSelfBody_.get());
+    auto& option = object_->GetOption();
+    option.materialData->environmentCoefficient = 0.0f;
+    option.materialData->color = Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+}
+
+void Player::ColliderInitialize()
+{
+    /// コライダーの初期化
+    collider_ = std::make_unique<Collider>();
+    collider_->SetColliderID("player");
+    collider_->SetAttribute(collisionManager_->GetNewAttribute("player"));
+    collider_->SetOwner(this);
+    collider_->SetShape(Shape::OBB);
+    collider_->SetRadius(2u);
+    collider_->SetMask(collisionManager_->GetNewMask("player"));
+    collider_->SetOnCollision(std::bind(&Player::OnCollision, this, std::placeholders::_1));
+    collider_->SetOnCollisionTrigger(std::bind(&Player::OnCollisionTrigger, this, std::placeholders::_1));
+    collider_->SetEnableLighter(true);
+}
 
 void Player::UpdateInputCommands()
 {
@@ -159,7 +177,7 @@ void Player::UpdateInputCommands()
             timerShot_->Reset();
             timerShot_->Start();
         }
-        shotEmitter->Emit();
+        shotEmitter_->Emit();
     }
 
     isSlow_ = false;
@@ -169,10 +187,10 @@ void Player::UpdateInputCommands()
     }
 }
 
-void Player::DebugWindow()
+void Player::ImGui()
 {
 #ifdef _DEBUG
-    BaseObject::DebugWindow();
+    EntityBase::ImGui();
     ImGui::DragFloat("MovePower", &movePower_, 0.12f);
 
     ImGui::SeparatorText("Debug");
@@ -180,21 +198,21 @@ void Player::DebugWindow()
 #endif
 }
 
-void Player::OnCollisionTrigger(const Collider* _other)
+void Player::OnCollisionTrigger(const Collider* other)
 {
-    const BaseObject* otherOwner = static_cast<const BaseObject*>(_other->GetOwner());
+    const EntityBase* otherOwner = other->GetOwner<EntityBase>();
 
-    if (_other->GetColliderID() == "enemy")
+    if (other->GetColliderID() == "enemy")
     {
-        hp_ -= otherOwner->GetAttackPower();
+        stats_.OnCollision(other->GetOwner<EntityBase>()->GetStats());
     }
 }
 
-void Player::OnCollision(const Collider* _other)
+void Player::OnCollision(const Collider* other)
 {
-    const BaseObject* otherOwner = static_cast<const BaseObject*>(_other->GetOwner());
+    const EntityBase* otherOwner = other->GetOwner<EntityBase>();
 
-    if (_other->GetColliderID() == "enemy")
+    if (other->GetColliderID() == "enemy")
     {
         /// 反発を速度に適用
         Vector3 otherPos = otherOwner->GetTranslation();

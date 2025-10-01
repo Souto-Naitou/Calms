@@ -7,7 +7,7 @@
 #include <Features/Particle/ParticleManager.h>
 #include <Features/Object3d/Object3dSystem.h>
 #include <Features/Sprite/SpriteSystem.h>
-#include <Timer/Timer.h>
+#include <Features/TimeMeasurer/TimeMeasurer.h>
 
 #include <Vector3.h>
 
@@ -15,12 +15,18 @@
 #include <imgui.h>
 #endif // _DEBUG
 
+#include <any>
+#include <Presets/Object3d/Grid/Preset_Grid.h>
+
 void GameScene::Initialize()
 {
     /// インスタンスの取得
     pDebugManager_    = DebugManager::GetInstance();
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
     randomGenerator_  = RandomGenerator::GetInstance();
+    pTextureManager_ = TextureManager::GetInstance();
+    pModelManager_ = std::any_cast<ModelManager*>(pArgs_->Get("ModelManager"));
+    pLineSystem_ = std::any_cast<LineSystem*>(pArgs_->Get("LineSystem"));
 
     /// デバッグウィンドウを登録
     #ifdef _DEBUG
@@ -33,13 +39,10 @@ void GameScene::Initialize()
 
 
     /// グリッドの初期化
-    grid_ = std::make_unique<Object3d>();
-    grid_->Initialize("Grid_v3.obj");
-    grid_->SetName("grid");
-    grid_->SetTilingMultiply({ 100.0f, 100.0f });
-    grid_->SetDirectionalLight(&directionalLight_);
+    grid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
+    grid_->GetOption().lightingData->enableLighting = true;
     grid_->SetPointLight(&pointLight_);
-
+    grid_->SetDirectionalLight(&directionalLight_);
 
     /// ゲームアイの初期化
     gameEye_ = std::make_unique<GameEye>();
@@ -49,7 +52,7 @@ void GameScene::Initialize()
 
 
     /// プレイヤーの初期化
-    player_ = std::make_unique<Player>();
+    player_ = std::make_unique<Player>(pModelManager_);
     player_->Initialize();
     player_->SetDIContainer(&gObjDIContainer_);
 
@@ -68,10 +71,10 @@ void GameScene::Initialize()
 
 
     /// ポイントライトの初期化
-    pointLight_.enablePointLight = 1;
-    pointLight_.color = Vector4(0.8f, 0.7f, 0.3f, 1.0f);
-    pointLight_.intensity = 7.5f;
-    pointLight_.position = Vector3(0.0f, 0.0f, 2.0f);
+    pointLight_.IsEnable() = true;
+    pointLight_.GetColor() = Vector4(0.8f, 0.7f, 0.3f, 1.0f);
+    pointLight_.GetIntensity() = 7.5f;
+    pointLight_.GetPosition() = Vector3(0.0f, 0.0f, 2.0f);
 
 
     /// DIコンテナに登録
@@ -121,37 +124,40 @@ void GameScene::Initialize()
 
 
     /// エリアの初期化
-    line_ = new Line(4);
-    line_->Initialize();
-    line_->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f });
+    lines_ = std::make_unique<Line>(4);
+    lines_->Initialize();
+    lines_->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f });
+    
+    (*lines_)[0] = Vector3(-areaWidth_, 0.5f, -areaWidth_);
+    (*lines_)[1] = Vector3(areaWidth_, 0.5f, -areaWidth_);
 
-    (*line_)[0] = Vector3(-areaWidth_, 0.5f, -areaWidth_);
-    (*line_)[1] = Vector3(areaWidth_, 0.5f, -areaWidth_);
+    (*lines_)[2] = Vector3(areaWidth_, 0.5f, -areaWidth_);
+    (*lines_)[3] = Vector3(areaWidth_, 0.5f, areaWidth_);
 
-    (*line_)[2] = Vector3(areaWidth_, 0.5f, -areaWidth_);
-    (*line_)[3] = Vector3(areaWidth_, 0.5f, areaWidth_);
+    (*lines_)[4] = Vector3(areaWidth_, 0.5f, areaWidth_);
+    (*lines_)[5] = Vector3(-areaWidth_, 0.5f, areaWidth_);
 
-    (*line_)[4] = Vector3(areaWidth_, 0.5f, areaWidth_);
-    (*line_)[5] = Vector3(-areaWidth_, 0.5f, areaWidth_);
+    (*lines_)[6] = Vector3(-areaWidth_, 0.5f, areaWidth_);
+    (*lines_)[7] = Vector3(-areaWidth_, 0.5f, -areaWidth_);
 
-    (*line_)[6] = Vector3(-areaWidth_, 0.5f, areaWidth_);
-    (*line_)[7] = Vector3(-areaWidth_, 0.5f, -areaWidth_);
+    //fpsText_ = std::make_unique<Text>();
+    //fpsText_->Initialize();
+    //fpsText_->SetPosition(Vector2(10.0f, 10.0f));
+    //fpsText_->SetFontSize(20.0f);
+    //fpsText_->SetColorName("White");
+    //fpsText_->SetAnchorPoint(TextStandardPoint::TopLeft);
+    //fpsText_->SetPivot(TextStandardPoint::TopLeft);
+    //fpsText_->SetMaxSize(Vector2(200.0f, 100.0f));
+    //fpsText_->SetText("FPS: 0.0");
+    //fpsText_->SetName("FPS");
 
-    fpsText_ = std::make_unique<Text>();
-    fpsText_->Initialize();
-    fpsText_->SetPosition(Vector2(10.0f, 10.0f));
-    fpsText_->SetFontSize(20.0f);
-    fpsText_->SetColorName("White");
-    fpsText_->SetAnchorPoint(TextStandardPoint::TopLeft);
-    fpsText_->SetPivot(TextStandardPoint::TopLeft);
-    fpsText_->SetMaxSize(Vector2(200.0f, 100.0f));
-    fpsText_->SetText("FPS: 0.0");
-    fpsText_->SetName("FPS");
+    // 敵の予約
+    enemies_.reserve(kMaxEnemyCount_);
 }
 
 void GameScene::Finalize()
 {
-    for (auto& enemy : enemy_)
+    for (auto& enemy : enemies_)
     {
         enemy->Finalize();
     }
@@ -173,17 +179,14 @@ void GameScene::Finalize()
     screenToWorld_->Finalize();
     gameTimer_->Finalize();
     inputGuide_->Finalize();
-    line_->Finalize();
+    lines_->Finalize();
     scoreSystem_->Finalize();
     ParticleManager::GetInstance()->ReleaseAllParticle();
-
-    delete line_;
 
     #ifdef _DEBUG
     pDebugManager_->DeleteComponent(name_);
     #endif // _DEBUG
 }
-
 
 void GameScene::Update()
 {
@@ -205,10 +208,10 @@ void GameScene::Update()
     PlayerSlowUpdate();
 
     /// 敵生成システムの更新
-    UpdateEnemyPopSystem();
+    EnemyPopSystemUpdate();
 
 
-    for (auto& enemy : enemy_)
+    for (auto& enemy : enemies_)
     {
         enemy->Update();
     }
@@ -244,8 +247,11 @@ void GameScene::Update()
 
 
     /// ポイントライトの更新
-    pointLight_.position = player_->GetTranslation();
-    pointLight_.position.y = 5.0f;
+    {
+        auto& position = pointLight_.GetPosition();
+        position = player_->GetTranslation();
+        position.y = 5.0f;
+    }
 
 
     /// タイマーの更新
@@ -269,28 +275,22 @@ void GameScene::Update()
 
 
     /// ラインの更新
-    line_->Update();
+    lines_->Update();
 
     scoreSystem_->Update();
 
     /// テキストの更新
-    fpsText_->SetText("FPS: " + std::to_string(pDebugManager_->GetFPS()));
-    fpsText_->Update();
+    //fpsText_->SetText("FPS: " + std::to_string(pDebugManager_->GetFPS()));
+    //fpsText_->Update();
 }
 
-
-void GameScene::Draw2dBackGround()
-{
-}
-
-
-void GameScene::Draw3d()
+void GameScene::Draw()
 {
     grid_->Draw();
 
     player_->Draw();
 
-    for (auto& enemy : enemy_)
+    for (auto& enemy : enemies_)
     {
         enemy->Draw();
     }
@@ -300,22 +300,15 @@ void GameScene::Draw3d()
         bullet->Draw();
     }
 
-    screenToWorld_->Draw();
-}
+    //screenToWorld_->Draw();
 
-void GameScene::Draw2dMidground()
-{
-    gameTimer_->Draw();
-}
+    //gameTimer_->Draw();
 
-void GameScene::Draw3dMidground()
-{
-}
+    // Lineの描画
+    pLineSystem_->PresentDraw();
 
-void GameScene::DrawLine()
-{
     player_->DrawLine();
-    for (auto& enemy : enemy_)
+    for (auto& enemy : enemies_)
     {
         enemy->DrawLine();
     }
@@ -326,19 +319,17 @@ void GameScene::DrawLine()
 
     enemyPopSystem_.DrawArea();
 
-    line_->Draw();
-}
+    lines_->Draw();
 
-void GameScene::Draw2dForeground()
-{
+    // 2d forward
     countDown_->Draw2D();
-    inputGuide_->Draw();
+    //inputGuide_->Draw();
 }
 
 void GameScene::DrawTexts()
 {
-    scoreSystem_->DrawTxt();
-    fpsText_->Draw();
+    //scoreSystem_->DrawTxt();
+    //fpsText_->Draw();
 }
 
 void GameScene::CreatePlayerBullet()
@@ -351,7 +342,8 @@ void GameScene::CreatePlayerBullet()
     direction.z += randomGenerator_->Generate(-0.05f, 0.05f);
     direction = direction.Normalize();
 
-    auto bullet = std::make_unique<PlayerBullet>();
+    IModel* pModel = pModelManager_->Load("Cube/Cube.obj");
+    auto bullet = std::make_unique<PlayerBullet>(pModel);
     bullet->Initialize(false);
     bullet->SetTranslation(player_->GetTranslation());
     bullet->SetMoveVelocity(direction * 15.0f);
@@ -360,7 +352,6 @@ void GameScene::CreatePlayerBullet()
 
     playerBullets_.push_back(std::move(bullet));
 }
-
 
 void GameScene::RemovePlayerBullet()
 {
@@ -375,41 +366,50 @@ void GameScene::RemovePlayerBullet()
     });
 }
 
-
 void GameScene::RemoveEnemy()
 {
-    enemy_.remove_if([&](const std::unique_ptr<Enemy>& _enemy)
-    {
-        if (!_enemy->IsAlive())
-        {
-            _enemy->Finalize();
-            scoreSystem_->CountEnemyDeath();
-            return true;
-        }
-        return false;
-    });
+    enemies_.erase(
+        std::remove_if(enemies_.begin(), enemies_.end(),
+            [&](auto& e) {
+                bool isDead = !e->IsAlive();
+                if (isDead)
+                {
+                    e->Finalize();
+                    scoreSystem_->CountEnemyDeath();
+                }
+                return isDead;
+            }
+        ),
+        enemies_.end()
+    );
 }
 
-
-void GameScene::UpdateEnemyPopSystem()
+void GameScene::EnemyPopSystemUpdate()
 {
     enemyPopSystem_.SetIgnorePosition(player_->GetTranslation());
     enemyPopSystem_.Update();
     while (enemyPopSystem_.IsExistPopRequest())
     {
-        if (enemy_.size() >= kMaxEnemyCount_)
+        if (enemies_.size() >= kMaxEnemyCount_)
         {
             break; // 最大数に達している場合は生成しない
         }
 
         auto popPoint = enemyPopSystem_.GetPopPoint();
-        auto enemy = std::make_unique<Enemy>();
+
+        Enemy::Desc enemyDesc = {};
+
+        enemyDesc.pModelSelfBody = pModelManager_->Load("Cube/Cube.obj");
+        enemyDesc.pModelParticleHit = pModelManager_->Load("Triangle/Triangle.obj");
+        enemyDesc.pModelParticleDeath = pModelManager_->Load("Triangle/Triangle.obj");
+
+        auto enemy = std::make_unique<Enemy>(enemyDesc);
         enemy->Initialize(false);
         enemy->SetTranslation(popPoint);
         enemy->SetLocationProvider(player_.get());
         enemy->SetDIContainer(&gObjDIContainer_);
         enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
-        enemy_.push_back(std::move(enemy));
+        enemies_.emplace_back(std::move(enemy));
     }
 }
 
@@ -442,7 +442,7 @@ void GameScene::DebugWindow()
     ImGui::SeparatorText("Collider Debug");
     if (ImGui::Checkbox("Enemy", &isDisplayColliderEnemy_))
     {
-        for (auto& enemy : enemy_)
+        for (auto& enemy : enemies_)
         {
             enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
         }
