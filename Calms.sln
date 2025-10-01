@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinterGame", "WinterGame.vcxproj", "{A0ECBC58-FE34-477C-B275-299ED2583C53}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Calms", "WinterGame.vcxproj", "{A0ECBC58-FE34-477C-B275-299ED2583C53}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Externals\GameEngine_DX12\Engine\Engine.vcxproj", "{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}"
 EndProject
@@ -18,6 +18,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NiGui", "Externals\GameEngine_DX12\Engine\Externals\NiGui\NiGui.vcxproj", "{E3E0F431-57AB-47BD-9CAD-DB622644B99C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleProject", "Externals\GameEngine_DX12\SampleProject\SampleProject.vcxproj", "{90D922CA-A224-4348-A76F-46A4F4A34371}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +73,12 @@ Global
 		{E3E0F431-57AB-47BD-9CAD-DB622644B99C}.Release|x64.Build.0 = Release|x64
 		{E3E0F431-57AB-47BD-9CAD-DB622644B99C}.Release|x86.ActiveCfg = Release|x64
 		{E3E0F431-57AB-47BD-9CAD-DB622644B99C}.Release|x86.Build.0 = Release|x64
+		{90D922CA-A224-4348-A76F-46A4F4A34371}.Debug|x64.ActiveCfg = Debug|x64
+		{90D922CA-A224-4348-A76F-46A4F4A34371}.Debug|x86.ActiveCfg = Debug|x64
+		{90D922CA-A224-4348-A76F-46A4F4A34371}.Debug|x86.Build.0 = Debug|x64
+		{90D922CA-A224-4348-A76F-46A4F4A34371}.Release|x64.ActiveCfg = Release|x64
+		{90D922CA-A224-4348-A76F-46A4F4A34371}.Release|x86.ActiveCfg = Release|x64
+		{90D922CA-A224-4348-A76F-46A4F4A34371}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,6 +89,7 @@ Global
 		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B} = {3BC02507-77C0-40A8-9E3B-2FA4A06BE9B2}
 		{A87AD77F-CC08-4788-8630-68470354FCD3} = {3BC02507-77C0-40A8-9E3B-2FA4A06BE9B2}
 		{E3E0F431-57AB-47BD-9CAD-DB622644B99C} = {3BC02507-77C0-40A8-9E3B-2FA4A06BE9B2}
+		{90D922CA-A224-4348-A76F-46A4F4A34371} = {DDB4EF12-CC4E-5E88-E6FC-71A802F4DE97}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {83ACFAB7-7736-4934-9FD3-5E67DB15118D}

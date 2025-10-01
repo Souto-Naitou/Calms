@@ -42,7 +42,7 @@ private:
     std::unique_ptr<TimeMeasurer> timer_ = nullptr;
     
     IModel* pModelSelfBody_ = nullptr;
-    std::unique_ptr<Object3d> pObjectSelfBody_ = nullptr;
+    std::unique_ptr<Object3d> pBody_ = nullptr;
     
     /// パラメータ
     float lifeTimeLimit_ = 8.0f;

@@ -33,8 +33,8 @@ void PlayerBullet::Initialize(bool _enableDebugWindow)
 
 void PlayerBullet::Finalize()
 {
-    pObjectSelfBody_->Finalize();
-    pObjectSelfBody_.reset();
+    pBody_->Finalize();
+    pBody_.reset();
 
     collisionManager_->DeleteCollider(collider_.get());
 
@@ -61,7 +61,7 @@ void PlayerBullet::Update()
 
     // OBBの更新
     obb_.SetCenter(translation_);
-    obb_.SetOrientations(pObjectSelfBody_->GetRotateMatrix());
+    obb_.SetOrientations(pBody_->GetRotateMatrix());
     obb_.SetSize(Vector3(0.3f, 0.3f, 0.3f));
 
     collider_->SetShapeData(&obb_);
@@ -70,7 +70,7 @@ void PlayerBullet::Update()
 
 void PlayerBullet::Draw()
 {
-    pObjectSelfBody_->Draw();
+    pBody_->Draw();
 }
 
 void PlayerBullet::DrawLine()
@@ -97,34 +97,34 @@ void PlayerBullet::ImGui()
 void PlayerBullet::ObjectsInitialize()
 {
     /// オブジェクトの初期化
-    pObjectSelfBody_ = std::make_unique<Object3d>();
-    pObjectSelfBody_->Initialize(false);
-    pObjectSelfBody_->SetScale(Vector3(0.3f, 0.3f, 0.3f));
-    pObjectSelfBody_->SetTranslate(Vector3(0, 0.5f, 0));
-    pObjectSelfBody_->SetRotate(Vector3(0, 0, 0));
-    pObjectSelfBody_->SetModel(pModelSelfBody_);
-    pObjectSelfBody_->GetOption().materialData->environmentCoefficient = 0.0f;
+    pBody_ = std::make_unique<Object3d>();
+    pBody_->Initialize(false);
+    pBody_->SetScale(Vector3(0.3f, 0.3f, 0.3f));
+    pBody_->SetTranslate(Vector3(0, 0.5f, 0));
+    pBody_->SetRotate(Vector3(0, 0, 0));
+    pBody_->SetModel(pModelSelfBody_);
+    pBody_->GetOption().materialData->environmentCoefficient = 0.0f;
 }
 
 void PlayerBullet::ObjectsUpdate()
 {
     // 位置の反映
-    pObjectSelfBody_->SetTranslate(translation_);
+    pBody_->SetTranslate(translation_);
 
     // オブジェクトの更新
     if (!directionalLight_)
     {
         directionalLight_ = diContainer_->Resolve<DirectionalLight>();
-        pObjectSelfBody_->SetDirectionalLight(directionalLight_);
+        pBody_->SetDirectionalLight(directionalLight_);
     }
 
     if (!pointLight_)
     {
         pointLight_ = diContainer_->Resolve<PointLight>();
-        pObjectSelfBody_->SetPointLight(pointLight_);
+        pBody_->SetPointLight(pointLight_);
     }
 
-    pObjectSelfBody_->Update();
+    pBody_->Update();
 }
 
 void PlayerBullet::CollidersInitialize()
