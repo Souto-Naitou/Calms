@@ -9,6 +9,8 @@
 #include <Features/Text/Text.h>
 #include <ScoreSystem/ScoreSystem.h>
 #include <memory>
+#include <Features/Cubemap/Skybox.h>
+#include <Features/Cubemap/CubemapSystem.h>
 
 class TitleScene : public SceneBase
 {
@@ -30,7 +32,10 @@ public:
     /// </summary>
     void Update() override;
 
-    void Draw() override {};
+    /// <summary>
+    /// 描画(テキスト描画を除く)
+    /// </summary>
+    void Draw() override;
 
     /// <summary>
     /// テキスト描画
@@ -39,12 +44,18 @@ public:
 
 
 private:
-    std::unique_ptr<GameEye>                    gameEye_            = {};           // !< ゲームアイ
-    std::unique_ptr<Text>                       pTextTitle_         = nullptr;
-    std::unique_ptr<Text>                       pTextStart_         = nullptr;
-    
+    void InitializeSprites();
+    void InitializeTexts();
+
+    std::unique_ptr<GameEye>    gameEye_                = {};           // !< ゲームアイ
+    std::unique_ptr<Text>       pTextTitle_             = nullptr;      // !< タイトルテキスト
+    std::unique_ptr<Text>       pTextStart_             = nullptr;      // !< ボタンテキスト
+    std::unique_ptr<Sprite>     pSpriteBackground_      = nullptr;      // !< 背景スプライト
+    std::unique_ptr<Sprite>     pSpriteFilterImediate_  = nullptr;      // !< フィルタースプライト(即座にフェードインアウト)
+    std::unique_ptr<Skybox>     pSkybox_                = nullptr;      // !< スカイボックス
 
 private:
-    Input*                                      pInput_             = nullptr;      // !< 入力
-    SceneTransitionManager*                     pSceneTransition_   = nullptr;      // !< シーン遷移
+    Input*                      pInput_             = nullptr;      // !< 入力
+    SceneTransitionManager*     pSceneTransition_   = nullptr;      // !< シーン遷移
+    CubemapSystem*              pCubemapSystem_     = nullptr;      // !< キューブマップシステム
 };

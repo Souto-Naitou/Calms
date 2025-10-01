@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GameObject/BaseObject.h>
+#include <Entity/EntityBase.h>
 #include <Features/Object3d/Object3d.h>
 #include <Vector3.h>
 #include <memory>
@@ -13,7 +13,7 @@
 #include <Features/Particle/Emitter/ParticleEmitter.h>
 #include <Features/Audio/AudioManager.h>
 
-class Enemy : public BaseObject
+class Enemy : public EntityBase
 {
 public:
     struct Desc
@@ -32,10 +32,11 @@ public:
     void Update() override;
     void Draw() override;
     void DrawLine() override;
+    void ImGui() override;
 
 
 public: /// Setter
-    void SetLocationProvider(BaseObject* _gameObject) { locationProvider_ = _gameObject; }
+    void SetLocationProvider(EntityBase* _gameObject) { locationProvider_ = _gameObject; }
     void SetIsDrawCollisionArea(bool _isDraw) { isDrawCollisionArea_ = _isDraw; }
 
 
@@ -51,7 +52,6 @@ private:
 
     void OnCollision(const Collider* _other);
     void OnCollisionTrigger(const Collider* _other);
-    void DebugWindow() override;
 
     std::unique_ptr<Object3d>           objectSelfBody_     = {};
     std::unique_ptr<TimeMeasurer>       timeMeasurer_       = {};
@@ -60,7 +60,7 @@ private:
     Vector3         accelerationRefl_           = {};
     Vector3         moveVelocity_               = {};
     Vector2         distanceToTarget            = {};
-    BaseObject*     locationProvider_           = nullptr;
+    EntityBase*     locationProvider_           = nullptr;
     Vector2         positionTarget_             = {};
     Vector2         velocity_move               = {};
     float           moveSpeed_                  = 0.0f;

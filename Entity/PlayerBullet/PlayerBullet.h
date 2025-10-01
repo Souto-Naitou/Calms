@@ -1,10 +1,9 @@
 #pragma once
 
-#include <GameObject/BaseObject.h>
+#include <Entity/EntityBase.h>
 #include <Features/Object3d/Object3d.h>
 #include <Vector3.h>
 #include <memory>
-#include <Features/GameEye/GameEye.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Collision/Collider/Collider.h>
 #include <Features/Collision/Manager/CollisionManager.h>
@@ -12,7 +11,7 @@
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 
 
-class PlayerBullet : public BaseObject
+class PlayerBullet : public EntityBase
 {
 public:
     PlayerBullet(IModel* _pModelSelfBody)
@@ -23,6 +22,7 @@ public:
     void Update() override;
     void Draw() override;
     void DrawLine() override;
+    void ImGui() override;
 
 
 public: /// Setter
@@ -33,7 +33,6 @@ public: /// Setter
 private:
     /// コールバック関数
     void OnCollisionTrigger(const Collider* _other);
-    void DebugWindow() override;
 
     /// 内部関数
     void ObjectsInitialize();

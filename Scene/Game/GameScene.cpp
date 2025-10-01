@@ -40,7 +40,7 @@ void GameScene::Initialize()
 
     /// グリッドの初期化
     grid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
-    grid_->GetOption().lightingData->enableLighting = false;
+    grid_->GetOption().lightingData->enableLighting = true;
     grid_->SetPointLight(&pointLight_);
     grid_->SetDirectionalLight(&directionalLight_);
 
@@ -140,16 +140,16 @@ void GameScene::Initialize()
     (*lines_)[6] = Vector3(-areaWidth_, 0.5f, areaWidth_);
     (*lines_)[7] = Vector3(-areaWidth_, 0.5f, -areaWidth_);
 
-    fpsText_ = std::make_unique<Text>();
-    fpsText_->Initialize();
-    fpsText_->SetPosition(Vector2(10.0f, 10.0f));
-    fpsText_->SetFontSize(20.0f);
-    fpsText_->SetColorName("White");
-    fpsText_->SetAnchorPoint(TextStandardPoint::TopLeft);
-    fpsText_->SetPivot(TextStandardPoint::TopLeft);
-    fpsText_->SetMaxSize(Vector2(200.0f, 100.0f));
-    fpsText_->SetText("FPS: 0.0");
-    fpsText_->SetName("FPS");
+    //fpsText_ = std::make_unique<Text>();
+    //fpsText_->Initialize();
+    //fpsText_->SetPosition(Vector2(10.0f, 10.0f));
+    //fpsText_->SetFontSize(20.0f);
+    //fpsText_->SetColorName("White");
+    //fpsText_->SetAnchorPoint(TextStandardPoint::TopLeft);
+    //fpsText_->SetPivot(TextStandardPoint::TopLeft);
+    //fpsText_->SetMaxSize(Vector2(200.0f, 100.0f));
+    //fpsText_->SetText("FPS: 0.0");
+    //fpsText_->SetName("FPS");
 
     // 敵の予約
     enemies_.reserve(kMaxEnemyCount_);
@@ -280,8 +280,8 @@ void GameScene::Update()
     scoreSystem_->Update();
 
     /// テキストの更新
-    fpsText_->SetText("FPS: " + std::to_string(pDebugManager_->GetFPS()));
-    fpsText_->Update();
+    //fpsText_->SetText("FPS: " + std::to_string(pDebugManager_->GetFPS()));
+    //fpsText_->Update();
 }
 
 void GameScene::Draw()
@@ -300,9 +300,9 @@ void GameScene::Draw()
         bullet->Draw();
     }
 
-    screenToWorld_->Draw();
+    //screenToWorld_->Draw();
 
-    gameTimer_->Draw();
+    //gameTimer_->Draw();
 
     // Lineの描画
     pLineSystem_->PresentDraw();
@@ -323,13 +323,13 @@ void GameScene::Draw()
 
     // 2d forward
     countDown_->Draw2D();
-    inputGuide_->Draw();
+    //inputGuide_->Draw();
 }
 
 void GameScene::DrawTexts()
 {
-    scoreSystem_->DrawTxt();
-    fpsText_->Draw();
+    //scoreSystem_->DrawTxt();
+    //fpsText_->Draw();
 }
 
 void GameScene::CreatePlayerBullet()

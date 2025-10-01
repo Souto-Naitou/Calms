@@ -3,10 +3,11 @@
 #include <imgui.h>
 #include <Features/Model/ObjModel.h>
 
-void Player::Initialize(bool _enableDebugWindow)
+void Player::Initialize(bool enableDebugWindow)
 {
     // 基底クラスの初期化
-    BaseObject::Initialize(_enableDebugWindow);
+    EntityBase::Initialize(enableDebugWindow);
+    pDebugEntry_->SetName("Player");
 
 
     /// インスタンスの取得
@@ -22,11 +23,10 @@ void Player::Initialize(bool _enableDebugWindow)
 
 
     /// パラメータの初期化
-    name_ = "player";
     movePower_ = 20.0f;
     friction_ = 0.95f;
     translation_ = Vector3(0, 0.5f, 0);
-    hp_ = 100.0f;
+    stats_.Initalize(100.0f, 0.0f, 20.0f);
 
     // オブジェクトの初期化
     this->ObjectsInitialize();
@@ -49,7 +49,7 @@ void Player::Initialize(bool _enableDebugWindow)
     shotEmitter_->SetEnableBillboard(true);
 
     audioShot_ = audioManager_->GetNewAudio("Effect", "hit_hat.wav");
-    audioShot_->SetVolume(0.2f);
+    audioShot_->SetVolume(0.1f);
 }
 
 
@@ -58,7 +58,7 @@ void Player::Finalize()
     object_->Finalize();
     shotEmitter_->Finalize();
     
-    BaseObject::Finalize();
+    EntityBase::Finalize();
 }
 
 
@@ -72,7 +72,7 @@ void Player::Update()
     accelerationRefl_ = Vector3(0, 0, 0);
 
     // 座標更新
-    BaseObject::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
+    EntityBase::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
 
     // 座標の反映
     object_->SetTranslate(translation_);
@@ -187,10 +187,10 @@ void Player::UpdateInputCommands()
     }
 }
 
-void Player::DebugWindow()
+void Player::ImGui()
 {
 #ifdef _DEBUG
-    BaseObject::DebugWindow();
+    EntityBase::ImGui();
     ImGui::DragFloat("MovePower", &movePower_, 0.12f);
 
     ImGui::SeparatorText("Debug");
@@ -198,21 +198,21 @@ void Player::DebugWindow()
 #endif
 }
 
-void Player::OnCollisionTrigger(const Collider* _other)
+void Player::OnCollisionTrigger(const Collider* other)
 {
-    const BaseObject* otherOwner = static_cast<const BaseObject*>(_other->GetOwner());
+    const EntityBase* otherOwner = other->GetOwner<EntityBase>();
 
-    if (_other->GetColliderID() == "enemy")
+    if (other->GetColliderID() == "enemy")
     {
-        hp_ -= otherOwner->GetAttackPower();
+        stats_.OnCollision(other->GetOwner<EntityBase>()->GetStats());
     }
 }
 
-void Player::OnCollision(const Collider* _other)
+void Player::OnCollision(const Collider* other)
 {
-    const BaseObject* otherOwner = static_cast<const BaseObject*>(_other->GetOwner());
+    const EntityBase* otherOwner = other->GetOwner<EntityBase>();
 
-    if (_other->GetColliderID() == "enemy")
+    if (other->GetColliderID() == "enemy")
     {
         /// 反発を速度に適用
         Vector3 otherPos = otherOwner->GetTranslation();

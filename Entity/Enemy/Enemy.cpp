@@ -14,7 +14,8 @@ Enemy::Enemy(const Desc& _desc)
 void Enemy::Initialize(bool _enableDebugWindow)
 {
     /// 基底クラスの初期化
-    BaseObject::Initialize(_enableDebugWindow);
+    EntityBase::Initialize(_enableDebugWindow);
+    pDebugEntry_->SetName("Enemy");
 
     /// インスタンスの取得
     collisionManager_ = CollisionManager::GetInstance();
@@ -22,12 +23,11 @@ void Enemy::Initialize(bool _enableDebugWindow)
     ppGameEye_        = Object3dSystem::GetInstance()->GetGlobalEye();
 
     /// パラメータの初期化
-    name_           = utl::debug::generate_name("enemy", this);
     friction_       = 0.95f;
     moveSpeed_      = 10.0f;
     translation_    = Vector3(0, 0.5f, 0);
     attackPower_    = 10.0f;
-    hp_             = 50.0f;
+    stats_.Initalize(50.0f, 10.0f, 10.0f);
 
     // オブジェクトの初期化
     this->InitializeObjects();
@@ -65,7 +65,7 @@ void Enemy::Finalize()
     //pParticleHit_->Finalize();
     //pParticleDeath_->Finalize();
 
-    BaseObject::Finalize();
+    EntityBase::Finalize();
 }
 
 void Enemy::Update()
@@ -74,7 +74,7 @@ void Enemy::Update()
     this->UpdateTransform();
 
     // 物理演算の更新
-    BaseObject::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
+    EntityBase::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
 
     // ライトの更新
     this->UpdateLights();
@@ -210,7 +210,7 @@ void Enemy::OnCollision(const Collider* _other)
 {
     if (_other->GetColliderID() == "enemy")
     {
-        const BaseObject* otherOwner = static_cast<const BaseObject*>(_other->GetOwner());
+        const EntityBase* otherOwner = _other->GetOwner<EntityBase>();
 
         /// 反発を速度に適用
         Vector3 otherPos = otherOwner->GetTranslation();
@@ -224,10 +224,11 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
 {
     if (_other->GetColliderID() == "playerBullet")
     {
-        const BaseObject* otherOwner = static_cast<const BaseObject*>(_other->GetOwner());
+        const EntityBase* otherOwner = _other->GetOwner<EntityBase>();
 
-        hp_ -= otherOwner->GetAttackPower();
-        if (hp_ <= 0) 
+        stats_.OnCollision(otherOwner->GetStats());
+        
+        if (stats_.GetHp() <= 0) 
         {
             isAlive_ = false;
             audioDeath_->Play();
@@ -255,10 +256,10 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
     }
 }
 
-void Enemy::DebugWindow()
+void Enemy::ImGui()
 {
 #ifdef _DEBUG
-    BaseObject::DebugWindow();
+    EntityBase::ImGui();
     ImGui::Checkbox("Draw2D Collision Area", &isDrawCollisionArea_);
 #endif
 }

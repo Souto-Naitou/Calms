@@ -4,15 +4,12 @@
 
 void PlayerBullet::Initialize(bool _enableDebugWindow)
 {
-    BaseObject::Initialize(_enableDebugWindow);
+    EntityBase::Initialize(_enableDebugWindow);
+    pDebugEntry_->SetName("PlayerBullet");
 
     /// インスタンスの取得
     collisionManager_ = CollisionManager::GetInstance();
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
-
-    std::stringstream ss;
-    ss << "playerBullet##0x" << std::hex << this;
-    name_ = ss.str();
 
     /// タイマーの初期化
     timer_ = std::make_unique<TimeMeasurer>();
@@ -23,8 +20,8 @@ void PlayerBullet::Initialize(bool _enableDebugWindow)
 
     /// パラメータの初期化
     friction_ = 1.0f;
-    hp_ = 100.0f;
     attackPower_ = 5.0f;
+    stats_.Initalize(1.0f, 5.0f, 1.0f);
 
     // OBBの初期化
     obb_.Initialize();
@@ -41,7 +38,7 @@ void PlayerBullet::Finalize()
 
     collisionManager_->DeleteCollider(collider_.get());
 
-    BaseObject::Finalize();
+    EntityBase::Finalize();
 }
 
 
@@ -57,7 +54,7 @@ void PlayerBullet::Update()
     velocity_ = moveVelocity_;
 
     // 位置の更新
-    BaseObject::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
+    EntityBase::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
 
     // オブジェクトの更新
     this->ObjectsUpdate();
@@ -89,10 +86,10 @@ void PlayerBullet::OnCollisionTrigger(const Collider* _other)
     }
 }
 
-void PlayerBullet::DebugWindow()
+void PlayerBullet::ImGui()
 {
 #ifdef _DEBUG
-    BaseObject::DebugWindow();
+    EntityBase::ImGui();
     ImGui::Checkbox("Draw2D Collision Area", &isDrawCollisionArea_);
 #endif
 }

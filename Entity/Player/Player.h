@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GameObject/BaseObject.h>
+#include <Entity/EntityBase.h>
 #include <Features/Object3d/Object3d.h>
 #include <memory>
 #include <Features/Input/Input.h>
@@ -14,17 +14,18 @@
 #include <Features/Model/ModelManager.h>
 #include <Features/Model/IModel.h>
 
-class Player : public BaseObject
+class Player : public EntityBase
 {
 public:
-    Player(ModelManager* _pModelManager)
-        : pModelManager_(_pModelManager) {};
+    Player(ModelManager* pModelManager)
+        : pModelManager_(pModelManager) {};
 
-    void Initialize(bool _enableDebugWindow = true) override;
+    void Initialize(bool enableDebugWindow = true) override;
     void Finalize() override;
     void Update() override;
     void Draw() override;
     void DrawLine() override;
+    void ImGui() override;
 
 
 public: /// Getter
@@ -33,14 +34,13 @@ public: /// Getter
 
 
 public: /// Setter
-    void SetIsDrawCollisionArea(bool _isDraw) { isDrawCollisionArea_ = _isDraw; }
-    void SetEnableInput(bool _enable) { enableInput_ = _enable; }
+    void SetIsDrawCollisionArea(bool isDraw) { isDrawCollisionArea_ = isDraw; }
+    void SetEnableInput(bool enable) { enableInput_ = enable; }
 
 
 private:
-    void DebugWindow();
-    void OnCollisionTrigger(const Collider* _other);
-    void OnCollision(const Collider* _other);
+    void OnCollisionTrigger(const Collider* other);
+    void OnCollision(const Collider* other);
 
     void ObjectsInitialize();
     void ColliderInitialize();

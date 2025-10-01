@@ -41,7 +41,7 @@ void EnemyPopSystem::Finalize()
     linesArea_->Finalize();
     linesIgnoreCircle_->Finalize();
 
-    DebugManager::GetInstance()->DeleteComponent(name_.c_str());
+    DebugManager::GetInstance()->DeleteComponent(name_);
 }
 
 void EnemyPopSystem::Update()
@@ -101,11 +101,11 @@ void EnemyPopSystem::DrawArea()
     float theta = 0;
     Vector2 resultLine[16] = {};
 
-    for (int i = 0; i < 16; i++)
+    for (auto& line : resultLine)
     {
         theta += 2.0f * 3.141592f / 16;
-        resultLine[i].x = ignorePosition_.x + std::cosf(theta) * ignoreRange_;
-        resultLine[i].y = ignorePosition_.z + std::sinf(theta) * ignoreRange_;
+        line.x = ignorePosition_.x + std::cosf(theta) * ignoreRange_;
+        line.y = ignorePosition_.z + std::sinf(theta) * ignoreRange_;
     }
 
     for (size_t i = 0; i < 16; i++)
@@ -127,13 +127,11 @@ void EnemyPopSystem::DrawArea()
 void EnemyPopSystem::ManualPop()
 {
     this->PopRandom();
-    return;
 }
 
 void EnemyPopSystem::ManualPop(const Vector3& _position)
 {
     popPoints_.push(_position);
-    return;
 }
 
 Vector3 EnemyPopSystem::GetPopPoint()
@@ -148,7 +146,6 @@ void EnemyPopSystem::StartPop()
     timerOverall_.Start();
     timerPop_.Start();
     isEnablePop_ = true;
-    return;
 }
 
 void EnemyPopSystem::StopPop()
@@ -156,7 +153,6 @@ void EnemyPopSystem::StopPop()
     timerOverall_.Reset();
     timerPop_.Reset();
     isEnablePop_ = false;
-    return;
 }
 
 void EnemyPopSystem::PopRandom()
