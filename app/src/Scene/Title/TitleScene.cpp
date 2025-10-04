@@ -33,9 +33,6 @@ void TitleScene::Initialize()
 void TitleScene::Finalize()
 {
     gameEye_.reset();
-
-    pTextTitle_->Finalize();
-    pTextStart_->Finalize();
 }
 
 void TitleScene::Update()
@@ -49,9 +46,6 @@ void TitleScene::Update()
     {
         pSceneTransition_->ChangeScene("GameScene", std::make_unique<TransFadeInOut>());
     }
-
-    pTextTitle_->Update();
-    pTextStart_->Update();
 
     pSkybox_->Update();
 
@@ -68,8 +62,6 @@ void TitleScene::Draw()
 
 void TitleScene::DrawTexts()
 {
-    pTextTitle_->Draw();
-    pTextStart_->Draw();
 }
 
 void TitleScene::InitializeGameEye()
@@ -92,8 +84,6 @@ void TitleScene::InitializeSprites()
     /// タイトルテキストの初期化
     pSpriteTitle_ = std::make_unique<Sprite>();
     pSpriteTitle_->Initialize("Title/Title.png");
-
-
 }
 
 void TitleScene::InitializeSkybox()
