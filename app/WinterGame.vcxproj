@@ -134,6 +134,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AnimationKeyframes\OpeningAnimation.h" />
+    <ClInclude Include="src\config\ResourcePath.h" />
     <ClInclude Include="src\DIContainer\DIContainer.h" />
     <ClInclude Include="src\Entity\EntityBase.h" />
     <ClInclude Include="src\Entity\Enemy\Enemy.h" />

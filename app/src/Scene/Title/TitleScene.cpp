@@ -5,6 +5,10 @@
 #include <Features/Line/LineSystem.h>
 #include <any>
 #include <Core/DirectX12/TextureManager.h>
+#include <config/ResourcePath.h>
+#include <Core/Win32/WinSystem.h>
+#include <Color.h>
+#include <cmath>
 
 void TitleScene::Initialize()
 {
@@ -16,7 +20,7 @@ void TitleScene::Initialize()
     // ゲームアイの初期化
     this->InitializeGameEye();
 
-    // テキストの初期化
+    // スプライトの初期化
     this->InitializeSprites();
 
     // スカイボックスの初期化
@@ -47,8 +51,12 @@ void TitleScene::Update()
         pSceneTransition_->ChangeScene("GameScene", std::make_unique<TransFadeInOut>());
     }
 
-    pSkybox_->Update();
+    this->UpdateStartPromptAnimation();
 
+    pSkybox_->Update();
+    pSpriteTitle_->Update();
+    pSpriteFrameScreen_->Update();
+    pSpritePressStart_->Update();
     pOpeningAnimation_->Update();
 }
 
@@ -57,6 +65,9 @@ void TitleScene::Draw()
     pCubemapSystem_->DrawSetting();
     pSkybox_->Draw();
 
+    pSpriteTitle_->Draw();
+    pSpriteFrameScreen_->Draw();
+    pSpritePressStart_->Draw();
     pOpeningAnimation_->Draw2d();
 }
 
@@ -83,15 +94,44 @@ void TitleScene::InitializeSprites()
 {
     /// タイトルテキストの初期化
     pSpriteTitle_ = std::make_unique<Sprite>();
-    pSpriteTitle_->Initialize("Title/Title.png");
+    pSpriteTitle_->Initialize(Path::Image::kTitle);
+    pSpriteTitle_->SetName("Title");
+    pSpriteTitle_->SetAnchorPoint({ 0.5f, 0.5f });
+    pSpriteTitle_->SetPosition({ WinSystem::clientWidth / 2.0f, WinSystem::clientHeight / 2.0f - 50.0f });
+
+    /// フレームスクリーンの初期化
+    pSpriteFrameScreen_ = std::make_unique<Sprite>();
+    pSpriteFrameScreen_->Initialize(Path::Image::kFrameScreen);
+    pSpriteFrameScreen_->SetName("FrameScreen");
+    pSpriteFrameScreen_->SetAnchorPoint({ 0.5f, 0.5f });
+    pSpriteFrameScreen_->SetPosition({ WinSystem::clientWidth / 2.0f, WinSystem::clientHeight / 2.0f });
+    pSpriteFrameScreen_->SetSize({ static_cast<float>(WinSystem::clientWidth), static_cast<float>(WinSystem::clientHeight) });
+    pSpriteFrameScreen_->SetColor(RGBA(0x101010ff).to_Vector4());
+
+    /// 開始プロンプトの初期化
+    pSpritePressStart_ = std::make_unique<Sprite>();
+    pSpritePressStart_->Initialize(Path::Image::kTitleStartPrompt);
+    pSpritePressStart_->SetName("PressStart");
+    pSpritePressStart_->SetAnchorPoint({ 0.5f, 0.5f });
+    pSpritePressStart_->SetPosition({ WinSystem::clientWidth / 2.0f, WinSystem::clientHeight / 2.0f + 200.0f });
+    pSpritePressStart_->SetSizeWithFactor(1.05f);
 }
 
 void TitleScene::InitializeSkybox()
 {
     auto pTM = TextureManager::GetInstance();
-    pTM->LoadTexture("Title/Skybox.dds");
+    pTM->LoadTexture(Path::Image::kTitleSkybox);
 
     pSkybox_ = std::make_unique<Skybox>();
     pSkybox_->Initialize(pCubemapSystem_);
-    pSkybox_->SetSkyboxTexture(pTM->GetSrvHandleGPU("Title/Skybox.dds"));
+    pSkybox_->SetSkyboxTexture(pTM->GetSrvHandleGPU(Path::Image::kTitleSkybox));
+}
+
+void TitleScene::UpdateStartPromptAnimation()
+{
+    // FIX: 別クラスを立ててUIアニメーションを管理する
+    static float t = 0.0f;
+    opacityStartPrompt_ = (std::sinf(t) + 1.5f) / 3.0f;
+    t += 0.04f;
+    pSpritePressStart_->SetColor(Vector4(1.0f, 1.0f, 1.0f, opacityStartPrompt_));
 }
