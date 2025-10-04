@@ -203,5 +203,6 @@
     <ClInclude Include="src\AnimationKeyframes\OpeningAnimation.h">
       <Filter>AnimationKeyframes</Filter>
     </ClInclude>
+    <ClInclude Include="src\config\ResourcePath.h" />
   </ItemGroup>
 </Project>

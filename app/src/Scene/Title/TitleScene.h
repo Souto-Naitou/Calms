@@ -5,9 +5,6 @@
 #include <Features/Input/Input.h>
 #include <Features/SceneTransition/SceneTransitionManager.h>
 #include <Features/Sprite/Sprite.h>
-#include <Features/Particle/Emitter/ParticleEmitter.h>
-#include <Features/Text/Text.h>
-#include <ScoreSystem/ScoreSystem.h>
 #include <memory>
 #include <Features/Cubemap/Skybox.h>
 #include <Features/Cubemap/CubemapSystem.h>
@@ -49,11 +46,15 @@ private:
     void InitializeSprites();
     void InitializeSkybox();
 
+    void UpdateStartPromptAnimation();
+
     std::unique_ptr<GameEye>            gameEye_                = {};           // !< ゲームアイ
     std::unique_ptr<Sprite>             pSpriteTitle_           = nullptr;      // !< タイトル
-    std::unique_ptr<Sprite>             pSpriteStart_           = nullptr;      // !< メニュー
+    std::unique_ptr<Sprite>             pSpriteFrameScreen_     = nullptr;      // !< タイトル
+    std::unique_ptr<Sprite>             pSpritePressStart_      = nullptr;      // !< メニュー
     std::unique_ptr<Skybox>             pSkybox_                = nullptr;      // !< スカイボックス
     std::unique_ptr<OpeningAnimation>   pOpeningAnimation_      = nullptr;      // !< オープニングアニメーション
+    float                               opacityStartPrompt_     = 0.0f;         // !< スタートプロンプトの不透明度
 
 private:
     Input*                      pInput_             = nullptr;      // !< 入力

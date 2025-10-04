@@ -89,14 +89,14 @@ void GameTimer::Initialize(bool _useSystemClock, double _gameDuration)
         tensPlaceNums_[i]->SetName("tensPlaceNum_" + std::to_string(i));
         tensPlaceNums_[i]->SetAnchorPoint({ 0.5f, 0.5f });
         tensPlaceNums_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.2f });
-        tensPlaceNums_[i]->SetSizeMultiply(0.75f);
+        tensPlaceNums_[i]->SetSizeWithFactor(0.75f);
 
         onesPlaceNums_[i] = std::make_unique<Sprite>();
         onesPlaceNums_[i]->Initialize("number_" + std::to_string(i) + ".png");
         onesPlaceNums_[i]->SetName("onesPlaceNum_" + std::to_string(i));
         onesPlaceNums_[i]->SetAnchorPoint({ 0.5f, 0.5f });
         onesPlaceNums_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.2f });
-        onesPlaceNums_[i]->SetSizeMultiply(0.75f);
+        onesPlaceNums_[i]->SetSizeWithFactor(0.75f);
     }
 
     if (_useSystemClock)
