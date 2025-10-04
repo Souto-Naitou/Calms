@@ -13,30 +13,21 @@ void TitleScene::Initialize()
     pSceneTransition_ = SceneTransitionManager::GetInstance();
     pCubemapSystem_ = std::any_cast<CubemapSystem*>(pArgs_->Get("CubemapSystem"));
 
-    /// ゲームアイの初期化
-    gameEye_ = std::make_unique<GameEye>();
-    gameEye_->SetName("main");
-    gameEye_->SetTranslate(Vector3(0, 15.0f, -30.0f));
-    gameEye_->SetRotate(Vector3(-1.2f, 0, 0));
-
-    /// ゲームアイをセット
-    Object3dSystem::GetInstance()->SetGlobalEye(gameEye_.get());
-    SpriteSystem::GetInstance()->SetGlobalEye(gameEye_.get());
-    LineSystem::GetInstance()->SetGlobalEye(gameEye_.get());
-    pCubemapSystem_->SetGlobalEye(gameEye_.get());
+    // ゲームアイの初期化
+    this->InitializeGameEye();
 
     // テキストの初期化
-    this->InitializeTexts();
-
-    // スプライトの初期化
     this->InitializeSprites();
 
-    auto pTM = TextureManager::GetInstance();
-    pTM->LoadTexture("Title/Skybox.dds");
+    // スカイボックスの初期化
+    this->InitializeSkybox();
 
-    pSkybox_ = std::make_unique<Skybox>();
-    pSkybox_->Initialize(pCubemapSystem_);
-    pSkybox_->SetSkyboxTexture(pTM->GetSrvHandleGPU("Title/Skybox.dds"));
+
+    // オープニングアニメーションの初期化と再生
+    // - 実時間をもとに再生されるためPlay関数のあとに時間のかかる処理(I/O など)を入れないこと
+    pOpeningAnimation_ = std::make_unique<OpeningAnimation>();
+    pOpeningAnimation_->Initialize();
+    pOpeningAnimation_->Play();
 }
 
 void TitleScene::Finalize()
@@ -62,19 +53,17 @@ void TitleScene::Update()
     pTextTitle_->Update();
     pTextStart_->Update();
 
-    pSpriteBackground_->Update();
-    pSpriteFilterImediate_->Update();
-
     pSkybox_->Update();
+
+    pOpeningAnimation_->Update();
 }
 
 void TitleScene::Draw()
 {
-    //pSpriteBackground_->Draw();
-    //pSpriteFilterImediate_->Draw();
-
     pCubemapSystem_->DrawSetting();
     pSkybox_->Draw();
+
+    pOpeningAnimation_->Draw2d();
 }
 
 void TitleScene::DrawTexts()
@@ -83,46 +72,36 @@ void TitleScene::DrawTexts()
     pTextStart_->Draw();
 }
 
-void TitleScene::InitializeSprites()
+void TitleScene::InitializeGameEye()
 {
-    pSpriteBackground_ = std::make_unique<Sprite>();
-    pSpriteBackground_->Initialize("Title/BG0.png");
-    pSpriteBackground_->SetName("Background");
-    pSpriteBackground_->SetPosition({ 0, 0 });
-    pSpriteBackground_->SetSize({ 1600,900 });
+    /// ゲームアイの初期化
+    gameEye_ = std::make_unique<GameEye>();
+    gameEye_->SetName("main");
+    gameEye_->SetTranslate(Vector3(0, 15.0f, -30.0f));
+    gameEye_->SetRotate(Vector3(-1.2f, 0, 0));
 
-    pSpriteFilterImediate_ = std::make_unique<Sprite>();
-    pSpriteFilterImediate_->Initialize("white1x1.png");
-    pSpriteFilterImediate_->SetName("FilterImediate");
-    pSpriteFilterImediate_->SetPosition({ 0, 0 });
-    pSpriteFilterImediate_->SetSize({ 1600,900 });
-    pSpriteFilterImediate_->SetColor({ 0,0,0,0.5f });
+    /// ゲームアイをセット
+    Object3dSystem::GetInstance()->SetGlobalEye(gameEye_.get());
+    SpriteSystem::GetInstance()->SetGlobalEye(gameEye_.get());
+    LineSystem::GetInstance()->SetGlobalEye(gameEye_.get());
+    pCubemapSystem_->SetGlobalEye(gameEye_.get());
 }
 
-void TitleScene::InitializeTexts()
+void TitleScene::InitializeSprites()
 {
-    /// テキストの初期化
-    pTextTitle_ = std::make_unique<Text>();
-    pTextTitle_->Initialize();
-    pTextTitle_->SetText("Calms");
-    pTextTitle_->SetMaxSize({ 1000, 300 });
-    pTextTitle_->SetPosition({ 0, -150 });
-    pTextTitle_->SetFontSize(99.9999f);
-    pTextTitle_->SetColorName("White");
-    pTextTitle_->SetAnchorPoint(TextStandardPoint::Center);
-    pTextTitle_->SetPivot(TextStandardPoint::Center);
-    pTextTitle_->SetName("Title");
-    pTextTitle_->SetFontFamily("Bahnschrift");
+    /// タイトルテキストの初期化
+    pSpriteTitle_ = std::make_unique<Sprite>();
+    pSpriteTitle_->Initialize("Title/Title.png");
 
-    pTextStart_ = std::make_unique<Text>();
-    pTextStart_->Initialize();
-    pTextStart_->SetText("Press SPACE");
-    pTextStart_->SetMaxSize({ 1000, 300 });
-    pTextStart_->SetPosition({ 0, 200 });
-    pTextStart_->SetFontSize(50.0f);
-    pTextStart_->SetColorName("White");
-    pTextStart_->SetAnchorPoint(TextStandardPoint::Center);
-    pTextStart_->SetPivot(TextStandardPoint::Center);
-    pTextStart_->SetName("Start");
-    pTextStart_->SetFontFamily("Bahnschrift");
+
+}
+
+void TitleScene::InitializeSkybox()
+{
+    auto pTM = TextureManager::GetInstance();
+    pTM->LoadTexture("Title/Skybox.dds");
+
+    pSkybox_ = std::make_unique<Skybox>();
+    pSkybox_->Initialize(pCubemapSystem_);
+    pSkybox_->SetSkyboxTexture(pTM->GetSrvHandleGPU("Title/Skybox.dds"));
 }

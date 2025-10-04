@@ -15,7 +15,10 @@ void Enemy::Initialize(bool _enableDebugWindow)
 {
     /// 基底クラスの初期化
     EntityBase::Initialize(_enableDebugWindow);
-    pDebugEntry_->SetName("Enemy");
+    if (isEnableDebugWindow_)
+    {
+        pDebugEntry_->SetName(utl::debug::generate_name("Enemy", this));
+    }
 
     /// インスタンスの取得
     collisionManager_ = CollisionManager::GetInstance();

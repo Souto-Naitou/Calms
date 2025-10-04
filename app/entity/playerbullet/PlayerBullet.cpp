@@ -5,7 +5,10 @@
 void PlayerBullet::Initialize(bool _enableDebugWindow)
 {
     EntityBase::Initialize(_enableDebugWindow);
-    pDebugEntry_->SetName("PlayerBullet");
+    if (isEnableDebugWindow_)
+    {
+        pDebugEntry_->SetName(utl::debug::generate_name("PlayerBullet", this));
+    }
 
     /// インスタンスの取得
     collisionManager_ = CollisionManager::GetInstance();

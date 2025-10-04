@@ -70,6 +70,9 @@
     <Filter Include="Entity\Stats">
       <UniqueIdentifier>{3673aaf9-50f9-4d17-a06b-99dda8e55965}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AnimationKeyframes">
+      <UniqueIdentifier>{2182c022-4ac2-4066-968a-4208cb6a71e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinterGame\WinterGame.cpp">
@@ -131,6 +134,7 @@
     <ClCompile Include="Entity\Status\EntityStats.cpp">
       <Filter>Entity\Stats</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationKeyframes\OpeningAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinterGame\WinterGame.h">
@@ -194,5 +198,6 @@
     <ClInclude Include="Entity\Status\EntityStats.h">
       <Filter>Entity\Stats</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationKeyframes\OpeningAnimation.h" />
   </ItemGroup>
 </Project>
