@@ -11,6 +11,7 @@
 #include <memory>
 #include <Features/Cubemap/Skybox.h>
 #include <Features/Cubemap/CubemapSystem.h>
+#include <AnimationKeyframes/OpeningAnimation.h>
 
 class TitleScene : public SceneBase
 {
@@ -44,15 +45,15 @@ public:
 
 
 private:
+    void InitializeGameEye();
     void InitializeSprites();
-    void InitializeTexts();
+    void InitializeSkybox();
 
-    std::unique_ptr<GameEye>    gameEye_                = {};           // !< ゲームアイ
-    std::unique_ptr<Text>       pTextTitle_             = nullptr;      // !< タイトルテキスト
-    std::unique_ptr<Text>       pTextStart_             = nullptr;      // !< ボタンテキスト
-    std::unique_ptr<Sprite>     pSpriteBackground_      = nullptr;      // !< 背景スプライト
-    std::unique_ptr<Sprite>     pSpriteFilterImediate_  = nullptr;      // !< フィルタースプライト(即座にフェードインアウト)
-    std::unique_ptr<Skybox>     pSkybox_                = nullptr;      // !< スカイボックス
+    std::unique_ptr<GameEye>            gameEye_                = {};           // !< ゲームアイ
+    std::unique_ptr<Sprite>             pSpriteTitle_           = nullptr;      // !< タイトル
+    std::unique_ptr<Sprite>             pSpriteStart_           = nullptr;      // !< メニュー
+    std::unique_ptr<Skybox>             pSkybox_                = nullptr;      // !< スカイボックス
+    std::unique_ptr<OpeningAnimation>   pOpeningAnimation_      = nullptr;      // !< オープニングアニメーション
 
 private:
     Input*                      pInput_             = nullptr;      // !< 入力

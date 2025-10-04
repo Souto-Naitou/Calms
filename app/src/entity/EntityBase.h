@@ -7,6 +7,7 @@
 #include <Entity/Status/EntityStats.h>
 #include <DebugTools/DebugEntry/DebugEntry.h>
 #include <Interfaces/IEntityStats.h>
+#include <memory>
 
 class EntityBase
 {
