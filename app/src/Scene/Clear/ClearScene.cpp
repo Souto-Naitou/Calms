@@ -9,14 +9,14 @@
 void ClearScene::Initialize()
 {
     pSpace_ = std::make_unique<Sprite>();
-    pSpace_->SetName("SpaceSprite");
     pSpace_->Initialize("spacePress.png");
+    pSpace_->SetName("SpaceSprite");
     pSpace_->SetAnchorPoint({ 0.5f, 0.5f });
     pSpace_->SetPosition({ WinSystem::clientWidth / 2, WinSystem::clientHeight / 2 + 100 });
 
     pClear_ = std::make_unique<Sprite>();
-    pClear_->SetName("ClearSprite");
     pClear_->Initialize("clear.png");
+    pClear_->SetName("ClearSprite");
     pClear_->SetAnchorPoint({ 0.5f, 0.5f });
     pClear_->SetPosition({ WinSystem::clientWidth / 2, WinSystem::clientHeight / 2 });
 }

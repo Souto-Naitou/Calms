@@ -300,9 +300,9 @@ void GameScene::Draw()
         bullet->Draw();
     }
 
-    //screenToWorld_->Draw();
+    screenToWorld_->Draw();
 
-    //gameTimer_->Draw();
+    gameTimer_->Draw();
 
     // Lineの描画
     pLineSystem_->PresentDraw();
@@ -323,12 +323,12 @@ void GameScene::Draw()
 
     // 2d forward
     countDown_->Draw2D();
-    //inputGuide_->Draw();
+    inputGuide_->Draw();
 }
 
 void GameScene::DrawTexts()
 {
-    //scoreSystem_->DrawTxt();
+    scoreSystem_->DrawTxt();
     //fpsText_->Draw();
 }
 

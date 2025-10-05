@@ -23,7 +23,7 @@ void OpeningAnimation::Initialize()
     spriteBackground_->SetColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 
     // Tweenの生成
-    AnimationTween<float> tweenOpacity(0.0f, 3.0f, 1.0f, 0.0f);
+    AnimationTween<float> tweenOpacity(1.0f, 3.0f, 1.0f, 0.0f);
 
     // AnimationTimelineの初期化
     timelineOpacity_ = std::make_unique<AnimationTimeline<float>>();
@@ -49,7 +49,7 @@ void OpeningAnimation::Draw2d()
 
 void OpeningAnimation::Play()
 {
-    timelineOpacity_->Start();
+    timelineOpacity_->Start(1.0f);
 }
 
 void OpeningAnimation::ImGui()

@@ -6,7 +6,6 @@
 #include <any>
 #include <Core/DirectX12/TextureManager.h>
 #include <config/ResourcePath.h>
-#include <Core/Win32/WinSystem.h>
 #include <Color.h>
 #include <cmath>
 
@@ -51,6 +50,7 @@ void TitleScene::Update()
         pSceneTransition_->ChangeScene("GameScene", std::make_unique<TransFadeInOut>());
     }
 
+    this->UpdateTitleAnimation();
     this->UpdateStartPromptAnimation();
 
     pSkybox_->Update();
@@ -125,6 +125,15 @@ void TitleScene::InitializeSkybox()
     pSkybox_ = std::make_unique<Skybox>();
     pSkybox_->Initialize(pCubemapSystem_);
     pSkybox_->SetSkyboxTexture(pTM->GetSrvHandleGPU(Path::Image::kTitleSkybox));
+}
+
+void TitleScene::UpdateTitleAnimation()
+{
+    static float t = 0.0f;
+    float x = pSpriteTitle_->GetPosition().x;
+    float y = kPosYTitle_ + std::sinf(t) * 5.0f;
+    pSpriteTitle_->SetPosition(Vector2(x, y));
+    t += 0.04f;
 }
 
 void TitleScene::UpdateStartPromptAnimation()
