@@ -1,10 +1,10 @@
-#include "EnemyPopSystem.h"
+#include "EnemySpawner.h"
 
 #include <imgui.h>
 #include <DebugTools/DebugManager/DebugManager.h>
 #include <Utility/JSONIO/JSONIO.h>
 
-void EnemyPopSystem::Initialize()
+void EnemySpawner::Initialize()
 {
     /// インスタンスの取得
     randomGenerator_ = RandomGenerator::GetInstance();
@@ -23,7 +23,7 @@ void EnemyPopSystem::Initialize()
 
 
     /// デバッグウィンドウを登録
-    DebugManager::GetInstance()->SetComponent(name_, std::bind(&EnemyPopSystem::DebugWindow, this));
+    DebugManager::GetInstance()->SetComponent(name_, std::bind(&EnemySpawner::DebugWindow, this));
 
 
     /// ラインの初期化
@@ -36,7 +36,7 @@ void EnemyPopSystem::Initialize()
     linesIgnoreCircle_->SetColor(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
-void EnemyPopSystem::Finalize()
+void EnemySpawner::Finalize()
 {   
     linesArea_->Finalize();
     linesIgnoreCircle_->Finalize();
@@ -44,7 +44,7 @@ void EnemyPopSystem::Finalize()
     DebugManager::GetInstance()->DeleteComponent(name_);
 }
 
-void EnemyPopSystem::Update()
+void EnemySpawner::Update()
 {
     if (isEnablePop_ == false)
     {
@@ -80,7 +80,7 @@ void EnemyPopSystem::Update()
 
 }
 
-void EnemyPopSystem::DrawArea()
+void EnemySpawner::DrawArea()
 {
     if (isDisplayArea_ == false)
     {
@@ -124,38 +124,38 @@ void EnemyPopSystem::DrawArea()
 }
 
 
-void EnemyPopSystem::ManualPop()
+void EnemySpawner::ManualPop()
 {
     this->PopRandom();
 }
 
-void EnemyPopSystem::ManualPop(const Vector3& _position)
+void EnemySpawner::ManualPop(const Vector3& _position)
 {
     popPoints_.push(_position);
 }
 
-Vector3 EnemyPopSystem::GetPopPoint()
+Vector3 EnemySpawner::GetPopPoint()
 {
     Vector3 popPoint = popPoints_.front();
     popPoints_.pop();
     return popPoint;
 }
 
-void EnemyPopSystem::StartPop()
+void EnemySpawner::StartPop()
 {
     timerOverall_.Start();
     timerPop_.Start();
     isEnablePop_ = true;
 }
 
-void EnemyPopSystem::StopPop()
+void EnemySpawner::StopPop()
 {
     timerOverall_.Reset();
     timerPop_.Reset();
     isEnablePop_ = false;
 }
 
-void EnemyPopSystem::PopRandom()
+void EnemySpawner::PopRandom()
 {
     Vector3 randPosition = {};
 
@@ -183,7 +183,7 @@ void EnemyPopSystem::PopRandom()
     popPoints_.push(randPosition);
 }
 
-void EnemyPopSystem::DebugWindow()
+void EnemySpawner::DebugWindow()
 {
 #ifdef _DEBUG
     ImGui::Text("Overall Time: %.1f", timerOverall_.GetNow<float>());
@@ -208,7 +208,7 @@ void EnemyPopSystem::DebugWindow()
 #endif
 }
 
-void EnemyPopSystem::InitPopData()
+void EnemySpawner::InitPopData()
 {
     json& enemyTimeTable = jsonPopTimeTable_["Enemy"]["TimeTable"];
 
@@ -239,7 +239,7 @@ void EnemyPopSystem::InitPopData()
     popDataIndex_ = 0;
 }
 
-void EnemyPopSystem::UpdatePop()
+void EnemySpawner::UpdatePop()
 {
     if (timerOverall_.GetIsStart() == false)
     {
@@ -268,7 +268,7 @@ void EnemyPopSystem::UpdatePop()
     }
 }
 
-void EnemyPopSystem::ReloadJsonData()
+void EnemySpawner::ReloadJsonData()
 {
     auto path = pathResolver_.GetFilePath(kJsonFileName_);
     jsonPopTimeTable_ = jsonIO_->Unload(path);

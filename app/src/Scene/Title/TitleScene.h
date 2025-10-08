@@ -8,8 +8,11 @@
 #include <memory>
 #include <Features/Cubemap/Skybox.h>
 #include <Features/Cubemap/CubemapSystem.h>
-#include <AnimationKeyframes/OpeningAnimation.h>
 #include <Core/Win32/WinSystem.h>
+#include <Effects/PostEffects/RandomFilter/RandomFilter.h>
+#include <Core/DirectX12/DirectX12.h>
+#include <Core/DirectX12/PostEffect.h>
+#include "Animation/OpeningAnimation.h"
 
 class TitleScene : public SceneBase
 {
@@ -58,6 +61,9 @@ private:
     std::unique_ptr<OpeningAnimation>   pOpeningAnimation_      = nullptr;      // !< オープニングアニメーション
     float                               opacityStartPrompt_     = 0.0f;         // !< スタートプロンプトの不透明度
     const float                         kPosYTitle_             = WinSystem::clientHeight / 2.0f - 50.0f ; // !< タイトルのY座標
+    std::unique_ptr<RandomFilter>       pRandomFilter_          = nullptr;      // !< ランダムフィルタ
+    DirectX12*                          pDx12_                  = nullptr;      // !< DirectX12
+    PostEffectExecuter*                 pPostEffectExecuter_    = nullptr;      // !< ポストエフェクト実行クラス
 
 
 private:

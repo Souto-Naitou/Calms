@@ -2,7 +2,7 @@
 #include <Features/Text/Text.h>
 #include <memory>
 
-class ScoreSystem
+class ScoreCalculator
 {
 public:
     void Initialize();

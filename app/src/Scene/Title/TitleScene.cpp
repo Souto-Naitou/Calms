@@ -15,6 +15,8 @@ void TitleScene::Initialize()
     pInput_ = Input::GetInstance();
     pSceneTransition_ = SceneTransitionManager::GetInstance();
     pCubemapSystem_ = std::any_cast<CubemapSystem*>(pArgs_->Get("CubemapSystem"));
+    pDx12_ = std::any_cast<DirectX12*>(pArgs_->Get("DirectX12"));
+    pPostEffectExecuter_ = std::any_cast<PostEffectExecuter*>(pArgs_->Get("PostEffectExecuter"));
 
     // ゲームアイの初期化
     this->InitializeGameEye();
@@ -25,6 +27,8 @@ void TitleScene::Initialize()
     // スカイボックスの初期化
     this->InitializeSkybox();
 
+    pRandomFilter_ = Helper::PostEffect::CreatePostEffect<RandomFilter>(pDx12_);
+    pPostEffectExecuter_->RegisterPostEffect(pRandomFilter_.get());
 
     // オープニングアニメーションの初期化と再生
     // - 実時間をもとに再生されるためPlay関数のあとに時間のかかる処理(I/O など)を入れないこと
@@ -36,6 +40,7 @@ void TitleScene::Initialize()
 void TitleScene::Finalize()
 {
     gameEye_.reset();
+    pPostEffectExecuter_->UnregisterPostEffect(pRandomFilter_.get());
 }
 
 void TitleScene::Update()
@@ -47,11 +52,13 @@ void TitleScene::Update()
 
     if (pInput_->TriggerKey(DIK_SPACE))
     {
-        pSceneTransition_->ChangeScene("GameScene", std::make_unique<TransFadeInOut>());
+        pSceneTransition_->ChangeScene("TitleScene", std::make_unique<TransFadeInOut>());
     }
 
     this->UpdateTitleAnimation();
     this->UpdateStartPromptAnimation();
+
+    pRandomFilter_->SetSeed(eyeRotate.y);
 
     pSkybox_->Update();
     pSpriteTitle_->Update();

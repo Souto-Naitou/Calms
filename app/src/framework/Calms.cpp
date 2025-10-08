@@ -1,4 +1,4 @@
-#include "WinterGame.h"
+#include "Calms.h"
 
 #include <Common/define.h>
 #include <Features/SceneManager/SceneManager.h>
@@ -7,7 +7,7 @@
 
 #pragma comment(lib, "Ws2_32.lib")
 
-void WinterGame::Initialize()
+void Calms::Initialize()
 {
     /// 基底クラスの初期化処理
     NimaFramework::Initialize();
@@ -36,13 +36,13 @@ void WinterGame::Initialize()
     pTextureManager_->LoadTexture("noise0.png");
 }
 
-void WinterGame::Finalize()
+void Calms::Finalize()
 {
     /// 基底クラスの終了処理
     NimaFramework::Finalize();
 }
 
-void WinterGame::Update()
+void Calms::Update()
 {
     /// 当たり判定の更新
     pCollisionManager_->CheckAllCollision();
@@ -51,7 +51,7 @@ void WinterGame::Update()
     NimaFramework::Update();
 }
 
-void WinterGame::Draw()
+void Calms::Draw()
 {
     /// 描画前処理
     NimaFramework::PreProcess();

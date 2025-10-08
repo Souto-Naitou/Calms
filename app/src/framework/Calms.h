@@ -7,7 +7,7 @@
 #include <Features/Model/ModelStorage.h>
 #include <Features/Model/ModelManager.h>
 
-class WinterGame : public NimaFramework
+class Calms : public NimaFramework
 {
 public:
     /// <summary>

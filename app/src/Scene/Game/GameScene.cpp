@@ -109,7 +109,7 @@ void GameScene::Initialize()
 
 
     /// ゲームタイマーの初期化
-    gameTimer_ = std::make_unique<GameTimer>();
+    gameTimer_ = std::make_unique<InGameTimer>();
     gameTimer_->Initialize(false, 60.0);
 
 
@@ -119,7 +119,7 @@ void GameScene::Initialize()
 
 
     /// スコアシステムの初期化
-    scoreSystem_ = std::make_unique<ScoreSystem>();
+    scoreSystem_ = std::make_unique<ScoreCalculator>();
     scoreSystem_->Initialize();
 
 

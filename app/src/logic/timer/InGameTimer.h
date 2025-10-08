@@ -4,7 +4,7 @@
 #include <Features/Sprite/Sprite.h>
 #include <array>
 
-class GameTimer
+class InGameTimer
 {
 public:
     void Initialize(bool _useSystemClock, double _gameDuration);

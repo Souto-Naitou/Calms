@@ -2,7 +2,7 @@
 
 #include <Vector3.h>
 #include <Features/GameEye/GameEye.h>
-#include <DIContainer/DIContainer.h>
+#include <type/DIContainer.h>
 #include <Features/Lighting/PointLight/PointLight.h>
 #include <Entity/Status/EntityStats.h>
 #include <DebugTools/DebugEntry/DebugEntry.h>

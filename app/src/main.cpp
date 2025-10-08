@@ -1,9 +1,8 @@
-#include <Framework/NimaFramework.h>
-#include "WinterGame/WinterGame.h"
+#include "framework/Calms.h"
 
 int _stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
-    NimaFramework* pWinterGame = new WinterGame();
+    NimaFramework* pWinterGame = new Calms();
 
     pWinterGame->Run();
 

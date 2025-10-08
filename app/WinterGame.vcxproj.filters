@@ -19,12 +19,6 @@
     <Filter Include="DIContainer">
       <UniqueIdentifier>{a054c6e7-0a23-441a-8a5f-995110a91dd8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PopSystem">
-      <UniqueIdentifier>{dbf0e03b-698b-4eb1-bf27-3bb34f606cb5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="PopSystem\Enemy">
-      <UniqueIdentifier>{beced530-f079-4aed-84b5-fdaaed33c53c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="EventListener">
       <UniqueIdentifier>{db49e90e-2b87-40c5-b88a-a7f2ab7fd0ac}</UniqueIdentifier>
     </Filter>
@@ -73,47 +67,53 @@
     <Filter Include="AnimationKeyframes">
       <UniqueIdentifier>{2182c022-4ac2-4066-968a-4208cb6a71e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Config">
+      <UniqueIdentifier>{8897ca16-d942-450f-9fd0-ac0e40272105}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="logic">
+      <UniqueIdentifier>{41f53130-ce1d-44f8-bb1b-ee0011b1132d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="logic\spawner">
+      <UniqueIdentifier>{89fb3282-62b2-4b28-b305-8a05d0f0d420}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\WinterGame\WinterGame.cpp">
+    <ClCompile Include="src\framework\Calms.cpp">
       <Filter>WinterGame</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Scene\Factory\SceneFactory.cpp">
+    <ClCompile Include="src\scene\Factory\SceneFactory.cpp">
       <Filter>Scene\Factory</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene\Title\TitleScene.cpp">
+    <ClCompile Include="src\scene\Title\TitleScene.cpp">
       <Filter>Scene\Title</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene\Game\GameScene.cpp">
+    <ClCompile Include="src\scene\Game\GameScene.cpp">
       <Filter>Scene\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\EventListener\EventListener.cpp">
+    <ClCompile Include="src\logic\event\EventListener.cpp">
       <Filter>EventListener</Filter>
     </ClCompile>
-    <ClCompile Include="src\PopSystem\Enemy\EnemyPopSystem.cpp">
-      <Filter>PopSystem\Enemy</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UI\CountDown\CountDown.cpp">
+    <ClCompile Include="src\ui\CountDown\CountDown.cpp">
       <Filter>UI\CountDown</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene\Clear\ClearScene.cpp">
+    <ClCompile Include="src\scene\Clear\ClearScene.cpp">
       <Filter>Scene\Clear</Filter>
     </ClCompile>
-    <ClCompile Include="src\GameTimer\GameTimer.cpp">
+    <ClCompile Include="src\logic\timer\InGameTimer.cpp">
       <Filter>GameTimer</Filter>
     </ClCompile>
-    <ClCompile Include="src\InputGuide\InputGuide.cpp">
+    <ClCompile Include="src\ui\guide\InputGuide.cpp">
       <Filter>UI\InputGuide</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
-    <ClCompile Include="src\MultiData\MultiDataResolver\MultiDataResolver.cpp">
+    <ClCompile Include="src\io\net\MultiDataResolver.cpp">
       <Filter>MultiData\MultiDataResolver</Filter>
     </ClCompile>
-    <ClCompile Include="src\MultiDataManager\MultiDataManager.cpp">
+    <ClCompile Include="src\io\net\MultiDataManager.cpp">
       <Filter>MultiData</Filter>
     </ClCompile>
-    <ClCompile Include="src\ScoreSystem\ScoreSystem.cpp">
+    <ClCompile Include="src\logic\score\ScoreCalculator.cpp">
       <Filter>ScoreSystem</Filter>
     </ClCompile>
     <ClCompile Include="src\Entity\Enemy\Enemy.cpp">
@@ -134,52 +134,52 @@
     <ClCompile Include="src\Entity\Status\EntityStats.cpp">
       <Filter>Entity\Stats</Filter>
     </ClCompile>
-    <ClCompile Include="src\AnimationKeyframes\OpeningAnimation.cpp">
+    <ClCompile Include="src\scene\Title\Animation\OpeningAnimation.cpp">
       <Filter>AnimationKeyframes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\logic\spawner\EnemySpawner.cpp">
+      <Filter>logic\spawner</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\WinterGame\WinterGame.h">
+    <ClInclude Include="src\framework\Calms.h">
       <Filter>WinterGame</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Factory\SceneFactory.h">
+    <ClInclude Include="src\scene\Factory\SceneFactory.h">
       <Filter>Scene\Factory</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Title\TitleScene.h">
+    <ClInclude Include="src\scene\Title\TitleScene.h">
       <Filter>Scene\Title</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Game\GameScene.h">
+    <ClInclude Include="src\scene\Game\GameScene.h">
       <Filter>Scene\Game</Filter>
     </ClInclude>
-    <ClInclude Include="src\DIContainer\DIContainer.h">
+    <ClInclude Include="src\type\DIContainer.h">
       <Filter>DIContainer</Filter>
     </ClInclude>
-    <ClInclude Include="src\PopSystem\Enemy\EnemyPopSystem.h">
-      <Filter>PopSystem\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EventListener\EventListener.h">
+    <ClInclude Include="src\logic\event\EventListener.h">
       <Filter>EventListener</Filter>
     </ClInclude>
-    <ClInclude Include="src\UI\CountDown\CountDown.h">
+    <ClInclude Include="src\ui\CountDown\CountDown.h">
       <Filter>UI\CountDown</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameTimer\GameTimer.h">
+    <ClInclude Include="src\logic\timer\InGameTimer.h">
       <Filter>GameTimer</Filter>
     </ClInclude>
-    <ClInclude Include="src\InputGuide\InputGuide.h">
+    <ClInclude Include="src\ui\guide\InputGuide.h">
       <Filter>UI\InputGuide</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Clear\ClearScene.h">
+    <ClInclude Include="src\scene\Clear\ClearScene.h">
       <Filter>Scene\Clear</Filter>
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
-    <ClInclude Include="src\MultiDataManager\MultiDataManager.h">
+    <ClInclude Include="src\io\net\MultiDataManager.h">
       <Filter>MultiData</Filter>
     </ClInclude>
-    <ClInclude Include="src\MultiData\MultiDataResolver\MultiDataResolver.h">
+    <ClInclude Include="src\io\net\MultiDataResolver.h">
       <Filter>MultiData\MultiDataResolver</Filter>
     </ClInclude>
-    <ClInclude Include="src\ScoreSystem\ScoreSystem.h">
+    <ClInclude Include="src\logic\score\ScoreCalculator.h">
       <Filter>ScoreSystem</Filter>
     </ClInclude>
     <ClInclude Include="src\Entity\Enemy\Enemy.h">
@@ -200,9 +200,14 @@
     <ClInclude Include="src\Entity\Status\EntityStats.h">
       <Filter>Entity\Stats</Filter>
     </ClInclude>
-    <ClInclude Include="src\AnimationKeyframes\OpeningAnimation.h">
+    <ClInclude Include="src\scene\Title\Animation\OpeningAnimation.h">
       <Filter>AnimationKeyframes</Filter>
     </ClInclude>
-    <ClInclude Include="src\config\ResourcePath.h" />
+    <ClInclude Include="src\config\ResourcePath.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\logic\spawner\EnemySpawner.h">
+      <Filter>logic\spawner</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

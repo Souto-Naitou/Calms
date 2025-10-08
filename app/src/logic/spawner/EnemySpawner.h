@@ -11,7 +11,7 @@
 #include <Utility/JSONIO/JSONIO.h>
 #include <nlohmann/json.hpp>
 
-class EnemyPopSystem
+class EnemySpawner
 {
 public:
     struct PopData

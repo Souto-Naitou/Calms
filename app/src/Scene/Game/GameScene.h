@@ -1,23 +1,23 @@
 #pragma once
 
 #include <Scene/SceneBase.h>
-#include <DIContainer/DIContainer.h>
+#include <type/DIContainer.h>
 #include <Features/Object3d/Object3d.h>
 #include <Features/GameEye/GameEye.h>
-#include <Entity/Player/Player.h>
-#include <Entity/PlayerBullet/PlayerBullet.h>
-#include <Entity/Enemy/Enemy.h>
+#include <entity/player/Player.h>
+#include <entity/playerbullet/PlayerBullet.h>
+#include <entity/enemy/Enemy.h>
 #include <Common/structs.h>
-#include <PopSystem/Enemy/EnemyPopSystem.h>
+#include <logic/spawner/EnemySpawner.h>
 #include <DebugTools/DebugManager/DebugManager.h>
 #include <UI/CountDown/CountDown.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <Entity/ScreenToWorld/ScreenToWorld.h>
 #include <Features/RandomGenerator/RandomGenerator.h>
-#include <GameTimer/GameTimer.h>
-#include <InputGuide/InputGuide.h>
+#include <logic/timer/InGameTimer.h>
+#include <ui/guide/InputGuide.h>
 #include <Features/Line/Line.h>
-#include <ScoreSystem/ScoreSystem.h>
+#include <logic/score/ScoreCalculator.h>
 #include <Features/Text/Text.h>
 #include <list>
 #include <memory>
@@ -67,12 +67,12 @@ private:
     std::vector<std::unique_ptr<Enemy>>         enemies_            = {};       // !< 敵s
     std::list<std::unique_ptr<PlayerBullet>>    playerBullets_      = {};       // !< プレイヤー弾s
     std::unique_ptr<ScreenToWorld>              screenToWorld_      = {};       // !< 座標変換
-    std::unique_ptr<GameTimer>                  gameTimer_          = {};       // !< ゲームタイマー
+    std::unique_ptr<InGameTimer>                gameTimer_          = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                 inputGuide_         = {};       // !< 入力ガイド
-    std::unique_ptr<ScoreSystem>                scoreSystem_        = {};       // !< スコアシステム
+    std::unique_ptr<ScoreCalculator>                scoreSystem_        = {};       // !< スコアシステム
     std::unique_ptr<Text>                       fpsText_            = {};       // !< テキスト
 
-    EnemyPopSystem                              enemyPopSystem_     = {};       // !< 敵生成システム
+    EnemySpawner                              enemyPopSystem_     = {};       // !< 敵生成システム
     DIContainer                                 gObjDIContainer_    = {};       // !< ゲームオブジェクトのDIコンテナ
     DirectionalLight                            directionalLight_   = {};       // !< ディレクショナルライト
     PointLight                                  pointLight_         = {};       // !< ポイントライト

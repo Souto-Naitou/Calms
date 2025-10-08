@@ -1,8 +1,8 @@
-#include "GameTimer.h"
+#include "InGameTimer.h"
 #include <Core/Win32/WinSystem.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 
-void GameTimer::Reset()
+void InGameTimer::Reset()
 {
     isEnd_ = false;
     isNextScene_ = false;
@@ -11,7 +11,7 @@ void GameTimer::Reset()
     if (pTimer_) pTimer_->Reset();
 }
 
-void GameTimer::CurrentTimeUpdate()
+void InGameTimer::CurrentTimeUpdate()
 {
     /// タイマー更新
     if (isStart_)
@@ -36,7 +36,7 @@ void GameTimer::CurrentTimeUpdate()
     }
 }
 
-void GameTimer::SpriteUpdate()
+void InGameTimer::SpriteUpdate()
 {
     double time = gameDuration_ - nowTime_;
     indexTensPlace_ = static_cast<int>(time) / 10;
@@ -68,7 +68,7 @@ void GameTimer::SpriteUpdate()
     spriteOnesPlace->Update();
 }
 
-void GameTimer::Start()
+void InGameTimer::Start()
 {
     isStart_ = true;
 
@@ -78,7 +78,7 @@ void GameTimer::Start()
     }
 }
 
-void GameTimer::Initialize(bool _useSystemClock, double _gameDuration)
+void InGameTimer::Initialize(bool _useSystemClock, double _gameDuration)
 {
     gameDuration_ = _gameDuration;
 
@@ -107,7 +107,7 @@ void GameTimer::Initialize(bool _useSystemClock, double _gameDuration)
     isUseSystemClock_ = _useSystemClock;
 }
 
-void GameTimer::Update()
+void InGameTimer::Update()
 {
     this->CurrentTimeUpdate();
 
@@ -120,7 +120,7 @@ void GameTimer::Update()
     //}
 }
 
-void GameTimer::Draw()
+void InGameTimer::Draw()
 {
     if (!isDisplay_)
     {
@@ -131,7 +131,7 @@ void GameTimer::Draw()
     onesPlaceNums_[indexOnesPlace_]->Draw();
 }
 
-void GameTimer::Finalize()
+void InGameTimer::Finalize()
 {
     for (int i = 0; i < 10; i++)
     {

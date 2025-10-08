@@ -1,8 +1,8 @@
-#include "ScoreSystem.h"
+#include "ScoreCalculator.h"
 
 #include <format>
 
-void ScoreSystem::Initialize()
+void ScoreCalculator::Initialize()
 {
     /// スコアの初期化
     score_ = 0;
@@ -32,7 +32,7 @@ void ScoreSystem::Initialize()
     pName_->SetFontFamily("Bahnschrift");
 }
 
-void ScoreSystem::Update()
+void ScoreCalculator::Update()
 {
     pScore_->SetText(std::format("{:010}", static_cast<int>(score_)));
 
@@ -49,19 +49,19 @@ void ScoreSystem::Update()
     pScore_->Update();
 }
 
-void ScoreSystem::DrawTxt()
+void ScoreCalculator::DrawTxt()
 {
     pName_->Draw();
     pScore_->Draw();
 }
 
-void ScoreSystem::Finalize()
+void ScoreCalculator::Finalize()
 {
     pName_->Finalize();
     pScore_->Finalize();
 }
 
-void ScoreSystem::CountEnemyDeath()
+void ScoreCalculator::CountEnemyDeath()
 {
     enemyDeathCount_++;
     receiveAddScore_ += kEnemyScore;
