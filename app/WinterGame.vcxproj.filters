@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="WinterGame">
-      <UniqueIdentifier>{41ae74d7-2431-4ece-81fa-20802ee7153d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scene">
       <UniqueIdentifier>{006d1f95-bd69-487f-a16f-63e700395313}</UniqueIdentifier>
     </Filter>
@@ -16,35 +13,17 @@
     <Filter Include="Scene\Game">
       <UniqueIdentifier>{caef7934-734a-4ac8-9c48-d59212b0d380}</UniqueIdentifier>
     </Filter>
-    <Filter Include="DIContainer">
-      <UniqueIdentifier>{a054c6e7-0a23-441a-8a5f-995110a91dd8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="EventListener">
-      <UniqueIdentifier>{db49e90e-2b87-40c5-b88a-a7f2ab7fd0ac}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI">
       <UniqueIdentifier>{f629a227-da6b-426b-97f9-3a33cfaa6f4c}</UniqueIdentifier>
     </Filter>
     <Filter Include="UI\CountDown">
       <UniqueIdentifier>{537eb468-a26f-41f8-97a1-eb5d138e5beb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameTimer">
-      <UniqueIdentifier>{7e57411c-5795-47fe-bd26-eaea6b828de2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI\InputGuide">
       <UniqueIdentifier>{be36d6ff-38cc-49dc-bc4d-af352c25742d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scene\Clear">
       <UniqueIdentifier>{e038e2c1-eee8-42e3-8c9b-f54ae3698b78}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="MultiData">
-      <UniqueIdentifier>{ea193379-2d59-4248-a97b-42bd27ab419f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="MultiData\MultiDataResolver">
-      <UniqueIdentifier>{871347c5-b419-4bb5-9e14-458f14e6b9eb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ScoreSystem">
-      <UniqueIdentifier>{1a901cd6-b7ad-42da-adc5-24619b1aa5db}</UniqueIdentifier>
     </Filter>
     <Filter Include="Entity">
       <UniqueIdentifier>{04dfdcfc-59e1-403a-9266-6a4aaee534b6}</UniqueIdentifier>
@@ -64,22 +43,43 @@
     <Filter Include="Entity\Stats">
       <UniqueIdentifier>{3673aaf9-50f9-4d17-a06b-99dda8e55965}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AnimationKeyframes">
-      <UniqueIdentifier>{2182c022-4ac2-4066-968a-4208cb6a71e6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Config">
       <UniqueIdentifier>{8897ca16-d942-450f-9fd0-ac0e40272105}</UniqueIdentifier>
     </Filter>
-    <Filter Include="logic">
+    <Filter Include="Framework">
+      <UniqueIdentifier>{41ae74d7-2431-4ece-81fa-20802ee7153d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic">
       <UniqueIdentifier>{41f53130-ce1d-44f8-bb1b-ee0011b1132d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="logic\spawner">
+    <Filter Include="Logic\Spawner">
       <UniqueIdentifier>{89fb3282-62b2-4b28-b305-8a05d0f0d420}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IO">
+      <UniqueIdentifier>{c1a9b9e5-3ea2-40dc-b89a-2325cb5a4534}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IO\Net">
+      <UniqueIdentifier>{ea193379-2d59-4248-a97b-42bd27ab419f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Title\Animation">
+      <UniqueIdentifier>{2182c022-4ac2-4066-968a-4208cb6a71e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Score">
+      <UniqueIdentifier>{1a901cd6-b7ad-42da-adc5-24619b1aa5db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Event">
+      <UniqueIdentifier>{db49e90e-2b87-40c5-b88a-a7f2ab7fd0ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Timer">
+      <UniqueIdentifier>{7e57411c-5795-47fe-bd26-eaea6b828de2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Type">
+      <UniqueIdentifier>{a054c6e7-0a23-441a-8a5f-995110a91dd8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\Calms.cpp">
-      <Filter>WinterGame</Filter>
+      <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\scene\Factory\SceneFactory.cpp">
@@ -92,7 +92,7 @@
       <Filter>Scene\Game</Filter>
     </ClCompile>
     <ClCompile Include="src\logic\event\EventListener.cpp">
-      <Filter>EventListener</Filter>
+      <Filter>Logic\Event</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\CountDown\CountDown.cpp">
       <Filter>UI\CountDown</Filter>
@@ -101,20 +101,17 @@
       <Filter>Scene\Clear</Filter>
     </ClCompile>
     <ClCompile Include="src\logic\timer\InGameTimer.cpp">
-      <Filter>GameTimer</Filter>
+      <Filter>Logic\Timer</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\guide\InputGuide.cpp">
       <Filter>UI\InputGuide</Filter>
     </ClCompile>
     <ClCompile Include="src\stdafx.cpp" />
-    <ClCompile Include="src\io\net\MultiDataResolver.cpp">
-      <Filter>MultiData\MultiDataResolver</Filter>
-    </ClCompile>
     <ClCompile Include="src\io\net\MultiDataManager.cpp">
-      <Filter>MultiData</Filter>
+      <Filter>IO\Net</Filter>
     </ClCompile>
     <ClCompile Include="src\logic\score\ScoreCalculator.cpp">
-      <Filter>ScoreSystem</Filter>
+      <Filter>Logic\Score</Filter>
     </ClCompile>
     <ClCompile Include="src\Entity\Enemy\Enemy.cpp">
       <Filter>Entity\Enemy</Filter>
@@ -135,15 +132,18 @@
       <Filter>Entity\Stats</Filter>
     </ClCompile>
     <ClCompile Include="src\scene\Title\Animation\OpeningAnimation.cpp">
-      <Filter>AnimationKeyframes</Filter>
+      <Filter>Scene\Title\Animation</Filter>
     </ClCompile>
     <ClCompile Include="src\logic\spawner\EnemySpawner.cpp">
-      <Filter>logic\spawner</Filter>
+      <Filter>Logic\Spawner</Filter>
+    </ClCompile>
+    <ClCompile Include="src\io\net\MultiDataResolver.cpp">
+      <Filter>IO\Net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
-      <Filter>WinterGame</Filter>
+      <Filter>Framework</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\Factory\SceneFactory.h">
       <Filter>Scene\Factory</Filter>
@@ -155,16 +155,16 @@
       <Filter>Scene\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\type\DIContainer.h">
-      <Filter>DIContainer</Filter>
+      <Filter>Type</Filter>
     </ClInclude>
     <ClInclude Include="src\logic\event\EventListener.h">
-      <Filter>EventListener</Filter>
+      <Filter>Logic\Event</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\CountDown\CountDown.h">
       <Filter>UI\CountDown</Filter>
     </ClInclude>
     <ClInclude Include="src\logic\timer\InGameTimer.h">
-      <Filter>GameTimer</Filter>
+      <Filter>Logic\Timer</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\guide\InputGuide.h">
       <Filter>UI\InputGuide</Filter>
@@ -174,13 +174,10 @@
     </ClInclude>
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\io\net\MultiDataManager.h">
-      <Filter>MultiData</Filter>
-    </ClInclude>
-    <ClInclude Include="src\io\net\MultiDataResolver.h">
-      <Filter>MultiData\MultiDataResolver</Filter>
+      <Filter>IO\Net</Filter>
     </ClInclude>
     <ClInclude Include="src\logic\score\ScoreCalculator.h">
-      <Filter>ScoreSystem</Filter>
+      <Filter>Logic\Score</Filter>
     </ClInclude>
     <ClInclude Include="src\Entity\Enemy\Enemy.h">
       <Filter>Entity\Enemy</Filter>
@@ -201,13 +198,16 @@
       <Filter>Entity\Stats</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\Title\Animation\OpeningAnimation.h">
-      <Filter>AnimationKeyframes</Filter>
+      <Filter>Scene\Title\Animation</Filter>
     </ClInclude>
     <ClInclude Include="src\config\ResourcePath.h">
       <Filter>Config</Filter>
     </ClInclude>
     <ClInclude Include="src\logic\spawner\EnemySpawner.h">
-      <Filter>logic\spawner</Filter>
+      <Filter>Logic\Spawner</Filter>
+    </ClInclude>
+    <ClInclude Include="src\io\net\MultiDataResolver.h">
+      <Filter>IO\Net</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
