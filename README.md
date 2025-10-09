@@ -1,7 +1,7 @@
 ### <img width="428" height="101" alt="image" src="https://github.com/user-attachments/assets/7105620c-3bf7-4352-be3a-664ae2dce6ff" />
 
 [![Build Status](https://github.com/Souto-Naitou/Calms/actions/workflows/ReleaseBuildTest.yml/badge.svg?event=pull_request)](https://github.com/Souto-Naitou/Calms/actions/workflows/ReleaseBuildTest.yml)
-[![YouTube Link](https://img.shields.io/badge/Youtube-PV-lightgray?logo=YouTube&labelColor=red)](https://youtu.be/iUMlmH9gDBQ)
+[![YouTube Link](https://img.shields.io/badge/Youtube-PV-gray?logo=YouTube&labelColor=red)](https://youtu.be/iUMlmH9gDBQ)
 
 <hr border=none />
 
