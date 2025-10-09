@@ -7,7 +7,7 @@
 
 3D見下ろし型シューティングゲーム - Written in C++
 
-<img width="1594" height="900" alt="スクリーンショット 2025-06-28 235415" src="https://github.com/user-attachments/assets/f1c45769-11f9-472e-a2cc-1414388c1ac7" />
+<img width="1594" alt="スクリーンショット 2025-06-28 235415" src="https://github.com/user-attachments/assets/f1c45769-11f9-472e-a2cc-1414388c1ac7" />
 
 # 環境
 - C++20 / Visual Studio 2022
