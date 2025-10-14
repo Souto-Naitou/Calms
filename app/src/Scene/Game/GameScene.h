@@ -69,7 +69,7 @@ private:
     std::unique_ptr<ScreenToWorld>              screenToWorld_      = {};       // !< 座標変換
     std::unique_ptr<InGameTimer>                gameTimer_          = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                 inputGuide_         = {};       // !< 入力ガイド
-    std::unique_ptr<ScoreCalculator>                scoreSystem_        = {};       // !< スコアシステム
+    std::unique_ptr<ScoreCalculator>            scoreSystem_        = {};       // !< スコアシステム
     std::unique_ptr<Text>                       fpsText_            = {};       // !< テキスト
 
     EnemySpawner                              enemyPopSystem_     = {};       // !< 敵生成システム

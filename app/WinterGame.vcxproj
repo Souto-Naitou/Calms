@@ -103,6 +103,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\scene\Load\LoadScene.cpp" />
     <ClCompile Include="src\scene\Title\Animation\OpeningAnimation.cpp" />
     <ClCompile Include="src\Entity\EntityBase.cpp" />
     <ClCompile Include="src\Entity\Enemy\Enemy.cpp" />
@@ -133,6 +134,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\framework\Calms.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\scene\Load\LoadScene.h" />
     <ClInclude Include="src\scene\Title\Animation\OpeningAnimation.h" />
     <ClInclude Include="src\config\ResourcePath.h" />
     <ClInclude Include="src\type\DIContainer.h" />

@@ -1,5 +1,5 @@
 #include "TitleScene.h"
-#include <Features/SceneTransition/TransFadeInOut.h>
+#include <Effects/SceneTransition/TransShutter.h>
 #include <Features/Sprite/SpriteSystem.h>
 #include <Features/Object3d/Object3dSystem.h>
 #include <Features/Line/LineSystem.h>
@@ -52,7 +52,7 @@ void TitleScene::Update()
 
     if (pInput_->TriggerKey(DIK_SPACE))
     {
-        pSceneTransition_->ChangeScene("TitleScene", std::make_unique<TransFadeInOut>());
+        pSceneTransition_->ChangeScene("LoadScene", std::make_unique<TransShutter>());
     }
 
     this->UpdateTitleAnimation();

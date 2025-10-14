@@ -76,6 +76,9 @@
     <Filter Include="Type">
       <UniqueIdentifier>{a054c6e7-0a23-441a-8a5f-995110a91dd8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\Load">
+      <UniqueIdentifier>{f4d730e1-b8e5-41fb-9d79-b0eafe7b5496}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\Calms.cpp">
@@ -140,6 +143,7 @@
     <ClCompile Include="src\io\net\MultiDataResolver.cpp">
       <Filter>IO\Net</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\Load\LoadScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -209,5 +213,6 @@
     <ClInclude Include="src\io\net\MultiDataResolver.h">
       <Filter>IO\Net</Filter>
     </ClInclude>
+    <ClInclude Include="src\scene\Load\LoadScene.h" />
   </ItemGroup>
 </Project>

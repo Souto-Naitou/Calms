@@ -3,7 +3,7 @@
 #include <Scene/SceneBase.h>
 #include <Features/GameEye/GameEye.h>
 #include <Features/Input/Input.h>
-#include <Features/SceneTransition/SceneTransitionManager.h>
+#include <Effects/SceneTransition/SceneTransitionManager.h>
 #include <Features/Sprite/Sprite.h>
 #include <memory>
 #include <Features/Cubemap/Skybox.h>
