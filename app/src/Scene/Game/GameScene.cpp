@@ -1,7 +1,7 @@
 #include "GameScene.h"
 
-#include <Features/SceneTransition/SceneTransitionManager.h>
-#include <Features/SceneTransition/TransFadeInOut.h>
+#include <Effects/SceneTransition/SceneTransitionManager.h>
+#include <Effects/SceneTransition/TransFadeInOut.h>
 #include <Features/Text/TextSystem.h>
 #include <MathExtension/mathExtension.h>
 #include <Features/Particle/ParticleManager.h>
@@ -277,7 +277,7 @@ void GameScene::Update()
     /// ラインの更新
     lines_->Update();
 
-    scoreSystem_->Update();
+    //scoreSystem_->Update();
 
     /// テキストの更新
     //fpsText_->SetText("FPS: " + std::to_string(pDebugManager_->GetFPS()));
@@ -328,7 +328,7 @@ void GameScene::Draw()
 
 void GameScene::DrawTexts()
 {
-    scoreSystem_->DrawTxt();
+    //scoreSystem_->DrawTxt();
     //fpsText_->Draw();
 }
 

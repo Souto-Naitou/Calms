@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <format>
+#include <scene/Load/LoadScene.h>
 
 #define JUDGE_SCENE(class, arg) if (_sceneName == #class) { return std::make_unique<class>(arg); }
 
@@ -14,6 +15,7 @@ SceneFactory::SceneFactory()
 {
     // シーンの登録
     sceneCreators_["TitleScene"] = [](ISceneArgs* args) { return std::make_unique<TitleScene>(args); };
+    sceneCreators_["LoadScene"] = [](ISceneArgs* args) { return std::make_unique<LoadScene>(args); };
     sceneCreators_["GameScene"] = [](ISceneArgs* args) { return std::make_unique<GameScene>(args); };
     sceneCreators_["ClearScene"] = [](ISceneArgs* args) { return std::make_unique<ClearScene>(args); };
 }

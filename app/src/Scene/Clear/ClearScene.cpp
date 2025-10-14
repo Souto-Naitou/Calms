@@ -3,8 +3,8 @@
 #include <Core/Win32/WinSystem.h>
 #include <Features/Input/Input.h>
 
-#include <Features/SceneTransition/SceneTransitionManager.h>
-#include <Features/SceneTransition/TransFadeInOut.h>
+#include <Effects/SceneTransition/SceneTransitionManager.h>
+#include <Effects/SceneTransition/TransFadeInOut.h>
 
 void ClearScene::Initialize()
 {
