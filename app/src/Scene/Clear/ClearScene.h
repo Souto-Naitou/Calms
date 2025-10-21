@@ -4,6 +4,9 @@
 #include <Features/Sprite/Sprite.h>
 #include <memory>
 
+/// <summary>
+/// クリアシーン
+/// </summary>
 class ClearScene : public SceneBase
 {
 public:

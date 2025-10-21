@@ -143,7 +143,9 @@
     <ClCompile Include="src\io\net\MultiDataResolver.cpp">
       <Filter>IO\Net</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\Load\LoadScene.cpp" />
+    <ClCompile Include="src\scene\Load\LoadScene.cpp">
+      <Filter>Scene\Load</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -213,6 +215,8 @@
     <ClInclude Include="src\io\net\MultiDataResolver.h">
       <Filter>IO\Net</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene\Load\LoadScene.h" />
+    <ClInclude Include="src\scene\Load\LoadScene.h">
+      <Filter>Scene\Load</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

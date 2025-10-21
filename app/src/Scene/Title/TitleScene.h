@@ -11,9 +11,12 @@
 #include <Core/Win32/WinSystem.h>
 #include <Effects/PostEffects/RandomFilter/RandomFilter.h>
 #include <Core/DirectX12/DirectX12.h>
-#include <Core/DirectX12/PostEffect.h>
+#include <Core/DirectX12/PostEffectExecuter.h>
 #include "Animation/OpeningAnimation.h"
 
+/// <summary>
+/// タイトルシーン
+/// </summary>
 class TitleScene : public SceneBase
 {
 public:

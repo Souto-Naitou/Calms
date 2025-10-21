@@ -1,6 +1,7 @@
 #include "InGameTimer.h"
 #include <Core/Win32/WinSystem.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
+#include <config/ResourcePath.h>
 
 void InGameTimer::Reset()
 {
@@ -85,14 +86,14 @@ void InGameTimer::Initialize(bool _useSystemClock, double _gameDuration)
     for (int i = 0; i < 10; i++)
     {
         tensPlaceNums_[i] = std::make_unique<Sprite>();
-        tensPlaceNums_[i]->Initialize("number_" + std::to_string(i) + ".png");
+        tensPlaceNums_[i]->Initialize(Path::Image::kNumbers[i]);
         tensPlaceNums_[i]->SetName("tensPlaceNum_" + std::to_string(i));
         tensPlaceNums_[i]->SetAnchorPoint({ 0.5f, 0.5f });
         tensPlaceNums_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.2f });
         tensPlaceNums_[i]->SetSizeWithFactor(0.75f);
 
         onesPlaceNums_[i] = std::make_unique<Sprite>();
-        onesPlaceNums_[i]->Initialize("number_" + std::to_string(i) + ".png");
+        onesPlaceNums_[i]->Initialize(Path::Image::kNumbers[i]);
         onesPlaceNums_[i]->SetName("onesPlaceNum_" + std::to_string(i));
         onesPlaceNums_[i]->SetAnchorPoint({ 0.5f, 0.5f });
         onesPlaceNums_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.2f });

@@ -7,6 +7,11 @@
 #include <Features/Model/ModelStorage.h>
 #include <Features/Model/ModelManager.h>
 
+
+/// <summary>
+/// ゲームのフレームワーククラス
+/// ゲーム固有の初期化、終了、更新、描画を行う
+/// </summary>
 class Calms : public NimaFramework
 {
 public:

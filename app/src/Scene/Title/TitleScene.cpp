@@ -27,8 +27,8 @@ void TitleScene::Initialize()
     // スカイボックスの初期化
     this->InitializeSkybox();
 
-    pRandomFilter_ = Helper::PostEffect::CreatePostEffect<RandomFilter>(pDx12_);
-    pPostEffectExecuter_->RegisterPostEffect(pRandomFilter_.get());
+    //pRandomFilter_ = Helper::PostEffect::CreatePostEffect<RandomFilter>(pDx12_);
+    //pPostEffectExecuter_->RegisterPostEffect(pRandomFilter_.get());
 
     // オープニングアニメーションの初期化と再生
     // - 実時間をもとに再生されるためPlay関数のあとに時間のかかる処理(I/O など)を入れないこと
@@ -58,7 +58,7 @@ void TitleScene::Update()
     this->UpdateTitleAnimation();
     this->UpdateStartPromptAnimation();
 
-    pRandomFilter_->SetSeed(eyeRotate.y);
+    //pRandomFilter_->SetSeed(eyeRotate.y);
 
     pSkybox_->Update();
     pSpriteTitle_->Update();

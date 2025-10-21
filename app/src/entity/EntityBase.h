@@ -8,6 +8,7 @@
 #include <DebugTools/DebugEntry/DebugEntry.h>
 #include <Interfaces/IEntityStats.h>
 #include <memory>
+#include <Common/structs.h>
 
 class EntityBase
 {
