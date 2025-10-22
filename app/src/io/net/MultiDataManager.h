@@ -2,6 +2,9 @@
 
 #include <Network/TCP_IP.h>
 
+/// <summary>
+/// TCPのホストとクライアントのデータを管理するクラス
+/// </summary>
 class MultiDataManager
 {
 public:

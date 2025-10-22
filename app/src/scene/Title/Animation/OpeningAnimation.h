@@ -4,6 +4,9 @@
 #include <Features/Sprite/Sprite.h>
 #include <DebugTools/DebugEntry/DebugEntry.h>
 
+/// <summary>
+/// オープニングアニメーションクラス
+/// </summary>
 class OpeningAnimation
 {
 public:

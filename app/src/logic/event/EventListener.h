@@ -3,6 +3,9 @@
 #include <unordered_map>
 #include <string>
 
+/// <summary>
+/// イベント受信クラス (WIP)
+/// </summary>
 class EventListener
 {
 public:

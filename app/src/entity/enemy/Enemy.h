@@ -13,6 +13,9 @@
 #include <Features/Particle/Emitter/ParticleEmitter.h>
 #include <Features/Audio/AudioManager.h>
 
+/// <summary>
+/// 敵クラス
+/// </summary>
 class Enemy : public EntityBase
 {
 public:

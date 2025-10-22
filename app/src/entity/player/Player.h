@@ -14,6 +14,9 @@
 #include <Features/Model/ModelManager.h>
 #include <Features/Model/IModel.h>
 
+/// <summary>
+/// プレイヤークラス
+/// </summary>
 class Player : public EntityBase
 {
 public:

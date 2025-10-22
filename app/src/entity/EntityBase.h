@@ -10,6 +10,9 @@
 #include <memory>
 #include <Common/structs.h>
 
+/// <summary>
+/// エンティティ基底クラス
+/// </summary>
 class EntityBase
 {
 public:

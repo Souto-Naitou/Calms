@@ -1,5 +1,8 @@
 #pragma once
 
+/// <summary>
+/// 画像リソースのパスを定義する名前空間
+/// </summary>
 namespace Path::Image
 {
     inline constexpr const char* kTitle = "title/title.png";

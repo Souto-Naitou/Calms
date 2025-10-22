@@ -7,6 +7,9 @@
 #include <string>
 #include <vector>
 
+/// <summary>
+/// ロードシーン
+/// </summary>
 class LoadScene : public SceneBase
 {
 public:

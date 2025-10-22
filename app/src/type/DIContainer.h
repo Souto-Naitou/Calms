@@ -3,6 +3,9 @@
 #include <unordered_map> // unordered_map
 #include <typeindex> // type_index
 
+/// <summary>
+/// 依存性注入コンテナクラス(WIP)
+/// </summary>
 class DIContainer
 {
 public:

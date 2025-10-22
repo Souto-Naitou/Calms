@@ -8,6 +8,9 @@
 #include <thread>
 #include <string>
 
+/// <summary>
+/// マルチデータ解決クラス
+/// </summary>
 class MultiDataResolver
 {
 public:

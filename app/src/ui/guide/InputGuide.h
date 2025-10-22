@@ -2,6 +2,9 @@
 
 #include <Features/Sprite/Sprite.h>
 
+/// <summary>
+/// 入力ガイドクラス
+/// </summary>
 class InputGuide
 {
 public:

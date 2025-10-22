@@ -11,6 +11,9 @@
 #include <Utility/JSONIO/JSONIO.h>
 #include <nlohmann/json.hpp>
 
+/// <summary>
+/// 敵生成クラス
+/// </summary>
 class EnemySpawner
 {
 public:

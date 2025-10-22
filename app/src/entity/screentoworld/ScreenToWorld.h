@@ -5,6 +5,9 @@
 #include <Features/GameEye/GameEye.h>
 #include <Features/Object3d/Object3d.h>
 
+/// <summary>
+/// スクリーン座標をワールド座標に変換してレティクルを表示するクラス
+/// </summary>
 class ScreenToWorld
 {
 public:

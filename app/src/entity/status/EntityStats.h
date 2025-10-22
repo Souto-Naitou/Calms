@@ -3,7 +3,9 @@
 #include <string>
 #include <Interfaces/IEntityStats.h>
 
-
+/// <summary>
+/// エンティティのステータスクラス
+/// </summary>
 class EntityStats : public IEntityStats
 {
 public:

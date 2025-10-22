@@ -2,6 +2,9 @@
 #include <Features/Text/Text.h>
 #include <memory>
 
+/// <summary>
+/// スコア計算クラス
+/// </summary>
 class ScoreCalculator
 {
 public:

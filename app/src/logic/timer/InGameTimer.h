@@ -4,6 +4,9 @@
 #include <Features/Sprite/Sprite.h>
 #include <array>
 
+/// <summary>
+/// ゲーム内タイマークラス
+/// </summary>
 class InGameTimer
 {
 public:

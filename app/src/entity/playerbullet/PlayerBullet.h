@@ -11,6 +11,9 @@
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 
 
+/// <summary>
+/// プレイヤー弾クラス
+/// </summary>
 class PlayerBullet : public EntityBase
 {
 public:
