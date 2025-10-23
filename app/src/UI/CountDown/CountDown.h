@@ -13,11 +13,29 @@
 class CountDown
 {
 public:
+    /// <summary>
+    /// カウントダウン用リソースの初期化を行います。
+    /// </summary>
     void Initialize();
+
+    /// <summary>
+    /// 後始末を行います。
+    /// </summary>
     void Finalize();
+
+    /// <summary>
+    /// カウントダウンの状態更新を行います。
+    /// </summary>
     void Update();
+
+    /// <summary>
+    /// 2D スプライトの描画を行います。
+    /// </summary>
     void Draw2D();
 
+    /// <summary>
+    /// カウントダウンを開始します。
+    /// </summary>
     void Start();
     bool IsStart() const { return !isInit_; }
     bool IsEnd() const { return isEnd_; }
@@ -30,7 +48,14 @@ private:
         End
     } currentState_;
 
+    /// <summary>
+    /// 数字カウントダウンの更新を行います。
+    /// </summary>
     void UpdateCountDown();
+
+    /// <summary>
+    /// START 表示フェーズの更新を行います。
+    /// </summary>
     void UpdateStart();
 
     TimeMeasurer timer_ = {};

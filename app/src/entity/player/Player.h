@@ -23,11 +23,38 @@ public:
     Player(ModelManager* pModelManager)
         : pModelManager_(pModelManager) {};
 
+    /// <summary>
+    /// プレイヤーの初期化を行います。
+    /// 必要なモデルやコライダー、入出力の初期設定を行います。
+    /// </summary>
+    /// <param name="enableDebugWindow">デバッグウィンドウの有効/無効。</param>
     void Initialize(bool enableDebugWindow = true) override;
+
+    /// <summary>
+    /// プレイヤーの終了処理を行います。
+    /// リソースの解放などを想定しています。
+    /// </summary>
     void Finalize() override;
+
+    /// <summary>
+    /// プレイヤーの状態更新を行います。
+    /// 入力処理、移動、当たり判定などの更新を行います。
+    /// </summary>
     void Update() override;
+
+    /// <summary>
+    /// プレイヤーの描画処理を行います。
+    /// </summary>
     void Draw() override;
+
+    /// <summary>
+    /// プレイヤーのライン等の補助描画を行います。
+    /// </summary>
     void DrawLine() override;
+
+    /// <summary>
+    /// ImGui を用いたデバッグUIの描画を行います。
+    /// </summary>
     void ImGui() override;
 
 
@@ -42,12 +69,31 @@ public: /// Setter
 
 
 private:
+    /// <summary>
+    /// トリガー型の衝突イベント時に呼ばれます。
+    /// </summary>
+    /// <param name="other">衝突相手のコライダー。</param>
     void OnCollisionTrigger(const Collider* other);
+
+    /// <summary>
+    /// 物理衝突時に呼ばれます。
+    /// </summary>
+    /// <param name="other">衝突相手のコライダー。</param>
     void OnCollision(const Collider* other);
 
+    /// <summary>
+    /// モデルや描画オブジェクトなどプレイヤー関連オブジェクトを初期化します。
+    /// </summary>
     void ObjectsInitialize();
+
+    /// <summary>
+    /// コライダーの生成と設定を行います。
+    /// </summary>
     void ColliderInitialize();
 
+    /// <summary>
+    /// 入力状態から移動や射撃などのコマンドを更新します。
+    /// </summary>
     void UpdateInputCommands();
 
     std::unique_ptr<IModel>         pModelSelfBody_ = nullptr;

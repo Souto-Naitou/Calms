@@ -20,6 +20,10 @@ public:
         return &instance;
     }
 
+    /// <summary>
+    /// イベントリスナーを初期化します。
+    /// 必要なイベントテーブルのセットアップを行います。
+    /// </summary>
     void Initialize();
 
 private:

@@ -58,5 +58,9 @@ private:
     std::unique_ptr<Sprite>     pSpriteLBackground_ = nullptr; // !< ローディングスプライト背景
     std::unique_ptr<Bar2d>      pBar_               = nullptr; // !< ローディングバー
 
+    /// <summary>
+    /// 指定ディレクトリ以下のテクスチャパスを収集します。
+    /// </summary>
+    /// <param name="directoryPath">探索するルートディレクトリのパス。</param>
     void AggregateTexturePaths(const std::string& directoryPath);
 };

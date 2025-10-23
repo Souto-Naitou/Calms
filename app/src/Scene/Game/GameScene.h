@@ -109,10 +109,22 @@ private:
     void RemovePlayerBullet();
 
     void RemoveEnemy();
+    void RemoveEnemy();
+
+    /// <summary>
+    /// </summary>
+    void EnemyPopSystemUpdate();
     void EnemyPopSystemUpdate();
 
+    /// <summary>
+    /// プレイヤーのスロー（低速移動）状態に関連する更新処理を行います。
+    /// </summary>
     void PlayerSlowUpdate();
 
+    /// <summary>
+    /// <summary>
+    /// シーン用のデバッグウィンドウを描画します。
+    /// </summary>
     void DebugWindow();
 
 

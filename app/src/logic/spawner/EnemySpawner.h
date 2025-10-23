@@ -28,15 +28,55 @@ public:
     };
 
 public:
+    /// <summary>
+    /// 敵生成システムを初期化します。
+    /// 生成範囲やJSON設定の読み込みなどを行います。
+    /// </summary>
     void    Initialize();
+
+    /// <summary>
+    /// 終了処理を行います。
+    /// リソースの解放などを想定しています。
+    /// </summary>
     void    Finalize();
+
+    /// <summary>
+    /// 生成タイミングや内部状態の更新を行います。
+    /// </summary>
     void    Update();
+
+    /// <summary>
+    /// 生成範囲や除外範囲の可視化描画を行います。
+    /// </summary>
     void    DrawArea();
+
+    /// <summary>
+    /// 手動で敵のポップ要求を追加します。
+    /// 位置はランダムレンジから決定されます。
+    /// </summary>
     void    ManualPop();
+
+    /// <summary>
+    /// 手動で敵のポップ要求を追加します。
+    /// </summary>
+    /// <param name="_position">生成位置。</param>
     void    ManualPop(const Vector3& _position);
     bool    IsExistPopRequest() const { return !popPoints_.empty(); }
+
+    /// <summary>
+    /// 次に生成する位置を取得し、内部キューから取り出します。
+    /// </summary>
+    /// <returns>生成位置。</returns>
     Vector3 GetPopPoint();
+
+    /// <summary>
+    /// 自動生成を開始します。
+    /// </summary>
     void    StartPop();
+
+    /// <summary>
+    /// 自動生成を停止します。
+    /// </summary>
     void    StopPop();
     bool    IsEnablePop() const { return isEnablePop_; }
 
@@ -55,10 +95,29 @@ public:
 
 private:
     // Internal functions
+    /// <summary>
+    /// ランダムレンジから位置を決めてポップ要求を生成します。
+    /// </summary>
     void PopRandom();  // ランダム生成
+
+    /// <summary>
+    /// ImGui のデバッグウィンドウを描画します。
+    /// </summary>
     void DebugWindow();
+
+    /// <summary>
+    /// JSON から読み込んだデータを内部ポップデータに変換します。
+    /// </summary>
     void InitPopData();
+
+    /// <summary>
+    /// ポップスケジュールの進行・遅延処理などの更新を行います。
+    /// </summary>
     void UpdatePop();
+
+    /// <summary>
+    /// JSON 設定を再読み込みします。
+    /// </summary>
     void ReloadJsonData();
 
     // Common methods

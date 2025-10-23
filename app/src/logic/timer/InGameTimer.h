@@ -10,12 +10,38 @@
 class InGameTimer
 {
 public:
+    /// <summary>
+    /// タイマーを初期化します。
+    /// システムクロックの使用有無とゲーム全体の制限時間を設定します。
+    /// </summary>
+    /// <param name="_useSystemClock">システムクロックを使用する場合は true。</param>
+    /// <param name="_gameDuration">ゲームの制限時間（秒）。</param>
     void Initialize(bool _useSystemClock, double _gameDuration);
+
+    /// <summary>
+    /// タイマーの状態を更新します。
+    /// 表示や終了判定に必要な内部値を更新します。
+    /// </summary>
     void Update();
+
+    /// <summary>
+    /// タイマーの描画を行います。
+    /// </summary>
     void Draw();
+
+    /// <summary>
+    /// タイマーの終了処理を行います。
+    /// </summary>
     void Finalize();
 
+    /// <summary>
+    /// タイマーを開始します。
+    /// </summary>
     void Start();
+
+    /// <summary>
+    /// タイマーをリセットします。
+    /// </summary>
     void Reset();
 
 public: /// Getter
@@ -30,7 +56,14 @@ public: /// Setter
     bool SetIsEnd(bool _isEnd) { isEnd_ = _isEnd; }
 
 private:
+    /// <summary>
+    /// 現在時刻・残り時間を更新します。
+    /// </summary>
     void CurrentTimeUpdate();
+
+    /// <summary>
+    /// 表示用スプライトのインデックスや不透明度など視覚要素を更新します。
+    /// </summary>
     void SpriteUpdate();
 
 private:

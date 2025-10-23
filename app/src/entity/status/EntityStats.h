@@ -12,8 +12,23 @@ public:
     EntityStats() = default;
     ~EntityStats() = default;
 
+    /// <summary>
+    /// ステータス値を初期化します。
+    /// </summary>
+    /// <param name="health">初期HP。</param>
+    /// <param name="attack">初期攻撃力。</param>
+    /// <param name="speed">初期移動速度。</param>
     void Initalize(float health, float attack, float speed);
+
+    /// <summary>
+    /// 継続的に変化する値やクールダウン等の更新を行います。
+    /// </summary>
     void Update();
+
+    /// <summary>
+    /// ステータスのデバッグ表示を行います。
+    /// </summary>
+    /// <param name="name">表示名。</param>
     void ImGui(const std::string& name) const;
 
     // Getter
@@ -33,6 +48,10 @@ public:
     void AddAttack(float attack) { attack_ += attack; }
     void AddSpeed(float speed) { speed_ += speed; }
 
+    /// <summary>
+    /// 衝突時の処理を行います（ダメージ計算など）。
+    /// </summary>
+    /// <param name="status">相手のステータス。</param>
     void OnCollision(const IEntityStats* status) override;
 
 private:

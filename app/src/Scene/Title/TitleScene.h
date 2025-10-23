@@ -53,7 +53,14 @@ private:
     void InitializeSprites();
     void InitializeSkybox();
 
+    /// <summary>
+    /// タイトルロゴのアニメーション更新を行います。
+    /// </summary>
     void UpdateTitleAnimation();
+
+    /// <summary>
+    /// 「Press Start」等の開始プロンプトのアニメーション更新を行います。
+    /// </summary>
     void UpdateStartPromptAnimation();
 
     std::unique_ptr<GameEye>            gameEye_                = {};           // !< ゲームアイ
