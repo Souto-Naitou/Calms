@@ -109,11 +109,9 @@ private:
     void RemovePlayerBullet();
 
     void RemoveEnemy();
-    void RemoveEnemy();
 
     /// <summary>
     /// </summary>
-    void EnemyPopSystemUpdate();
     void EnemyPopSystemUpdate();
 
     /// <summary>

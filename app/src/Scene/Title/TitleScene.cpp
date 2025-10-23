@@ -8,6 +8,7 @@
 #include <config/ResourcePath.h>
 #include <Color.h>
 #include <cmath>
+#include <DebugTools/Logger/Logger.h>
 
 void TitleScene::Initialize()
 {
@@ -18,6 +19,16 @@ void TitleScene::Initialize()
     pDx12_ = std::any_cast<DirectX12*>(pArgs_->Get("DirectX12"));
     pPostEffectExecuter_ = std::any_cast<PostEffectExecuter*>(pArgs_->Get("PostEffectExecuter"));
 
+    /// Canvasの初期化
+    {
+        CanvasInitParams params = {};
+        params.name = "TitleCanvas";
+        params.pDx12 = pDx12_;
+
+        pCanvas_ = std::make_unique<Canvas>();
+        pCanvas_->Initialize(params);
+    }
+
     // ゲームアイの初期化
     this->InitializeGameEye();
 
@@ -27,7 +38,24 @@ void TitleScene::Initialize()
     // スカイボックスの初期化
     this->InitializeSkybox();
 
-    //pRandomFilter_ = Helper::PostEffect::CreatePostEffect<RandomFilter>(pDx12_);
+    /// ランダムフィルタの初期化と登録
+    {
+        auto tempPointer = pCanvas_->GetPostEffectExecuter().AddEffect(PostEffectClassName::RandomFilter);
+        try
+        {
+            pRandomFilter_ = static_cast<RandomFilter*>(tempPointer);
+        }
+        catch (const std::exception& e)
+        {
+            Logger::GetInstance()->LogError(
+                __FILE__,
+                __FUNCTION__,
+                std::string("Failed to convert to RandomFilter pointer: ") + e.what()
+            );
+        }
+    }
+
+    
     //pPostEffectExecuter_->RegisterPostEffect(pRandomFilter_.get());
 
     // オープニングアニメーションの初期化と再生
@@ -40,7 +68,7 @@ void TitleScene::Initialize()
 void TitleScene::Finalize()
 {
     gameEye_.reset();
-    pPostEffectExecuter_->UnregisterPostEffect(pRandomFilter_.get());
+    pPostEffectExecuter_->RemoveEffect(pRandomFilter_);
 }
 
 void TitleScene::Update()
