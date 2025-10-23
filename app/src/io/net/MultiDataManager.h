@@ -2,6 +2,9 @@
 
 #include <Network/TCP_IP.h>
 
+/// <summary>
+/// TCPのホストとクライアントのデータを管理するクラス
+/// </summary>
 class MultiDataManager
 {
 public:
@@ -32,6 +35,12 @@ public:
         hostOrClient_ = 1;
     }
 
+    /// <summary>
+    /// TCP 通信関連のポインタと種別を取得します。
+    /// </summary>
+    /// <param name="_ppHost">ホストのポインタ格納先（二重ポインタ）。</param>
+    /// <param name="_ppClient">クライアントのポインタ格納先（二重ポインタ）。</param>
+    /// <param name="_pHostOrClient_">0:Host, 1:Client を返す格納先。</param>
     void GetTCPData(TCP::Host** _ppHost, TCP::Client** _ppClient, int* _pHostOrClient_);
 
 private:

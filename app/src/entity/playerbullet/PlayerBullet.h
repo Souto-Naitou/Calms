@@ -11,17 +11,46 @@
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 
 
+/// <summary>
+/// プレイヤー弾クラス
+/// </summary>
 class PlayerBullet : public EntityBase
 {
 public:
     PlayerBullet(IModel* _pModelSelfBody)
         : pModelSelfBody_(_pModelSelfBody) {};
 
+    /// <summary>
+    /// 弾の初期化を行います。
+    /// モデル・コライダー等の準備を行います。
+    /// </summary>
+    /// <param name="_enableDebugWindow">デバッグウィンドウの有効/無効。</param>
     void Initialize(bool _enableDebugWindow = true) override;
+
+    /// <summary>
+    /// 終了処理を行います。
+    /// </summary>
     void Finalize() override;
+
+    /// <summary>
+    /// 弾の更新処理を行います。
+    /// 移動、寿命管理、当たり判定などを更新します。
+    /// </summary>
     void Update() override;
+
+    /// <summary>
+    /// 弾の描画処理を行います。
+    /// </summary>
     void Draw() override;
+
+    /// <summary>
+    /// ライン等の補助描画を行います。
+    /// </summary>
     void DrawLine() override;
+
+    /// <summary>
+    /// ImGui を用いたデバッグUIの描画を行います。
+    /// </summary>
     void ImGui() override;
 
 
@@ -32,11 +61,26 @@ public: /// Setter
 
 private:
     /// コールバック関数
+    /// <summary>
+    /// トリガー衝突時のコールバックです。
+    /// </summary>
+    /// <param name="_other">衝突相手のコライダー。</param>
     void OnCollisionTrigger(const Collider* _other);
 
     /// 内部関数
+    /// <summary>
+    /// 表示オブジェクト等の初期化を行います。
+    /// </summary>
     void ObjectsInitialize();
+
+    /// <summary>
+    /// 表示オブジェクト等の更新を行います。
+    /// </summary>
     void ObjectsUpdate();
+
+    /// <summary>
+    /// コライダーの初期化を行います。
+    /// </summary>
     void CollidersInitialize();
 
     std::unique_ptr<TimeMeasurer> timer_ = nullptr;

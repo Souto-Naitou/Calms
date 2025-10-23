@@ -3,6 +3,9 @@
 #include <unordered_map>
 #include <string>
 
+/// <summary>
+/// イベント受信クラス (WIP)
+/// </summary>
 class EventListener
 {
 public:
@@ -17,6 +20,10 @@ public:
         return &instance;
     }
 
+    /// <summary>
+    /// イベントリスナーを初期化します。
+    /// 必要なイベントテーブルのセットアップを行います。
+    /// </summary>
     void Initialize();
 
 private:

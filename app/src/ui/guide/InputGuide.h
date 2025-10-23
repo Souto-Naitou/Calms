@@ -2,12 +2,31 @@
 
 #include <Features/Sprite/Sprite.h>
 
+/// <summary>
+/// 入力ガイドクラス
+/// </summary>
 class InputGuide
 {
 public:
+    /// <summary>
+    /// 入力ガイドの初期化を行います。
+    /// </summary>
     void Initialize();
+
+    /// <summary>
+    /// 入力ガイドの状態を更新します。
+    /// 点滅等の視覚効果を想定しています。
+    /// </summary>
     void Update();
+
+    /// <summary>
+    /// 入力ガイドの描画を行います。
+    /// </summary>
     void Draw();
+
+    /// <summary>
+    /// 入力ガイドの終了処理を行います。
+    /// </summary>
     void Finalize();
 
 private:

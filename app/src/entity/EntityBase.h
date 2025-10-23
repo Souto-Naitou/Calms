@@ -8,17 +8,50 @@
 #include <DebugTools/DebugEntry/DebugEntry.h>
 #include <Interfaces/IEntityStats.h>
 #include <memory>
+#include <Common/structs.h>
 
+/// <summary>
+/// エンティティ基底クラス
+/// </summary>
 class EntityBase
 {
 public:
     EntityBase() = default;
     virtual ~EntityBase() = default;
+
+    /// <summary>
+    /// エンティティの初期化を行います。
+    /// デバッグウィンドウの有効化設定も同時に行われます。
+    /// </summary>
+    /// <param name="enableDebugWindow">デバッグウィンドウを有効にする場合は true。</param>
     virtual void Initialize(bool enableDebugWindow = true);
+
+    /// <summary>
+    /// エンティティの終了処理を行います。
+    /// リソースの解放などを想定しています。
+    /// </summary>
     virtual void Finalize() {};
+
+    /// <summary>
+    /// エンティティの状態更新を行います。
+    /// 物理やアニメーション、内部タイミングの更新を想定しています。
+    /// </summary>
     virtual void Update() = 0;
+
+    /// <summary>
+    /// エンティティの描画処理を行います。
+    /// </summary>
     virtual void Draw() = 0;
+
+    /// <summary>
+    /// ライン等の補助的な描画処理を行います。
+    /// デバッグ用のワイヤー表示などを想定しています。
+    /// </summary>
     virtual void DrawLine() = 0;
+
+    /// <summary>
+    /// ImGui を用いたデバッグUIの描画を行います。
+    /// </summary>
     virtual void ImGui();
 
 
@@ -63,6 +96,11 @@ protected:
 
 
 protected:
+    /// <summary>
+    /// 単純な物理更新を行います。
+    /// 加速度・速度・減衰（摩擦）を考慮して位置を更新します。
+    /// </summary>
+    /// <param name="dt">経過時間（秒）。</param>
     void UpdatePhysics(float dt);
 
 

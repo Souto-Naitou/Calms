@@ -140,19 +140,10 @@ void GameScene::Initialize()
     (*lines_)[6] = Vector3(-areaWidth_, 0.5f, areaWidth_);
     (*lines_)[7] = Vector3(-areaWidth_, 0.5f, -areaWidth_);
 
-    //fpsText_ = std::make_unique<Text>();
-    //fpsText_->Initialize();
-    //fpsText_->SetPosition(Vector2(10.0f, 10.0f));
-    //fpsText_->SetFontSize(20.0f);
-    //fpsText_->SetColorName("White");
-    //fpsText_->SetAnchorPoint(TextStandardPoint::TopLeft);
-    //fpsText_->SetPivot(TextStandardPoint::TopLeft);
-    //fpsText_->SetMaxSize(Vector2(200.0f, 100.0f));
-    //fpsText_->SetText("FPS: 0.0");
-    //fpsText_->SetName("FPS");
-
     // 敵の予約
     enemies_.reserve(kMaxEnemyCount_);
+
+    titleTimer_.Start();
 }
 
 void GameScene::Finalize()
@@ -209,7 +200,6 @@ void GameScene::Update()
 
     /// 敵生成システムの更新
     EnemyPopSystemUpdate();
-
 
     for (auto& enemy : enemies_)
     {
@@ -277,11 +267,12 @@ void GameScene::Update()
     /// ラインの更新
     lines_->Update();
 
-    //scoreSystem_->Update();
+    if (titleTimer_.GetNow<float>() < 10.0f)
+    {
+        SceneTransitionManager::GetInstance()->ChangeScene("TitleScene", std::make_unique<TransFadeInOut>());
+    }
 
-    /// テキストの更新
-    //fpsText_->SetText("FPS: " + std::to_string(pDebugManager_->GetFPS()));
-    //fpsText_->Update();
+    //scoreSystem_->Update();
 }
 
 void GameScene::Draw()

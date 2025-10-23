@@ -8,11 +8,26 @@
 #include <thread>
 #include <string>
 
+/// <summary>
+/// マルチデータ解決クラス
+/// </summary>
 class MultiDataResolver
 {
 public:
+    /// <summary>
+    /// ネットワーク解決器を初期化します。
+    /// 必要なバッファや通信設定の準備を行います。
+    /// </summary>
     void    Initialize();
+
+    /// <summary>
+    /// 受送信処理スレッドを開始します。
+    /// </summary>
     void    Start();
+
+    /// <summary>
+    /// スレッド停止と後始末を行います。
+    /// </summary>
     void    Finalize();
 
 public:
@@ -23,6 +38,10 @@ public:
     /// Getter
     bool        isHost() const              { return hostOrClient_ == 0; };
 
+    /// <summary>
+    /// 通信相手（Player2）の位置をキューから取り出します。
+    /// </summary>
+    /// <returns>最新の位置。キューが空の場合は直近値。</returns>
     Vector3     PopPlayer2Position();
     uint32_t    GetNowTime() const          { return nowGameTime_; };
 
@@ -92,6 +111,9 @@ private:
 
 private:
     std::string name_ = "Network Buffer";
+    /// <summary>
+    /// ネットワーク状態などのデバッグウィンドウを描画します。
+    /// </summary>
     void DebugWindow();
     JSONIO* jsonIO_ = nullptr;  /// JSON入出力用のユーティリティ
 };

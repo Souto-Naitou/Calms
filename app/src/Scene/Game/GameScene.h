@@ -25,6 +25,9 @@
 #include <Core/DirectX12/TextureManager.h>
 #include <vector>
 
+/// <summary>
+/// ゲームシーン
+/// </summary>
 class GameScene : public SceneBase
 {
 public:
@@ -72,7 +75,7 @@ private:
     std::unique_ptr<ScoreCalculator>            scoreSystem_        = {};       // !< スコアシステム
     std::unique_ptr<Text>                       fpsText_            = {};       // !< テキスト
 
-    EnemySpawner                              enemyPopSystem_     = {};       // !< 敵生成システム
+    EnemySpawner                                enemyPopSystem_     = {};       // !< 敵生成システム
     DIContainer                                 gObjDIContainer_    = {};       // !< ゲームオブジェクトのDIコンテナ
     DirectionalLight                            directionalLight_   = {};       // !< ディレクショナルライト
     PointLight                                  pointLight_         = {};       // !< ポイントライト
@@ -85,6 +88,8 @@ private:
     float                                       areaWidth_          = 25.0f;    // !< エリアの幅
 
     const uint32_t                              kMaxEnemyCount_     = 30;       // !< 最大敵数
+
+    TimeMeasurer     titleTimer_ = {}; // タイトル表示用タイマー
 
 
 private: /// デバッグ用
@@ -104,10 +109,22 @@ private:
     void RemovePlayerBullet();
 
     void RemoveEnemy();
+    void RemoveEnemy();
+
+    /// <summary>
+    /// </summary>
+    void EnemyPopSystemUpdate();
     void EnemyPopSystemUpdate();
 
+    /// <summary>
+    /// プレイヤーのスロー（低速移動）状態に関連する更新処理を行います。
+    /// </summary>
     void PlayerSlowUpdate();
 
+    /// <summary>
+    /// <summary>
+    /// シーン用のデバッグウィンドウを描画します。
+    /// </summary>
     void DebugWindow();
 
 

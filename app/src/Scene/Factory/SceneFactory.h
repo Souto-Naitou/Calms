@@ -7,6 +7,9 @@
 #include <functional>
 #include <map>
 
+/// <summary>
+/// シーンファクトリークラス
+/// </summary>
 class SceneFactory : public ISceneFactory
 {
 public:
