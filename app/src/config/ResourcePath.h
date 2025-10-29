@@ -31,4 +31,5 @@ namespace Path::Image
     inline constexpr const char* kGuideSlow = "guide/shift.png";
 
     inline constexpr const char* kCountDownEndString = "common/font/start.png";
+    inline constexpr const char* kSpaceText = "common/font/space.png";
 }

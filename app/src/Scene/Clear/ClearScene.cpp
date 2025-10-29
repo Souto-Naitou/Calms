@@ -3,7 +3,7 @@
 #include <Core/Win32/WinSystem.h>
 #include <Features/Input/Input.h>
 
-#include <Effects/SceneTransition/SceneTransitionManager.h>
+#include <Features/SceneManager/SceneManager.h>
 #include <Effects/SceneTransition/TransFadeInOut.h>
 
 void ClearScene::Initialize()
@@ -34,7 +34,7 @@ void ClearScene::Update()
 
     if (Input::GetInstance()->TriggerKey(DIK_SPACE))
     {
-        SceneTransitionManager::GetInstance()->ChangeScene("TitleScene", std::make_unique<TransFadeInOut>());
+        SceneManager::GetInstance()->ReserveScene("TitleScene", std::make_unique<TransFadeInOut>());
     }
 }
 

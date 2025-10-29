@@ -3,10 +3,10 @@
 #include <imgui.h>
 #include <Features/Model/ObjModel.h>
 
-void Player::Initialize(bool enableDebugWindow)
+void Player::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
 {
     // 基底クラスの初期化
-    EntityBase::Initialize(enableDebugWindow);
+    EntityBase::Initialize(params, enableDebugWindow);
     pDebugEntry_->SetName("Player");
 
 
@@ -45,11 +45,14 @@ void Player::Initialize(bool enableDebugWindow)
 
     /// パーティクルエミッターの初期化
     shotEmitter_ = std::make_unique<ParticleEmitter>();
-    shotEmitter_->Initialize(pModelSpark_.get(), "resources/json/particles/shot.json");
+    shotEmitter_->Initialize(pModelSpark_.get(), "resources/json/Spark.json");
     shotEmitter_->SetEnableBillboard(true);
 
     audioShot_ = audioManager_->GetNewAudio("Effect", "hit_hat.wav");
     audioShot_->SetVolume(0.1f);
+
+    if (commonParams_.pDirLight) object_->SetDirectionalLight(commonParams_.pDirLight);
+    if (commonParams_.pPointLight) object_->SetPointLight(commonParams_.pPointLight);
 }
 
 
@@ -79,17 +82,6 @@ void Player::Update()
 
     // オブジェクトの更新
     object_->Update();
-    if (!directionalLight_)
-    {
-        directionalLight_ = diContainer_->Resolve<DirectionalLight>();
-        object_->SetDirectionalLight(directionalLight_);
-    }
-
-    if (!pointLight_)
-    {
-        pointLight_ = diContainer_->Resolve<PointLight>();
-        object_->SetPointLight(pointLight_);
-    }
 
     /// コライダーの更新
     obb_.SetCenter(translation_);

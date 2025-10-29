@@ -6,7 +6,7 @@
 #include <cctype>
 #include <vector>
 #include <Effects/SceneTransition/TransShutter.h>
-#include <Effects/SceneTransition/SceneTransitionManager.h>
+#include <Features/SceneManager/SceneManager.h>
 
 
 void LoadScene::Initialize()
@@ -67,7 +67,7 @@ void LoadScene::Update()
 
     if (isAggregated_ && pBar_->GetCurrentValue() >= pBar_->GetMaxValue() - 0.1f && !isChangingScene_)
     {
-        SceneTransitionManager::GetInstance()->ChangeScene("GameScene", std::make_unique<TransShutter>());
+        SceneManager::GetInstance()->ReserveScene("GameScene", std::make_unique<TransShutter>());
         isChangingScene_ = true;
     }
 

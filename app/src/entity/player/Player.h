@@ -28,7 +28,7 @@ public:
     /// 必要なモデルやコライダー、入出力の初期設定を行います。
     /// </summary>
     /// <param name="enableDebugWindow">デバッグウィンドウの有効/無効。</param>
-    void Initialize(bool enableDebugWindow = true) override;
+    void Initialize(const EntityCommonParams& params, bool enableDebugWindow = true) override;
 
     /// <summary>
     /// プレイヤーの終了処理を行います。
@@ -61,7 +61,7 @@ public:
 public: /// Getter
     bool IsShot() const { return isShot_; }
     bool IsSlow() const { return isSlow_; }
-
+    Object3d* GetObject3d() const { return object_.get(); }
 
 public: /// Setter
     void SetIsDrawCollisionArea(bool isDraw) { isDrawCollisionArea_ = isDraw; }

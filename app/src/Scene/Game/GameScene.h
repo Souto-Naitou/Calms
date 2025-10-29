@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Scene/SceneBase.h>
-#include <type/DIContainer.h>
 #include <Features/Object3d/Object3d.h>
 #include <Features/GameEye/GameEye.h>
 #include <entity/player/Player.h>
@@ -62,8 +61,6 @@ public:
 
 
 private:
-    
-
     std::unique_ptr<Object3d>                   grid_               = {};       // !< グリッド
     std::unique_ptr<GameEye>                    gameEye_            = {};       // !< ゲームアイ
     std::unique_ptr<Player>                     player_             = {};       // !< プレイヤー
@@ -74,9 +71,11 @@ private:
     std::unique_ptr<InputGuide>                 inputGuide_         = {};       // !< 入力ガイド
     std::unique_ptr<ScoreCalculator>            scoreSystem_        = {};       // !< スコアシステム
     std::unique_ptr<Text>                       fpsText_            = {};       // !< テキスト
+    std::unique_ptr<Canvas>                     canvas_             = {};       // !< ゲームキャンバス
+
+    EntityCommonParams                          entityCommonParams_ = {};       // !< エンティティ共通パラメータ
 
     EnemySpawner                                enemyPopSystem_     = {};       // !< 敵生成システム
-    DIContainer                                 gObjDIContainer_    = {};       // !< ゲームオブジェクトのDIコンテナ
     DirectionalLight                            directionalLight_   = {};       // !< ディレクショナルライト
     PointLight                                  pointLight_         = {};       // !< ポイントライト
     std::unique_ptr<CountDown>                  countDown_          = {};       // !< カウントダウン

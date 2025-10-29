@@ -11,10 +11,10 @@ Enemy::Enemy(const Desc& _desc)
     pModelParticleDeath_ = _desc.pModelParticleDeath;
 }
 
-void Enemy::Initialize(bool _enableDebugWindow)
+void Enemy::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
 {
     /// 基底クラスの初期化
-    EntityBase::Initialize(_enableDebugWindow);
+    EntityBase::Initialize(params, enableDebugWindow);
     if (isEnableDebugWindow_)
     {
         pDebugEntry_->SetName(utl::debug::generate_name("Enemy", this));
@@ -50,8 +50,11 @@ void Enemy::Initialize(bool _enableDebugWindow)
     /// オーディオの初期化
     audioHit_   = AudioManager::GetInstance()->GetNewAudio("Effect", "kill_snare.wav");
     audioDeath_ = AudioManager::GetInstance()->GetNewAudio("Effect", "hit_snare.wav");
-    audioHit_->SetVolume(0.2f);
-    audioDeath_->SetVolume(0.2f);
+    audioHit_->SetVolume(0.05f);
+    audioDeath_->SetVolume(0.05f);
+
+    if (params.pDirLight) objectSelfBody_->SetDirectionalLight(params.pDirLight);
+    if (params.pPointLight) objectSelfBody_->SetPointLight(params.pPointLight);
 }
 
 void Enemy::Finalize()
@@ -62,11 +65,11 @@ void Enemy::Finalize()
     objectSelfBody_->Finalize();
     objectSelfBody_.reset();
 
-    //pParticleDeath_->SetPosition(translation_);
-    //pParticleDeath_->Emit();
+    pParticleDeath_->SetPosition(translation_);
+    pParticleDeath_->Emit();
 
-    //pParticleHit_->Finalize();
-    //pParticleDeath_->Finalize();
+    pParticleHit_->Finalize();
+    pParticleDeath_->Finalize();
 
     EntityBase::Finalize();
 }
@@ -79,9 +82,6 @@ void Enemy::Update()
     // 物理演算の更新
     EntityBase::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
 
-    // ライトの更新
-    this->UpdateLights();
-
     // オブジェクトの更新
     this->UpdateObjects();
 
@@ -89,8 +89,8 @@ void Enemy::Update()
     this->UpdateCollider();
 
     // パーティクルの更新
-    //pParticleHit_->Update();
-    //pParticleDeath_->Update();
+    pParticleHit_->Update();
+    pParticleDeath_->Update();
 }
 
 void Enemy::Draw()
@@ -101,8 +101,8 @@ void Enemy::Draw()
 void Enemy::DrawLine()
 {
     if (isDrawCollisionArea_) collider_->DrawArea();
-    //pParticleHit_->Draw();
-    //pParticleDeath_->Draw();
+    pParticleHit_->Draw();
+    pParticleDeath_->Draw();
 }
 
 void Enemy::InitializeObjects()
@@ -143,15 +143,17 @@ void Enemy::InitializeCollider()
 void Enemy::InitializeParticleEmitters()
 {
     /// パーティクルエミッタの初期化
-    //pParticleHit_ = std::make_unique<ParticleEmitter>();
-    //pParticleHit_->Initialize(pModelParticleHit_ , "resources/json/particles/Box.json");
-    //pParticleHit_->SetEnableBillboard(true);
-    //pParticleHit_->SetPosition(translation_);
+    pParticleHit_ = std::make_unique<ParticleEmitter>();
+    pParticleHit_->Initialize(pModelParticleHit_, "resources/json/Spark.json");
+    pParticleHit_->SetEnableBillboard(true);
+    pParticleHit_->SetPosition(translation_);
+    pParticleHit_->EnableManualMode();
 
-    //pParticleDeath_ = std::make_unique<ParticleEmitter>();
-    //pParticleDeath_->Initialize(pModelParticleDeath_, "resources/json/particles/Death.json");
-    //pParticleDeath_->SetEnableBillboard(true);
-    //pParticleDeath_->SetPosition(translation_);
+    pParticleDeath_ = std::make_unique<ParticleEmitter>();
+    pParticleDeath_->Initialize(pModelParticleDeath_, "resources/json/Spark.json");
+    pParticleDeath_->SetEnableBillboard(true);
+    pParticleDeath_->SetPosition(translation_);
+    pParticleDeath_->EnableManualMode();
 }
 
 void Enemy::UpdateTransform()
@@ -174,21 +176,6 @@ void Enemy::UpdateTransform()
     if ((distanceToTarget.x != 0 || distanceToTarget.y != 0))
     {
         rotation_ = Vector3(0, -velocity_.xz().Theta(), 0);
-    }
-}
-
-void Enemy::UpdateLights()
-{
-    if (!directionalLight_) 
-    {
-        directionalLight_ = diContainer_->Resolve<DirectionalLight>();
-        objectSelfBody_->SetDirectionalLight(directionalLight_);
-    }
-
-    if (!pointLight_)
-    {
-        pointLight_ = diContainer_->Resolve<PointLight>();
-        objectSelfBody_->SetPointLight(pointLight_);
     }
 }
 
@@ -245,8 +232,8 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
             assert(0);
         }
 
-        //pParticleHit_->SetPosition(hitPos);
-        //pParticleHit_->Emit();
+        pParticleHit_->SetPosition(hitPos);
+        pParticleHit_->Emit();
 
         Vector3 dir = translation_ - hitPos;
 
