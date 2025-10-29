@@ -2,13 +2,18 @@
 
 #include <Vector3.h>
 #include <Features/GameEye/GameEye.h>
-#include <type/DIContainer.h>
 #include <Features/Lighting/PointLight/PointLight.h>
 #include <Entity/Status/EntityStats.h>
 #include <DebugTools/DebugEntry/DebugEntry.h>
 #include <Interfaces/IEntityStats.h>
 #include <memory>
 #include <Common/structs.h>
+
+struct EntityCommonParams
+{
+    DirectionalLight*   pDirLight   = nullptr;
+    PointLight*         pPointLight = nullptr;
+};
 
 /// <summary>
 /// エンティティ基底クラス
@@ -24,7 +29,7 @@ public:
     /// デバッグウィンドウの有効化設定も同時に行われます。
     /// </summary>
     /// <param name="enableDebugWindow">デバッグウィンドウを有効にする場合は true。</param>
-    virtual void Initialize(bool enableDebugWindow = true);
+    virtual void Initialize(const EntityCommonParams& params, bool enableDebugWindow = true);
 
     /// <summary>
     /// エンティティの終了処理を行います。
@@ -74,25 +79,27 @@ public: /// Setter
     void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
     void SetAcceleration(const Vector3& acceleration) { acceleration_ = acceleration; }
     void SetFriction(float friction) { friction_ = friction; }
-    void SetDIContainer(DIContainer* diContainer) { diContainer_ = diContainer; }
+    void SetParams(EntityCommonParams& params) { commonParams_ = params; }
 
 
 protected:
     std::unique_ptr<DebugEntry<EntityBase>> pDebugEntry_ = {};
 
-    bool    isEnableDebugWindow_    = true;
-    bool    isAlive_                = true;
+    EntityCommonParams commonParams_    = {};
 
-    EntityStats  stats_             = {};
+    bool    isEnableDebugWindow_        = true;
+    bool    isAlive_                    = true;
 
-    Vector3 rotation_               = {};
-    Vector3 scale_                  = {};
-    Vector3 translation_            = {};
-    Vector3 velocity_               = {};
-    Vector3 acceleration_           = {};
+    EntityStats  stats_                 = {};
 
-    float   friction_               = 1.0f;
-    float   attackPower_            = 0.0f;
+    Vector3 rotation_                   = {};
+    Vector3 scale_                      = {};
+    Vector3 translation_                = {};
+    Vector3 velocity_                   = {};
+    Vector3 acceleration_               = {};
+
+    float   friction_                   = 1.0f;
+    float   attackPower_                = 0.0f;
 
 
 protected:
@@ -106,7 +113,4 @@ protected:
 
 protected: /// 他クラスの所有物
     GameEye** ppGameEye_ = nullptr;
-    DIContainer* diContainer_ = nullptr;
-    DirectionalLight* directionalLight_ = nullptr;
-    PointLight* pointLight_ = nullptr;
 };

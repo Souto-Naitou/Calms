@@ -3,6 +3,7 @@
 #include <Features/Animation/AnimationTimeline.h>
 #include <Features/Sprite/Sprite.h>
 #include <DebugTools/DebugEntry/DebugEntry.h>
+#include <Features/Layer/Canvas.h>
 
 /// <summary>
 /// オープニングアニメーションクラス
@@ -16,7 +17,7 @@ public:
     /// <summary>
     /// アニメーション用リソースの初期化を行います。
     /// </summary>
-    void Initialize();
+    void Initialize(Canvas* canvas);
 
     /// <summary>
     /// アニメーションの更新を行います。

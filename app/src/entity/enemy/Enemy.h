@@ -34,7 +34,7 @@ public:
     /// モデル・コライダー・各種システムとの接続を準備します。
     /// </summary>
     /// <param name="_enableDebugWindow">デバッグウィンドウの有効/無効。</param>
-    void Initialize(bool _enableDebugWindow = true) override;
+    void Initialize(const EntityCommonParams& params, bool enableDebugWindow = true) override;
 
     /// <summary>
     /// 終了処理を行います。
@@ -88,11 +88,6 @@ private:
     /// 変換（位置・回転・スケール）を更新します。
     /// </summary>
     void UpdateTransform();
-
-    /// <summary>
-    /// ライト情報を更新します。
-    /// </summary>
-    void UpdateLights();
 
     /// <summary>
     /// 当たり判定の更新を行います。

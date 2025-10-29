@@ -1,6 +1,6 @@
 #include "GameScene.h"
 
-#include <Effects/SceneTransition/SceneTransitionManager.h>
+#include <Features/SceneManager/SceneManager.h>
 #include <Effects/SceneTransition/TransFadeInOut.h>
 #include <Features/Text/TextSystem.h>
 #include <MathExtension/mathExtension.h>
@@ -27,22 +27,29 @@ void GameScene::Initialize()
     pTextureManager_ = TextureManager::GetInstance();
     pModelManager_ = std::any_cast<ModelManager*>(pArgs_->Get("ModelManager"));
     pLineSystem_ = std::any_cast<LineSystem*>(pArgs_->Get("LineSystem"));
+    auto pDx12 = std::any_cast<DirectX12*>(pArgs_->Get("DirectX12"));
+    auto pCubemapSystem = std::any_cast<CubemapSystem*>(pArgs_->Get("CubemapSystem"));
 
     /// デバッグウィンドウを登録
     #ifdef _DEBUG
     pDebugManager_->SetComponent(name_, std::bind(&GameScene::DebugWindow, this));
     #endif // _DEBUG
 
-
-    /// テキストの色を追加
-    TextSystem::GetInstance()->SetColorBrush("HarfWhite", D2D1::ColorF(1.0f, 1.0f, 1.0f, 0.5f));
-
+    /// キャンバスの初期化
+    CanvasInitParams canvasParams = {};
+    canvasParams.name = "GameCanvas";
+    canvasParams.pDx12 = pDx12;
+    canvasParams.pCubemapSystem = pCubemapSystem;
+    canvas_ = std::make_unique<Canvas>();
+    canvas_->Initialize(canvasParams);
+    pLayer_->AddCanvas(canvas_.get());
 
     /// グリッドの初期化
     grid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
     grid_->GetOption().lightingData->enableLighting = true;
     grid_->SetPointLight(&pointLight_);
     grid_->SetDirectionalLight(&directionalLight_);
+    canvas_->RegisterDrawable(grid_.get());
 
     /// ゲームアイの初期化
     gameEye_ = std::make_unique<GameEye>();
@@ -50,25 +57,16 @@ void GameScene::Initialize()
     gameEye_->SetRotate(Vector3(1.57f, 0, 0));
     gameEye_->SetName("main");
 
-
-    /// プレイヤーの初期化
-    player_ = std::make_unique<Player>(pModelManager_);
-    player_->Initialize();
-    player_->SetDIContainer(&gObjDIContainer_);
-
-
     /// ゲームアイをセット
     Object3dSystem::GetInstance()->SetGlobalEye(gameEye_.get());
     SpriteSystem::GetInstance()->SetGlobalEye(gameEye_.get());
     LineSystem::GetInstance()->SetGlobalEye(gameEye_.get());
     ParticleSystem::GetInstance()->SetGlobalEye(gameEye_.get());
 
-
     /// 平行光源の初期化
     directionalLight_.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
     directionalLight_.direction = Vector3(0.0f, -1.0f, -0.0f);
     directionalLight_.intensity = 3.0f;
-
 
     /// ポイントライトの初期化
     pointLight_.IsEnable() = true;
@@ -76,27 +74,27 @@ void GameScene::Initialize()
     pointLight_.GetIntensity() = 7.5f;
     pointLight_.GetPosition() = Vector3(0.0f, 0.0f, 2.0f);
 
+    /// エンティティ共通パラメータをパック
+    entityCommonParams_.pDirLight = &directionalLight_;
+    entityCommonParams_.pPointLight = &pointLight_;
 
-    /// DIコンテナに登録
-    gObjDIContainer_.Register(&directionalLight_);
-    gObjDIContainer_.Register(&pointLight_);
-
+    /// プレイヤーの初期化
+    player_ = std::make_unique<Player>(pModelManager_);
+    player_->Initialize(entityCommonParams_);
+    canvas_->RegisterDrawable(player_->GetObject3d());
 
     /// 敵生成システムの初期化
     enemyPopSystem_.Initialize();
     enemyPopSystem_.SetPopRange(Vector3(-30.0f, 0.5f, -30.0f), Vector3(30.0f, 0.5f, 30.0f));
     enemyPopSystem_.SetIgnoreRange(3.0f);
 
-
     /// カウントダウンの初期化
     countDown_ = std::make_unique<CountDown>();
     countDown_->Initialize();
 
-
     /// デルタタイムの設定
     deltaTimeManager_->SetDeltaTime(0, 1.0f / 60.0f);
     deltaTimeManager_->SetDeltaTime(1, 1.0f / 60.0f);
-
 
     /// 座標変換の初期化
     screenToWorld_ = std::make_unique<ScreenToWorld>();
@@ -173,6 +171,8 @@ void GameScene::Finalize()
     lines_->Finalize();
     scoreSystem_->Finalize();
     ParticleManager::GetInstance()->ReleaseAllParticle();
+    canvas_->Finalize();
+    pLayer_->RemoveCanvas(canvas_.get());
 
     #ifdef _DEBUG
     pDebugManager_->DeleteComponent(name_);
@@ -256,7 +256,7 @@ void GameScene::Update()
     gameTimer_->Update();
     if (gameTimer_->IsEnd() && !isChangingScene_)
     {
-        SceneTransitionManager::GetInstance()->ChangeScene("ClearScene", std::make_unique<TransFadeInOut>());
+        SceneManager::GetInstance()->ReserveScene("ClearScene", std::make_unique<TransFadeInOut>());
         isChangingScene_ = true;
     }
 
@@ -267,9 +267,10 @@ void GameScene::Update()
     /// ラインの更新
     lines_->Update();
 
-    if (titleTimer_.GetNow<float>() < 10.0f)
+    if (titleTimer_.GetNow<float>() > 100.0f && !isChangingScene_)
     {
-        SceneTransitionManager::GetInstance()->ChangeScene("TitleScene", std::make_unique<TransFadeInOut>());
+        SceneManager::GetInstance()->ReserveScene("TitleScene", std::make_unique<TransFadeInOut>());
+        isChangingScene_ = true;
     }
 
     //scoreSystem_->Update();
@@ -278,8 +279,6 @@ void GameScene::Update()
 void GameScene::Draw()
 {
     grid_->Draw();
-
-    player_->Draw();
 
     for (auto& enemy : enemies_)
     {
@@ -335,11 +334,10 @@ void GameScene::CreatePlayerBullet()
 
     IModel* pModel = pModelManager_->Load("Cube/Cube.obj");
     auto bullet = std::make_unique<PlayerBullet>(pModel);
-    bullet->Initialize(false);
+    bullet->Initialize(entityCommonParams_, false);
     bullet->SetTranslation(player_->GetTranslation());
     bullet->SetMoveVelocity(direction * 15.0f);
     bullet->SetIsDrawCollisionArea(isDisplayColliderPlayerBullet_);
-    bullet->SetDIContainer(&gObjDIContainer_);
 
     playerBullets_.push_back(std::move(bullet));
 }
@@ -395,10 +393,9 @@ void GameScene::EnemyPopSystemUpdate()
         enemyDesc.pModelParticleDeath = pModelManager_->Load("Triangle/Triangle.obj");
 
         auto enemy = std::make_unique<Enemy>(enemyDesc);
-        enemy->Initialize(false);
+        enemy->Initialize(entityCommonParams_, false);
         enemy->SetTranslation(popPoint);
         enemy->SetLocationProvider(player_.get());
-        enemy->SetDIContainer(&gObjDIContainer_);
         enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
         enemies_.emplace_back(std::move(enemy));
     }

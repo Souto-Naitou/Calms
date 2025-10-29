@@ -25,7 +25,7 @@ public:
     /// モデル・コライダー等の準備を行います。
     /// </summary>
     /// <param name="_enableDebugWindow">デバッグウィンドウの有効/無効。</param>
-    void Initialize(bool _enableDebugWindow = true) override;
+    void Initialize(const EntityCommonParams& params, bool enableDebugWindow = true) override;
 
     /// <summary>
     /// 終了処理を行います。

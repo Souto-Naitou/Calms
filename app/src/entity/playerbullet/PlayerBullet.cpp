@@ -2,9 +2,9 @@
 
 #include <imgui.h>
 
-void PlayerBullet::Initialize(bool _enableDebugWindow)
+void PlayerBullet::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
 {
-    EntityBase::Initialize(_enableDebugWindow);
+    EntityBase::Initialize(params, enableDebugWindow);
     if (isEnableDebugWindow_)
     {
         pDebugEntry_->SetName(utl::debug::generate_name("PlayerBullet", this));
@@ -31,6 +31,9 @@ void PlayerBullet::Initialize(bool _enableDebugWindow)
 
     // コライダーの初期化
     this->CollidersInitialize();
+
+    if (params.pDirLight) pBody_->SetDirectionalLight(params.pDirLight);
+    if (params.pPointLight) pBody_->SetPointLight(params.pPointLight);
 }
 
 
@@ -113,20 +116,6 @@ void PlayerBullet::ObjectsUpdate()
 {
     // 位置の反映
     pBody_->SetTranslate(translation_);
-
-    // オブジェクトの更新
-    if (!directionalLight_)
-    {
-        directionalLight_ = diContainer_->Resolve<DirectionalLight>();
-        pBody_->SetDirectionalLight(directionalLight_);
-    }
-
-    if (!pointLight_)
-    {
-        pointLight_ = diContainer_->Resolve<PointLight>();
-        pBody_->SetPointLight(pointLight_);
-    }
-
     pBody_->Update();
 }
 

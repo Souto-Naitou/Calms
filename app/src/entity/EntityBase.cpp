@@ -4,13 +4,14 @@
 #include <MathExtension/mathExtension.h>
 #include <imgui.h>
 
-void EntityBase::Initialize(bool enableDebugWindow)
+void EntityBase::Initialize(const EntityCommonParams& params, bool enableDebugWindow /*= true*/)
 {
     isEnableDebugWindow_ = enableDebugWindow;
     if (isEnableDebugWindow_)
     {
         pDebugEntry_ = std::make_unique<DebugEntry<EntityBase>>("GameObject", this);
     }
+    commonParams_ = params;
 }
 
 void EntityBase::UpdatePhysics(float dt)

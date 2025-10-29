@@ -8,7 +8,7 @@ OpeningAnimation::OpeningAnimation()
     pDebugEntry_ = std::make_unique<DebugEntry<OpeningAnimation>>("AnimationScene", "OpeningAnimation", this, false);
 }
 
-void OpeningAnimation::Initialize()
+void OpeningAnimation::Initialize(Canvas* canvas)
 {
     const Vector2 clientSize = 
     { 
@@ -21,6 +21,9 @@ void OpeningAnimation::Initialize()
     spriteBackground_->Initialize("white1x1.png");
     spriteBackground_->SetSize(clientSize);
     spriteBackground_->SetColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+
+    // Canvasへ登録
+    canvas->RegisterDrawable(spriteBackground_.get());
 
     // Tweenの生成
     AnimationTween<float> tweenOpacity(1.0f, 3.0f, 1.0f, 0.0f);

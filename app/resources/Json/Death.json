@@ -6,14 +6,14 @@
     "common": {
         "alphaDeltaValue": 0.0,
         "emitInterval": 0.019999999552965164,
-        "emitNum": 27,
+        "emitNum": 300,
         "emitPositionFixed": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
         },
         "emitterLifeTime": 0.0,
-        "particleLifeTime": 4.099999904632568,
+        "particleLifeTime": 2.4000000953674316,
         "scaleDelayTime": 0.0,
         "scaleFixed": {
             "x": 0.4300000071525574,
@@ -28,9 +28,9 @@
     },
     "flags": {
         "enableCollisionFloor": true,
-        "enableRandomEmit": false,
+        "enableRandomEmit": true,
         "enableRandomRotation": false,
-        "enableRandomScale": false,
+        "enableRandomScale": true,
         "enableRandomVelocity": true,
         "enableScaleTransition": true,
         "velocityDistribution": 1
@@ -53,34 +53,34 @@
         "color": {
             "end": {
                 "w": 1.0,
-                "x": 0.21834109723567963,
-                "y": 0.9240506291389465,
-                "z": 0.8793853521347046
+                "x": 1.0,
+                "y": 1.0,
+                "z": 1.0
             },
             "start": {
                 "w": 1.0,
-                "x": 0.8498104214668274,
+                "x": 1.0,
                 "y": 1.0,
-                "z": 0.6793248653411865
+                "z": 1.0
             }
         },
         "position": {
             "end": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
+                "x": -2.6600000858306885,
+                "y": -1.7400000095367432,
+                "z": -2.819999933242798
             },
             "start": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
+                "x": 2.890000104904175,
+                "y": 2.5399999618530273,
+                "z": 1.8600000143051147
             }
         },
         "rotationRandom": {
             "end": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
+                "x": 1.340000033378601,
+                "y": 1.399999976158142,
+                "z": 1.100000023841858
             },
             "start": {
                 "x": 0.0,
@@ -102,9 +102,9 @@
         },
         "scaleRandom": {
             "end": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
+                "x": 2.6700000762939453,
+                "y": 2.7799999713897705,
+                "z": 1.7899999618530273
             },
             "start": {
                 "x": 0.0,
@@ -125,8 +125,8 @@
             }
         },
         "velocityRandomSphere": {
-            "end": 0.3400000035762787,
-            "start": 0.3700000047683716
+            "end": 11.0,
+            "start": 11.0
         }
     },
     "version": 3
