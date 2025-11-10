@@ -1,6 +1,7 @@
 #pragma once
 
-#include <Features/Sprite/Sprite.h>
+#include <drawable/sprite/Sprite.h>
+#include <Features/Layer/Canvas.h>
 
 /// <summary>
 /// 入力ガイドクラス
@@ -11,7 +12,7 @@ public:
     /// <summary>
     /// 入力ガイドの初期化を行います。
     /// </summary>
-    void Initialize();
+    void Initialize(Canvas* canvas);
 
     /// <summary>
     /// 入力ガイドの状態を更新します。
@@ -30,6 +31,7 @@ public:
     void Finalize();
 
 private:
+    Canvas* canvas_ = nullptr;
     std::unique_ptr<Sprite> leftclick_ = nullptr;
     std::unique_ptr<Sprite> shift_ = nullptr;
 };

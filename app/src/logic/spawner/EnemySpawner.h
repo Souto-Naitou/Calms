@@ -10,6 +10,8 @@
 #include <string>
 #include <Utility/JSONIO/JSONIO.h>
 #include <nlohmann/json.hpp>
+#include <DebugTools/DebugEntry/DebugEntry.h>
+#include <memory>
 
 /// <summary>
 /// 敵生成クラス
@@ -44,6 +46,11 @@ public:
     /// 生成タイミングや内部状態の更新を行います。
     /// </summary>
     void    Update();
+
+    /// <summary>
+    /// ImGui のデバッグウィンドウを描画します。
+    /// </summary>
+    void ImGui();
 
     /// <summary>
     /// 生成範囲や除外範囲の可視化描画を行います。
@@ -101,11 +108,6 @@ private:
     void PopRandom();  // ランダム生成
 
     /// <summary>
-    /// ImGui のデバッグウィンドウを描画します。
-    /// </summary>
-    void DebugWindow();
-
-    /// <summary>
     /// JSON から読み込んだデータを内部ポップデータに変換します。
     /// </summary>
     void InitPopData();
@@ -151,9 +153,9 @@ private:
 
 
     /// デバッグ用
+    std::unique_ptr<DebugEntry<EnemySpawner>> pDebugEntry_ = {};            // !< デバッグエントリ
     std::unique_ptr<Line>   linesArea_              = {};                   // !< エリアライン
     std::unique_ptr<Line>   linesIgnoreCircle_      = {};                   // !< 禁止エリアライン
-    std::string             name_                   = "EnemyPopSystem";     // !< 名前
     bool                    isDisplayArea_          = false;                // !< 生成範囲表示フラグ
 
 private:

@@ -8,8 +8,15 @@ OpeningAnimation::OpeningAnimation()
     pDebugEntry_ = std::make_unique<DebugEntry<OpeningAnimation>>("AnimationScene", "OpeningAnimation", this, false);
 }
 
+OpeningAnimation::~OpeningAnimation()
+{
+    pCanvas_->UnregisterDrawable(spriteBackground_.get());
+}
+
 void OpeningAnimation::Initialize(Canvas* canvas)
 {
+    pCanvas_ = canvas;
+
     const Vector2 clientSize = 
     { 
         static_cast<float>(WinSystem::clientWidth), 
@@ -44,10 +51,10 @@ void OpeningAnimation::Update()
     spriteBackground_->Update();
 }
 
-void OpeningAnimation::Draw2d()
+void OpeningAnimation::Draw1F()
 {
     // Spriteの描画
-    spriteBackground_->Draw();
+    spriteBackground_->Draw1F();
 }
 
 void OpeningAnimation::Play()

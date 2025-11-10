@@ -1,7 +1,7 @@
 #include "TitleScene.h"
 #include <Effects/SceneTransition/TransShutter.h>
-#include <Features/Sprite/SpriteSystem.h>
-#include <Features/Object3d/Object3dSystem.h>
+#include <drawable/sprite/SpriteSystem.h>
+#include <drawable/object3d/Object3dSystem.h>
 #include <Features/Line/LineSystem.h>
 #include <any>
 #include <Core/DirectX12/TextureManager.h>
@@ -20,10 +20,11 @@ void TitleScene::Initialize()
 
     /// Canvasの初期化
     {
-        CanvasInitParams params = {};
+        Canvas::Params params = {};
         params.name = "TitleCanvas";
         params.pDx12 = pDx12_;
         params.pCubemapSystem = pCubemapSystem_;
+        params.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs_->Get("ImGuiManager"));
 
         pCanvas_ = std::make_unique<Canvas>();
         pCanvas_->Initialize(params);
@@ -103,6 +104,11 @@ void TitleScene::Update()
 
 void TitleScene::Draw()
 {
+    pSpriteTitle_->Draw1F();
+    pSpriteFrameScreen_->Draw1F();
+    pSpritePressStart_->Draw1F();
+
+    pOpeningAnimation_->Draw1F();
 }
 
 void TitleScene::DrawTexts()

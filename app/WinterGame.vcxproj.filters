@@ -222,4 +222,9 @@
       <Filter>Scene\GameOverTest</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\Json\.engine\config.json">
+      <Filter>Config</Filter>
+    </None>
+  </ItemGroup>
 </Project>

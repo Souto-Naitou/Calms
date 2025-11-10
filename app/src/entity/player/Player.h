@@ -1,18 +1,19 @@
 #pragma once
 
 #include <Entity/EntityBase.h>
-#include <Features/Object3d/Object3d.h>
+#include <drawable/object3d/Object3d.h>
 #include <memory>
 #include <Features/Input/Input.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Collision/Manager/CollisionManager.h>
 #include <Features/Collision/Collider/Collider.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
-#include <Features/Particle/Emitter/ParticleEmitter.h>
+#include <drawable/particle/Emitter/ParticleEmitter.h>
 #include <Features/Audio/AudioManager.h>
 #include <Features/Audio/Audio.h>
 #include <Features/Model/ModelManager.h>
 #include <Features/Model/IModel.h>
+
 
 /// <summary>
 /// プレイヤークラス
@@ -20,8 +21,13 @@
 class Player : public EntityBase
 {
 public:
-    Player(ModelManager* pModelManager)
-        : pModelManager_(pModelManager) {};
+    struct Params
+    {
+        Particle* particle = nullptr;
+        ModelManager* pModelManager = nullptr;
+    };
+
+    Player(const Params& params);
 
     /// <summary>
     /// プレイヤーの初期化を行います。
@@ -45,7 +51,7 @@ public:
     /// <summary>
     /// プレイヤーの描画処理を行います。
     /// </summary>
-    void Draw() override;
+    void Draw1F() override;
 
     /// <summary>
     /// プレイヤーのライン等の補助描画を行います。
@@ -92,9 +98,17 @@ private:
     void ColliderInitialize();
 
     /// <summary>
+    /// パーティクルエミッターの初期化を行います。
+    /// </summary>
+    void ParticleEmittersInitialize();
+
+    /// <summary>
     /// 入力状態から移動や射撃などのコマンドを更新します。
     /// </summary>
     void UpdateInputCommands();
+
+    // 初期化パラメータ
+    Params                          params_;
 
     std::unique_ptr<IModel>         pModelSelfBody_ = nullptr;
     std::unique_ptr<Object3d>       object_ = {};
@@ -121,8 +135,7 @@ private:
     bool enableInput_ = true;
 
     /// パーティクルエミッター
-    std::unique_ptr<ParticleEmitter> shotEmitter_ = nullptr;
-    std::shared_ptr<IModel> pModelSpark_ = nullptr;
+    std::unique_ptr<ParticleEmitter> emitterConstant_ = nullptr;    // 常時発生エミッター
 
     /// オーディオ
     Audio* audioShot_ = nullptr;

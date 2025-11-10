@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Scene/SceneBase.h>
-#include <Features/Sprite/Sprite.h>
+#include <drawable/sprite/Sprite.h>
 #include <memory>
 
 /// <summary>

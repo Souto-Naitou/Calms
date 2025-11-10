@@ -13,6 +13,19 @@ void LoadScene::Initialize()
 {
     pInput_ = Input::GetInstance();
 
+    DirectX12* pDx12 = std::any_cast<DirectX12*>(pArgs_->Get("DirectX12"));
+    CubemapSystem* pCubemapSystem = std::any_cast<CubemapSystem*>(pArgs_->Get("CubemapSystem"));
+
+    Canvas::Params canvasParams = {};
+    canvasParams.name = "LoadSceneCanvas";
+    canvasParams.pDx12 = pDx12;
+    canvasParams.pCubemapSystem = pCubemapSystem;
+    canvasParams.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs_->Get("ImGuiManager"));
+    pCanvas_ = std::make_unique<Canvas>();
+    pCanvas_->Initialize(canvasParams);
+    pLayer_->AddCanvas(pCanvas_.get());
+    
+    /// ローディングスプライトの初期化
     pTextureManager_ = TextureManager::GetInstance();
     pSpriteLoading_ = std::make_unique<Sprite>();
     pSpriteLoading_->Initialize(Path::Image::kLoading);
@@ -21,24 +34,35 @@ void LoadScene::Initialize()
     pSpriteLoading_->SetPosition({ WinSystem::clientWidth - 130.0f, WinSystem::clientHeight - 80.0f});
     pSpriteLoading_->SetColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 
-    pBar_ = std::make_unique<Bar2d>();
-    pBar_->Initialize("white1x1.png", {800.0f, 30.0f});
-    pBar_->SetAnchorPoint({ 1.0f, 0.5f });
-    pBar_->SetPosition({ WinSystem::clientWidth - 600.0f, WinSystem::clientHeight - 80.0f });
-    pBar_->SetCurrentValue(0.0f);
-
+    /// ローディング背景スプライトの初期化
     pSpriteLBackground_ = std::make_unique<Sprite>();
     pSpriteLBackground_->Initialize("white1x1.png");
     pSpriteLBackground_->SetName("LoadingBackground");
     pSpriteLBackground_->SetColor({ 0.8f, 0.8f, 0.8f, 1.0f });
     pSpriteLBackground_->SetSize({ WinSystem::clientWidth, WinSystem::clientHeight });
 
+    /// キャンバスに登録
+    pCanvas_->RegisterDrawable(pSpriteLBackground_.get());
+    pCanvas_->RegisterDrawable(pSpriteLoading_.get());
+
+    /// ローディングバーの初期化
+    Bar2dInitParams barParams = {};
+    barParams.pCanvas = pCanvas_.get();
+    barParams.barSize = { 800.0f, 30.0f };
+    pBar_ = std::make_unique<Bar2d>();
+    pBar_->Initialize(barParams);
+    pBar_->SetAnchorPoint({ 1.0f, 0.5f });
+    pBar_->SetPosition({ WinSystem::clientWidth - 600.0f, WinSystem::clientHeight - 80.0f });
+    pBar_->SetCurrentValue(0.0f);
+
     waitTimer_.Start();
 }
 
 void LoadScene::Finalize()
 {
-
+    pBar_->Finalize();
+    pCanvas_->Finalize();
+    pLayer_->RemoveCanvas(pCanvas_.get());
 }
 
 void LoadScene::Update()
@@ -78,9 +102,9 @@ void LoadScene::Update()
 
 void LoadScene::Draw()
 {
-    pSpriteLBackground_->Draw();
-    pSpriteLoading_->Draw();
-    pBar_->Draw2D();
+    pSpriteLBackground_->Draw1F();
+    pSpriteLoading_->Draw1F();
+    pBar_->Draw1F();
 }
 
 void LoadScene::AggregateTexturePaths(const std::string& directoryPath)

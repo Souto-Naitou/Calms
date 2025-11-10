@@ -1,8 +1,9 @@
 #pragma once
 
 #include <Features/TimeMeasurer/TimeMeasurer.h>
-#include <Features/Sprite/Sprite.h>
+#include <drawable/sprite/Sprite.h>
 #include <array>
+#include <Features/Layer/Canvas.h>
 
 /// <summary>
 /// ゲーム内タイマークラス
@@ -16,7 +17,7 @@ public:
     /// </summary>
     /// <param name="_useSystemClock">システムクロックを使用する場合は true。</param>
     /// <param name="_gameDuration">ゲームの制限時間（秒）。</param>
-    void Initialize(bool _useSystemClock, double _gameDuration);
+    void Initialize(Canvas* canvas, bool _useSystemClock, double _gameDuration);
 
     /// <summary>
     /// タイマーの状態を更新します。
@@ -27,7 +28,7 @@ public:
     /// <summary>
     /// タイマーの描画を行います。
     /// </summary>
-    void Draw();
+    void Draw1F();
 
     /// <summary>
     /// タイマーの終了処理を行います。
@@ -50,6 +51,7 @@ public: /// Getter
     double GetNowTime() const { return nowTime_; }
 
 
+
 public: /// Setter
     void SetDisplay(bool _isDisplay) { isDisplay_ = _isDisplay; }
     void SetNowTime(double _time) { nowTime_ = _time; }
@@ -67,6 +69,7 @@ private:
     void SpriteUpdate();
 
 private:
+    Canvas* pCanvas_ = nullptr;
     /// タイマー
     std::unique_ptr<TimeMeasurer> pTimer_ = nullptr;
     double nowTime_ = 0.0;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Scene/SceneBase.h>
-#include <Features/Object3d/Object3d.h>
+#include <drawable/object3d/Object3d.h>
 #include <Features/GameEye/GameEye.h>
 #include <entity/player/Player.h>
 #include <Common/structs.h>
@@ -13,6 +13,7 @@
 #include <Features/Model/ModelManager.h>
 #include <Core/DirectX12/TextureManager.h>
 #include <entity/player/GameOverAnimation.h>
+#include <drawable/Sprite/Sprite.h>
 
 /// <summary>
 /// ゲームオーバーテストシーン
@@ -76,6 +77,7 @@ private:
     TimeMeasurer                            titleTimer_         = {};       // タイトル表示用タイマー
     std::unique_ptr<GameOverAnimation>      gameOverAnimation_  = {};       // ゲームオーバーアニメーション
     std::unique_ptr<Sprite>                 spaceSprite_        = nullptr;  // スペースキー案内スプライト
+    Particle*                               particleDeath_      = nullptr;  // パーティクル
 
     /// デバッグ用
     DebugManager*   pDebugManager_  = nullptr;

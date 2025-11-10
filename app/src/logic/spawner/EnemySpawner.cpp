@@ -21,10 +21,8 @@ void EnemySpawner::Initialize()
     /// ポップデータの初期化
     this->InitPopData();
 
-
     /// デバッグウィンドウを登録
-    DebugManager::GetInstance()->SetComponent(name_, std::bind(&EnemySpawner::DebugWindow, this));
-
+    pDebugEntry_ = std::make_unique<DebugEntry<EnemySpawner>>("EnemySpawner", "EnemySpawner", this, false);
 
     /// ラインの初期化
     linesArea_ = std::make_unique<Line>(4);
@@ -40,8 +38,6 @@ void EnemySpawner::Finalize()
 {   
     linesArea_->Finalize();
     linesIgnoreCircle_->Finalize();
-
-    DebugManager::GetInstance()->DeleteComponent(name_);
 }
 
 void EnemySpawner::Update()
@@ -183,7 +179,7 @@ void EnemySpawner::PopRandom()
     popPoints_.push(randPosition);
 }
 
-void EnemySpawner::DebugWindow()
+void EnemySpawner::ImGui()
 {
 #ifdef _DEBUG
     ImGui::Text("Overall Time: %.1f", timerOverall_.GetNow<float>());
@@ -198,6 +194,7 @@ void EnemySpawner::DebugWindow()
 
     ImGui::Separator();
 
+    ImGui::Checkbox("Enable", &isEnablePop_);
     ImGui::Checkbox("Display Area", &isDisplayArea_);
     ImGui::InputFloat("Pop Interval", &popInterval_);
     ImGui::InputInt("Pop Count", reinterpret_cast<int*>(&popCount_));

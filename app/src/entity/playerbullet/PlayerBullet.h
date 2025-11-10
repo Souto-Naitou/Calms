@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Entity/EntityBase.h>
-#include <Features/Object3d/Object3d.h>
+#include <drawable/object3d/Object3d.h>
 #include <Vector3.h>
 #include <memory>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
@@ -41,7 +41,7 @@ public:
     /// <summary>
     /// 弾の描画処理を行います。
     /// </summary>
-    void Draw() override;
+    void Draw1F() override;
 
     /// <summary>
     /// ライン等の補助描画を行います。

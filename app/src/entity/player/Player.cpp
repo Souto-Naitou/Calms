@@ -3,6 +3,11 @@
 #include <imgui.h>
 #include <Features/Model/ObjModel.h>
 
+Player::Player(const Params& params) : pModelManager_(params.pModelManager)
+{
+    params_ = params;
+}
+
 void Player::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
 {
     // 基底クラスの初期化
@@ -21,6 +26,8 @@ void Player::Initialize(const EntityCommonParams& params, bool enableDebugWindow
     timerShot_ = std::make_unique<TimeMeasurer>();
     timerShot_->Start();
 
+    // パーティクルエミッターの初期化
+    this->ParticleEmittersInitialize();
 
     /// パラメータの初期化
     movePower_ = 20.0f;
@@ -31,22 +38,11 @@ void Player::Initialize(const EntityCommonParams& params, bool enableDebugWindow
     // オブジェクトの初期化
     this->ObjectsInitialize();
 
-    /// OBBの初期化
+    // OBBの初期化
     obb_.Initialize();
 
     // コライダーの初期化
     this->ColliderInitialize();
-
-    // コライダーの登録
-    collisionManager_->RegisterCollider(collider_.get());
-
-    pModelSpark_ = std::make_unique<ObjModel>();
-    pModelSpark_->Clone(pModelManager_->Load("Particle/ParticleSpark.obj"));
-
-    /// パーティクルエミッターの初期化
-    shotEmitter_ = std::make_unique<ParticleEmitter>();
-    shotEmitter_->Initialize(pModelSpark_.get(), "resources/json/Spark.json");
-    shotEmitter_->SetEnableBillboard(true);
 
     audioShot_ = audioManager_->GetNewAudio("Effect", "hit_hat.wav");
     audioShot_->SetVolume(0.1f);
@@ -59,7 +55,7 @@ void Player::Initialize(const EntityCommonParams& params, bool enableDebugWindow
 void Player::Finalize()
 {
     object_->Finalize();
-    shotEmitter_->Finalize();
+    emitterConstant_->Finalize();
     
     EntityBase::Finalize();
 }
@@ -91,22 +87,22 @@ void Player::Update()
     collider_->SetShapeData(&obb_);
 
     /// パーティクルエミッターの更新
-    shotEmitter_->SetPosition(translation_);
-    shotEmitter_->Update();
+    emitterConstant_->SetPosition(translation_);
+    emitterConstant_->Update();
 }
 
 
-void Player::Draw()
+void Player::Draw1F()
 {
     // オブジェクトの描画
-    object_->Draw();
+    object_->Draw1F();
 }
 
 void Player::DrawLine()
 {
     if (isDrawCollisionArea_) collider_->DrawArea();
     // パーティクルエミッターの描画
-    shotEmitter_->Draw();
+    emitterConstant_->Draw();
 }
 
 void Player::ObjectsInitialize()
@@ -138,6 +134,18 @@ void Player::ColliderInitialize()
     collider_->SetOnCollision(std::bind(&Player::OnCollision, this, std::placeholders::_1));
     collider_->SetOnCollisionTrigger(std::bind(&Player::OnCollisionTrigger, this, std::placeholders::_1));
     collider_->SetEnableLighter(true);
+    // コライダーの登録
+    collisionManager_->RegisterCollider(collider_.get());
+}
+
+void Player::ParticleEmittersInitialize()
+{
+    ParticleEmitterInitParams emitterParams = {};
+    emitterParams.particle = params_.particle;
+    emitterParams.jsonPath = "resources/json/Spark.json";
+    emitterConstant_ = std::make_unique<ParticleEmitter>();
+    emitterConstant_->Initialize(emitterParams);
+    emitterConstant_->SetEnableBillboard(true);
 }
 
 void Player::UpdateInputCommands()
@@ -169,7 +177,7 @@ void Player::UpdateInputCommands()
             timerShot_->Reset();
             timerShot_->Start();
         }
-        shotEmitter_->Emit();
+        emitterConstant_->Emit();
     }
 
     isSlow_ = false;

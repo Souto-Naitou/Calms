@@ -1,17 +1,17 @@
 #pragma once
 
 #include <Entity/EntityBase.h>
-#include <Features/Object3d/Object3d.h>
+#include <drawable/object3d/Object3d.h>
 #include <Vector3.h>
 #include <memory>
-#include <Features/GameEye/GameEye.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Collision/Collider/Collider.h>
 #include <Features/Collision/Manager/CollisionManager.h>
 #include <Features/Primitive/OBB.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
-#include <Features/Particle/Emitter/ParticleEmitter.h>
+#include <drawable/particle/Emitter/ParticleEmitter.h>
 #include <Features/Audio/AudioManager.h>
+#include <drawable/particle/Particle.h>
 
 /// <summary>
 /// 敵クラス
@@ -19,15 +19,15 @@
 class Enemy : public EntityBase
 {
 public:
-    struct Desc
+    struct Params
     {
-        IModel* pModelSelfBody = nullptr;               // 本体モデル
-        IModel* pModelParticleHit = nullptr;            // ヒットパーティクルモデル
-        IModel* pModelParticleDeath = nullptr;          // デスパーティクルモデル
+        Particle*   pParticleHit    = nullptr;      // ヒットパーティクル
+        Particle*   pParticleDeath  = nullptr;      // デスパーティクル
+        IModel*     pModelSelfBody  = nullptr;      // 本体モデル
     };
 
 public:
-    Enemy(const Desc& _desc);
+    Enemy(const Params& _desc);
 
     /// <summary>
     /// 敵の初期化を行います。
@@ -50,7 +50,7 @@ public:
     /// <summary>
     /// 敵の描画処理を行います。
     /// </summary>
-    void Draw() override;
+    void Draw1F() override;
 
     /// <summary>
     /// 敵のライン等の補助描画を行います。
@@ -111,6 +111,8 @@ private:
     /// <param name="_other">衝突相手のコライダー。</param>
     void OnCollisionTrigger(const Collider* _other);
 
+    Params          params_                     = {};
+
     std::unique_ptr<Object3d>           objectSelfBody_     = {};
     std::unique_ptr<TimeMeasurer>       timeMeasurer_       = {};
 
@@ -137,8 +139,6 @@ private:
     std::unique_ptr<ParticleEmitter>    pParticleHit_               = nullptr;
     std::unique_ptr<ParticleEmitter>    pParticleDeath_             = nullptr;
     std::unique_ptr<IModel>             pModelSelfBody_             = nullptr;
-    IModel*                             pModelParticleHit_          = nullptr;
-    IModel*                             pModelParticleDeath_        = nullptr;
 
 
 private: /// 他クラスの所有物

@@ -4,7 +4,7 @@
 
 void ScreenToWorld::Initialize()
 {
-    object_ = new Object3d();
+    object_ = std::make_unique<Object3d>();
     object_->Initialize("Cube.obj");
     object_->SetScale(Vector3(0.3f, 0.3f, 0.3f));
     object_->SetTranslate(Vector3(0, 0, 0));
@@ -16,7 +16,6 @@ void ScreenToWorld::Initialize()
 void ScreenToWorld::Finalize()
 {
     object_->Finalize();
-    delete object_;
 }
 
 void ScreenToWorld::Update()
@@ -70,9 +69,9 @@ void ScreenToWorld::Update()
     object_->Update();
 }
 
-void ScreenToWorld::Draw()
+void ScreenToWorld::Draw1F()
 {
-    object_->Draw();
+    object_->Draw1F();
 }
 
 void ScreenToWorld::ModifyGameEye(GameEye* _eye)

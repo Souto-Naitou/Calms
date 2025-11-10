@@ -71,12 +71,12 @@ void CountDown::Update()
     };
 }
 
-void CountDown::Draw2D()
+void CountDown::Draw1F()
 {
     if (isEnd_|| isInit_) return;
 
-    if (!isDrawStart_)      numbers_[currentNumber_]->Draw();
-    else                    start_->Draw();
+    if (!isDrawStart_)      numbers_[currentNumber_]->Draw1F();
+    else                    start_->Draw1F();
 }
 
 void CountDown::Start()
