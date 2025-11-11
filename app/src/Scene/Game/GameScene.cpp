@@ -42,7 +42,9 @@ void GameScene::Initialize()
     canvasParams.name = "GameCanvas";
     canvasParams.pDx12 = pDx12;
     canvasParams.pCubemapSystem = pCubemapSystem;
+    #ifdef _DEBUG
     canvasParams.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs_->Get("ImGuiManager"));
+    #endif // _DEBUG
 
     canvas_ = std::make_unique<Canvas>();
     canvas_->Initialize(canvasParams);

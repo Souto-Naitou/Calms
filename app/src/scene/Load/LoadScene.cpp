@@ -20,7 +20,9 @@ void LoadScene::Initialize()
     canvasParams.name = "LoadSceneCanvas";
     canvasParams.pDx12 = pDx12;
     canvasParams.pCubemapSystem = pCubemapSystem;
+    #ifdef _DEBUG
     canvasParams.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs_->Get("ImGuiManager"));
+    #endif // _DEBUG
     pCanvas_ = std::make_unique<Canvas>();
     pCanvas_->Initialize(canvasParams);
     pLayer_->AddCanvas(pCanvas_.get());

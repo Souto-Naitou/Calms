@@ -24,7 +24,9 @@ void TitleScene::Initialize()
         params.name = "TitleCanvas";
         params.pDx12 = pDx12_;
         params.pCubemapSystem = pCubemapSystem_;
+        #ifdef _DEBUG
         params.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs_->Get("ImGuiManager"));
+        #endif // _DEBUG
 
         pCanvas_ = std::make_unique<Canvas>();
         pCanvas_->Initialize(params);
