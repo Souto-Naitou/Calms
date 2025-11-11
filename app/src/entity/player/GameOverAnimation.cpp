@@ -6,8 +6,11 @@
 void GameOverAnimation::Initialize(GameOverAnimationInitParams params)
 {
     initParams_ = params;
+    ParticleEmitterInitParams emitterParams = {};
+    emitterParams.particle = initParams_.pParticle;
+    emitterParams.jsonPath = "resources/json/death.json";
     pEmitter_ = std::make_unique<ParticleEmitter>();
-    pEmitter_->Initialize(params.pParticleModel, "resources/json/death.json");
+    pEmitter_->Initialize(emitterParams);
     pEmitter_->SetEnableBillboard(true);
     pEmitter_->EnableManualMode();
 }

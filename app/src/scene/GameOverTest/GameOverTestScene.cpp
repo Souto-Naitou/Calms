@@ -3,9 +3,9 @@
 #include <Features/SceneManager/SceneManager.h>
 #include <Effects/SceneTransition/TransFadeInOut.h>
 #include <MathExtension/mathExtension.h>
-#include <Features/Particle/ParticleManager.h>
-#include <Features/Object3d/Object3dSystem.h>
-#include <Features/Sprite/SpriteSystem.h>
+#include <drawable/particle/ParticleStorage.h>
+#include <drawable/object3d/Object3dSystem.h>
+#include <drawable/sprite/SpriteSystem.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 
 #include <Vector3.h>
@@ -37,7 +37,7 @@ void GameOverTestScene::Initialize()
     #endif // _DEBUG
 
     /// キャンバスの初期化
-    CanvasInitParams canvasParams = {};
+    Canvas::Params canvasParams = {};
     canvasParams.name = "GameCanvas";
     canvasParams.pDx12 = pDx12;
     canvasParams.pCubemapSystem = pCubemapSystem;
@@ -79,7 +79,10 @@ void GameOverTestScene::Initialize()
     entityCommonParams_.pPointLight = &pointLight_;
 
     /// プレイヤーの初期化
-    player_ = std::make_unique<Player>(pModelManager_);
+    Player::Params playerParams = {};
+    playerParams.pModelManager = pModelManager_;
+    playerParams.particle = ParticleStorage::GetInstance()->CreateParticle();
+    player_ = std::make_unique<Player>(playerParams);
     player_->Initialize(entityCommonParams_);
 
     /// デルタタイムの設定
@@ -105,11 +108,14 @@ void GameOverTestScene::Initialize()
 
     /// ゲームオーバーアニメーションの初期化
     {
+        particleDeath_ = ParticleStorage::GetInstance()->CreateParticle();
+        particleDeath_->Initialize(pModelManager_->Load("Particle/ParticleSpark.obj"));
+
         GameOverAnimationInitParams params = {};
         params.pGameEye = gameEye_.get();
         params.pPlayer = player_.get();
         params.pPointLight = &pointLight_;
-        params.pParticleModel = pModelManager_->Load("Particle/ParticleSpark.obj");
+        params.pParticle = particleDeath_;
         gameOverAnimation_ = std::make_unique<GameOverAnimation>();
         gameOverAnimation_->Initialize(params);
     }
@@ -133,7 +139,7 @@ void GameOverTestScene::Finalize()
     CollisionManager::GetInstance()->ClearCollider();
 
     lines_->Finalize();
-    ParticleManager::GetInstance()->ReleaseAllParticle();
+    ParticleStorage::GetInstance()->ReleaseAllParticle();
     canvas_->Finalize();
     pLayer_->RemoveCanvas(canvas_.get());
 
@@ -200,9 +206,9 @@ void GameOverTestScene::Draw()
 
     lines_->Draw();
 
-    player_->Draw();
-    grid_->Draw();
-    spaceSprite_->Draw();
+    player_->Draw1F();
+    grid_->Draw1F();
+    spaceSprite_->Draw1F();
 }
 
 void GameOverTestScene::DrawTexts()

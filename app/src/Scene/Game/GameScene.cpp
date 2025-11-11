@@ -4,10 +4,11 @@
 #include <Effects/SceneTransition/TransFadeInOut.h>
 #include <Features/Text/TextSystem.h>
 #include <MathExtension/mathExtension.h>
-#include <Features/Particle/ParticleManager.h>
-#include <Features/Object3d/Object3dSystem.h>
-#include <Features/Sprite/SpriteSystem.h>
+#include <drawable/particle/ParticleStorage.h>
+#include <drawable/object3d/Object3dSystem.h>
+#include <drawable/sprite/SpriteSystem.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
+#include <Features/Layer/CanvasScope.h>
 
 #include <Vector3.h>
 
@@ -17,6 +18,7 @@
 
 #include <any>
 #include <Presets/Object3d/Grid/Preset_Grid.h>
+#include <Effects/PostEffects/GaussianBloom/GaussianBloom.h>
 
 void GameScene::Initialize()
 {
@@ -36,20 +38,44 @@ void GameScene::Initialize()
     #endif // _DEBUG
 
     /// キャンバスの初期化
-    CanvasInitParams canvasParams = {};
+    Canvas::Params canvasParams = {};
     canvasParams.name = "GameCanvas";
     canvasParams.pDx12 = pDx12;
     canvasParams.pCubemapSystem = pCubemapSystem;
+    #ifdef _DEBUG
+    canvasParams.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs_->Get("ImGuiManager"));
+    #endif // _DEBUG
+
     canvas_ = std::make_unique<Canvas>();
     canvas_->Initialize(canvasParams);
     pLayer_->AddCanvas(canvas_.get());
+
+    /// パーティクル用キャンバスの初期化
+    canvasParams.name = "ParticleCanvas";
+    canvasParticle_ = std::make_unique<Canvas>();
+    canvasParticle_->Initialize(canvasParams);
+    IPostEffect* effect = canvasParticle_->GetPostEffectExecuter().AddEffect(PostEffectClassName::GaussianBloom);
+    auto bloom = static_cast<GaussianBloom*>(effect);
+    {
+        auto& optionBloom = bloom->GetOption();
+        auto& optionLuminance = bloom->GetLuminanceOutputFilter()->GetOption();
+        auto& optionGaussian = bloom->GetSeparatedGaussianFilter()->GetOption();
+        optionLuminance.threshold = 0.0f;
+        optionGaussian.kernelSize = 31;
+        optionBloom.bloomIntensity = 1.0f;
+        bloom->GetSeparatedGaussianFilter()->SetSigma(27.0f);
+    }
+    bloom->Enable(true);
+
+    pLayer_->AddCanvas(canvasParticle_.get());
 
     /// グリッドの初期化
     grid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
     grid_->GetOption().lightingData->enableLighting = true;
     grid_->SetPointLight(&pointLight_);
     grid_->SetDirectionalLight(&directionalLight_);
-    canvas_->RegisterDrawable(grid_.get());
+    grid_->SetScale(Vector3(0.5f, 30.0f, 0.5f));
+    grid_->GetOption().tilingData->tilingMultiply = Vector2(10.0f, 10.0f);
 
     /// ゲームアイの初期化
     gameEye_ = std::make_unique<GameEye>();
@@ -66,22 +92,27 @@ void GameScene::Initialize()
     /// 平行光源の初期化
     directionalLight_.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
     directionalLight_.direction = Vector3(0.0f, -1.0f, -0.0f);
-    directionalLight_.intensity = 3.0f;
+    directionalLight_.intensity = 0.0f;
 
     /// ポイントライトの初期化
     pointLight_.IsEnable() = true;
-    pointLight_.GetColor() = Vector4(0.8f, 0.7f, 0.3f, 1.0f);
+    pointLight_.GetColor() = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     pointLight_.GetIntensity() = 7.5f;
     pointLight_.GetPosition() = Vector3(0.0f, 0.0f, 2.0f);
+
+    // パーティクルの初期化
+    this->ParticlesInitialize();
 
     /// エンティティ共通パラメータをパック
     entityCommonParams_.pDirLight = &directionalLight_;
     entityCommonParams_.pPointLight = &pointLight_;
 
     /// プレイヤーの初期化
-    player_ = std::make_unique<Player>(pModelManager_);
+    Player::Params playerParams = {};
+    playerParams.particle = particles_[static_cast<size_t>(ParticleID::PlayerConstant)];
+    playerParams.pModelManager = pModelManager_;
+    player_ = std::make_unique<Player>(playerParams);
     player_->Initialize(entityCommonParams_);
-    canvas_->RegisterDrawable(player_->GetObject3d());
 
     /// 敵生成システムの初期化
     enemyPopSystem_.Initialize();
@@ -100,26 +131,19 @@ void GameScene::Initialize()
     screenToWorld_ = std::make_unique<ScreenToWorld>();
     screenToWorld_->Initialize();
     screenToWorld_->SetGameEye(gameEye_.get());
-
+    canvas_->RegisterDrawable(screenToWorld_->GetObject3d());
 
     /// タイマー
     timer_.Start();
 
-
     /// ゲームタイマーの初期化
     gameTimer_ = std::make_unique<InGameTimer>();
-    gameTimer_->Initialize(false, 60.0);
+    gameTimer_->Initialize(canvas_.get(), false, 5000.0f);
 
 
     /// 入力ガイド
     inputGuide_ = std::make_unique<InputGuide>();
-    inputGuide_->Initialize();
-
-
-    /// スコアシステムの初期化
-    scoreSystem_ = std::make_unique<ScoreCalculator>();
-    scoreSystem_->Initialize();
-
+    inputGuide_->Initialize(canvas_.get());
 
     /// エリアの初期化
     lines_ = std::make_unique<Line>(4);
@@ -169,10 +193,11 @@ void GameScene::Finalize()
     gameTimer_->Finalize();
     inputGuide_->Finalize();
     lines_->Finalize();
-    scoreSystem_->Finalize();
-    ParticleManager::GetInstance()->ReleaseAllParticle();
+    ParticleStorage::GetInstance()->ReleaseAllParticle();
     canvas_->Finalize();
     pLayer_->RemoveCanvas(canvas_.get());
+    canvasParticle_->Finalize();
+    pLayer_->RemoveCanvas(canvasParticle_.get());
 
     #ifdef _DEBUG
     pDebugManager_->DeleteComponent(name_);
@@ -228,7 +253,7 @@ void GameScene::Update()
 
     /// カウントダウンの更新
     countDown_->Update();
-    if (countDown_->IsEnd() && !enemyPopSystem_.IsEnablePop())
+    if (countDown_->IsEnd() && !enemyPopSystem_.IsEnablePop() && !gameTimer_->GetNowTime())
     {
         enemyPopSystem_.StartPop();
         gameTimer_->Start();
@@ -267,32 +292,34 @@ void GameScene::Update()
     /// ラインの更新
     lines_->Update();
 
-    if (titleTimer_.GetNow<float>() > 100.0f && !isChangingScene_)
-    {
-        SceneManager::GetInstance()->ReserveScene("TitleScene", std::make_unique<TransFadeInOut>());
-        isChangingScene_ = true;
-    }
+    //if (titleTimer_.GetNow<float>() > 100.0f && !isChangingScene_)
+    //{
+    //    SceneManager::GetInstance()->ReserveScene("TitleScene", std::make_unique<TransFadeInOut>());
+    //    isChangingScene_ = true;
+    //}
 
     //scoreSystem_->Update();
 }
 
 void GameScene::Draw()
 {
-    grid_->Draw();
+    CanvasScope canvasScope(canvas_.get());
+    grid_->Draw1F();
+    player_->Draw1F();
 
     for (auto& enemy : enemies_)
     {
-        enemy->Draw();
+        enemy->Draw1F();
     }
 
     for (auto& bullet : playerBullets_)
     {
-        bullet->Draw();
+        bullet->Draw1F();
     }
 
-    screenToWorld_->Draw();
+    screenToWorld_->Draw1F();
 
-    gameTimer_->Draw();
+    gameTimer_->Draw1F();
 
     // Lineの描画
     pLineSystem_->PresentDraw();
@@ -309,17 +336,43 @@ void GameScene::Draw()
 
     enemyPopSystem_.DrawArea();
 
-    lines_->Draw();
+    // lines_->Draw();
 
     // 2d forward
-    countDown_->Draw2D();
+    countDown_->Draw1F();
     inputGuide_->Draw();
+
+    CanvasScope particleCanvasScope(canvasParticle_.get());
+    // パーティクルの描画
+    for (auto& particle : particles_)
+    {
+        particle->Draw1F();
+    }
 }
 
 void GameScene::DrawTexts()
 {
-    //scoreSystem_->DrawTxt();
-    //fpsText_->Draw();
+}
+
+void GameScene::ParticlesInitialize()
+{
+    // パーティクルの初期化
+    // SceneでParticleのDraw1Fを呼ぶ
+    {
+        auto& particle = particles_[static_cast<size_t>(ParticleID::PlayerConstant)] = ParticleStorage::GetInstance()->CreateParticle();
+        particle->Initialize(pModelManager_->Load("Particle/ParticleSpark.obj"));
+        particle->reserve(1000);
+    }
+    {
+        auto& particle = particles_[static_cast<size_t>(ParticleID::EnemyHit)] = ParticleStorage::GetInstance()->CreateParticle();
+        particle->Initialize(pModelManager_->Load("Triangle/Triangle.obj"));
+        particle->reserve(500);
+    }
+    {
+        auto& particle = particles_[static_cast<size_t>(ParticleID::EnemyDeath)] = ParticleStorage::GetInstance()->CreateParticle();
+        particle->Initialize(pModelManager_->Load("Triangle/Triangle.obj"));
+        particle->reserve(500);
+    }
 }
 
 void GameScene::CreatePlayerBullet()
@@ -364,7 +417,6 @@ void GameScene::RemoveEnemy()
                 if (isDead)
                 {
                     e->Finalize();
-                    scoreSystem_->CountEnemyDeath();
                 }
                 return isDead;
             }
@@ -386,13 +438,12 @@ void GameScene::EnemyPopSystemUpdate()
 
         auto popPoint = enemyPopSystem_.GetPopPoint();
 
-        Enemy::Desc enemyDesc = {};
+        Enemy::Params enemyParams = {};
+        enemyParams.pModelSelfBody = pModelManager_->Load("Cube/Cube.obj");
+        enemyParams.pParticleHit = particles_[static_cast<size_t>(ParticleID::EnemyHit)];
+        enemyParams.pParticleDeath = particles_[static_cast<size_t>(ParticleID::EnemyDeath)];
 
-        enemyDesc.pModelSelfBody = pModelManager_->Load("Cube/Cube.obj");
-        enemyDesc.pModelParticleHit = pModelManager_->Load("Triangle/Triangle.obj");
-        enemyDesc.pModelParticleDeath = pModelManager_->Load("Triangle/Triangle.obj");
-
-        auto enemy = std::make_unique<Enemy>(enemyDesc);
+        auto enemy = std::make_unique<Enemy>(enemyParams);
         enemy->Initialize(entityCommonParams_, false);
         enemy->SetTranslation(popPoint);
         enemy->SetLocationProvider(player_.get());

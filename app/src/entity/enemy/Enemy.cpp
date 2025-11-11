@@ -4,11 +4,10 @@
 #include <Features/Model/Helper/ModelHelper.h>
 #include <Utility/Debug/dbgutl.h>
 
-Enemy::Enemy(const Desc& _desc)
+Enemy::Enemy(const Params& params)
 {
-    pModelSelfBody_ = _desc.pModelSelfBody->Cloned();
-    pModelParticleHit_ = _desc.pModelParticleHit;
-    pModelParticleDeath_ = _desc.pModelParticleDeath;
+    pModelSelfBody_ = params.pModelSelfBody->Cloned();
+    params_ = params;
 }
 
 void Enemy::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
@@ -30,7 +29,7 @@ void Enemy::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
     moveSpeed_      = 10.0f;
     translation_    = Vector3(0, 0.5f, 0);
     attackPower_    = 10.0f;
-    stats_.Initalize(50.0f, 10.0f, 10.0f);
+    stats_.Initalize(1.0f, 10.0f, 10.0f);
 
     // オブジェクトの初期化
     this->InitializeObjects();
@@ -63,7 +62,6 @@ void Enemy::Finalize()
     collisionManager_->DeleteCollider(collider_.get());
 
     objectSelfBody_->Finalize();
-    objectSelfBody_.reset();
 
     pParticleDeath_->SetPosition(translation_);
     pParticleDeath_->Emit();
@@ -93,9 +91,9 @@ void Enemy::Update()
     pParticleDeath_->Update();
 }
 
-void Enemy::Draw()
+void Enemy::Draw1F()
 {
-    if (objectSelfBody_) objectSelfBody_->Draw();
+    if (objectSelfBody_) objectSelfBody_->Draw1F();
 }
 
 void Enemy::DrawLine()
@@ -142,15 +140,21 @@ void Enemy::InitializeCollider()
 
 void Enemy::InitializeParticleEmitters()
 {
+    /// パラメータを作成
+    ParticleEmitterInitParams params;
+    params.jsonPath = "resources/json/Spark.json";
+
     /// パーティクルエミッタの初期化
+    params.particle = params_.pParticleHit;
     pParticleHit_ = std::make_unique<ParticleEmitter>();
-    pParticleHit_->Initialize(pModelParticleHit_, "resources/json/Spark.json");
+    pParticleHit_->Initialize(params);
     pParticleHit_->SetEnableBillboard(true);
     pParticleHit_->SetPosition(translation_);
     pParticleHit_->EnableManualMode();
 
+    params.particle = params_.pParticleDeath;
     pParticleDeath_ = std::make_unique<ParticleEmitter>();
-    pParticleDeath_->Initialize(pModelParticleDeath_, "resources/json/Spark.json");
+    pParticleDeath_->Initialize(params);
     pParticleDeath_->SetEnableBillboard(true);
     pParticleDeath_->SetPosition(translation_);
     pParticleDeath_->EnableManualMode();

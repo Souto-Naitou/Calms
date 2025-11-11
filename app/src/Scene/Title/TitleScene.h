@@ -4,7 +4,7 @@
 #include <Features/GameEye/GameEye.h>
 #include <Features/Input/Input.h>
 #include <Features/SceneManager/SceneManager.h>
-#include <Features/Sprite/Sprite.h>
+#include <drawable/sprite/Sprite.h>
 #include <memory>
 #include <Features/Cubemap/Skybox.h>
 #include <Features/Cubemap/CubemapSystem.h>

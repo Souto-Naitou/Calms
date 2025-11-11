@@ -1,28 +1,34 @@
 #pragma once
 
+// engine
 #include <Scene/SceneBase.h>
-#include <Features/Object3d/Object3d.h>
+#include <Common/structs.h>
+#include <Core/DirectX12/TextureManager.h>
 #include <Features/GameEye/GameEye.h>
+#include <Features/DeltaTimeManager/DeltaTimeManager.h>
+#include <Features/RandomGenerator/RandomGenerator.h>
+#include <Features/Line/Line.h>
+#include <Features/Text/Text.h>
+#include <Features/Model/ModelManager.h>
+#include <drawable/object3d/Object3d.h>
+#include <drawable/particle/Particle.h>
+#include <DebugTools/DebugManager/DebugManager.h>
+
+// game
+#include <entity/ScreenToWorld/ScreenToWorld.h>
 #include <entity/player/Player.h>
 #include <entity/playerbullet/PlayerBullet.h>
 #include <entity/enemy/Enemy.h>
-#include <Common/structs.h>
-#include <logic/spawner/EnemySpawner.h>
-#include <DebugTools/DebugManager/DebugManager.h>
-#include <UI/CountDown/CountDown.h>
-#include <Features/DeltaTimeManager/DeltaTimeManager.h>
-#include <Entity/ScreenToWorld/ScreenToWorld.h>
-#include <Features/RandomGenerator/RandomGenerator.h>
-#include <logic/timer/InGameTimer.h>
+#include <ui/countdown/CountDown.h>
 #include <ui/guide/InputGuide.h>
-#include <Features/Line/Line.h>
-#include <logic/score/ScoreCalculator.h>
-#include <Features/Text/Text.h>
+#include <logic/timer/InGameTimer.h>
+#include <logic/spawner/EnemySpawner.h>
+
+// stl
+#include <vector>
 #include <list>
 #include <memory>
-#include <Features/Model/ModelManager.h>
-#include <Core/DirectX12/TextureManager.h>
-#include <vector>
+#include <array>
 
 /// <summary>
 /// ゲームシーン
@@ -61,6 +67,20 @@ public:
 
 
 private:
+    enum class ParticleID
+    {
+        PlayerConstant,
+        EnemyHit,
+        EnemyDeath,
+
+        Size
+    };
+
+    static constexpr inline size_t kParticleIDMax = static_cast<size_t>(ParticleID::Size);
+
+    std::unique_ptr<Canvas>                     canvas_             = {};       // !< ゲームキャンバス
+    std::unique_ptr<Canvas>                     canvasParticle_     = {};       // !< パーティクルキャンバス
+
     std::unique_ptr<Object3d>                   grid_               = {};       // !< グリッド
     std::unique_ptr<GameEye>                    gameEye_            = {};       // !< ゲームアイ
     std::unique_ptr<Player>                     player_             = {};       // !< プレイヤー
@@ -69,9 +89,8 @@ private:
     std::unique_ptr<ScreenToWorld>              screenToWorld_      = {};       // !< 座標変換
     std::unique_ptr<InGameTimer>                gameTimer_          = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                 inputGuide_         = {};       // !< 入力ガイド
-    std::unique_ptr<ScoreCalculator>            scoreSystem_        = {};       // !< スコアシステム
     std::unique_ptr<Text>                       fpsText_            = {};       // !< テキスト
-    std::unique_ptr<Canvas>                     canvas_             = {};       // !< ゲームキャンバス
+    std::array<Particle*, kParticleIDMax>       particles_          = {};       // !< パーティクル
 
     EntityCommonParams                          entityCommonParams_ = {};       // !< エンティティ共通パラメータ
 
@@ -104,6 +123,7 @@ private: /// デバッグ用
 
 
 private:
+    void ParticlesInitialize();
     void CreatePlayerBullet();
     void RemovePlayerBullet();
 

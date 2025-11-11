@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Features/Sprite/Sprite.h>
+#include <drawable/sprite/Sprite.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <array>
 #include <memory>
@@ -31,7 +31,7 @@ public:
     /// <summary>
     /// 2D スプライトの描画を行います。
     /// </summary>
-    void Draw2D();
+    void Draw1F();
 
     /// <summary>
     /// カウントダウンを開始します。
@@ -46,7 +46,7 @@ private:
         CountDown,
         Start,
         End
-    } currentState_;
+    } currentState_ = State::CountDown;
 
     /// <summary>
     /// 数字カウントダウンの更新を行います。

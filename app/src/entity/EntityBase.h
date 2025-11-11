@@ -8,6 +8,7 @@
 #include <Interfaces/IEntityStats.h>
 #include <memory>
 #include <Common/structs.h>
+#include <Features/Layer/Canvas.h>
 
 struct EntityCommonParams
 {
@@ -46,7 +47,7 @@ public:
     /// <summary>
     /// エンティティの描画処理を行います。
     /// </summary>
-    virtual void Draw() = 0;
+    virtual void Draw1F() = 0;
 
     /// <summary>
     /// ライン等の補助的な描画処理を行います。

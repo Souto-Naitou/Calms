@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Features/Animation/AnimationTimeline.h>
-#include <Features/Sprite/Sprite.h>
+#include <drawable/sprite/Sprite.h>
 #include <DebugTools/DebugEntry/DebugEntry.h>
 #include <Features/Layer/Canvas.h>
 
@@ -12,7 +12,7 @@ class OpeningAnimation
 {
 public:
     OpeningAnimation();
-    ~OpeningAnimation() = default;
+    ~OpeningAnimation();
 
     /// <summary>
     /// アニメーション用リソースの初期化を行います。
@@ -27,7 +27,7 @@ public:
     /// <summary>
     /// 2D 描画を行います。
     /// </summary>
-    void Draw2d();
+    void Draw1F();
 
     /// <summary>
     /// 再生を開始します。
@@ -40,6 +40,7 @@ public:
     void ImGui();
 
 private:
+    Canvas* pCanvas_ = nullptr;
     std::unique_ptr<Sprite> spriteBackground_ = {};
     std::unique_ptr<AnimationTimeline<float>> timelineOpacity_ = {};
     std::unique_ptr<DebugEntry<OpeningAnimation>> pDebugEntry_ = {};

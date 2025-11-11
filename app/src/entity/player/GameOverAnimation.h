@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <Features/Particle/Emitter/ParticleEmitter.h>
+#include <drawable/particle/Emitter/ParticleEmitter.h>
 #include <entity/player/Player.h>
 #include <Features/GameEye/GameEye.h>
 #include <unordered_map>
@@ -12,7 +12,7 @@ struct GameOverAnimationInitParams
     GameEye*            pGameEye            = nullptr;
     Player*             pPlayer             = nullptr;
     PointLight*         pPointLight         = nullptr;
-    IModel*             pParticleModel      = nullptr;
+    Particle*           pParticle           = nullptr;
 };
 
 class GameOverAnimation

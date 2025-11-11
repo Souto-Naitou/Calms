@@ -40,8 +40,8 @@ void ClearScene::Update()
 
 void ClearScene::Draw()
 {
-    pClear_->Draw();
-    pSpace_->Draw();
+    pClear_->DrawCall();
+    pSpace_->DrawCall();
 }
 
 void ClearScene::DrawTexts()

@@ -2,10 +2,12 @@
 
 #include <Scene/SceneBase.h>
 #include <Core/DirectX12/TextureManager.h>
-#include <Features/Sprite/Sprite.h>
+#include <drawable/sprite/Sprite.h>
 #include <Features/Bar2d/Bar2d.h>
+#include <Features/Layer/Canvas.h>
 #include <string>
 #include <vector>
+#include <memory>
 
 /// <summary>
 /// ロードシーン
@@ -57,6 +59,8 @@ private:
     std::unique_ptr<Sprite>     pSpriteLoading_     = nullptr; // !< ローディングスプライト
     std::unique_ptr<Sprite>     pSpriteLBackground_ = nullptr; // !< ローディングスプライト背景
     std::unique_ptr<Bar2d>      pBar_               = nullptr; // !< ローディングバー
+
+    std::unique_ptr<Canvas>     pCanvas_            = nullptr; // !< ロードシーン用キャンバス
 
     /// <summary>
     /// 指定ディレクトリ以下のテクスチャパスを収集します。

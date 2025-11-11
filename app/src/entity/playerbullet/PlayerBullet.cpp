@@ -74,9 +74,9 @@ void PlayerBullet::Update()
 }
 
 
-void PlayerBullet::Draw()
+void PlayerBullet::Draw1F()
 {
-    pBody_->Draw();
+    //pBody_->Draw1F();
 }
 
 void PlayerBullet::DrawLine()
