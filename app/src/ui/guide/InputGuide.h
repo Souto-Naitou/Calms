@@ -23,7 +23,7 @@ public:
     /// <summary>
     /// 入力ガイドの描画を行います。
     /// </summary>
-    void Draw();
+    void Draw1F();
 
     /// <summary>
     /// 入力ガイドの終了処理を行います。

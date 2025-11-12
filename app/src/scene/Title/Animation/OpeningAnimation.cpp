@@ -10,13 +10,10 @@ OpeningAnimation::OpeningAnimation()
 
 OpeningAnimation::~OpeningAnimation()
 {
-    pCanvas_->UnregisterDrawable(spriteBackground_.get());
 }
 
-void OpeningAnimation::Initialize(Canvas* canvas)
+void OpeningAnimation::Initialize()
 {
-    pCanvas_ = canvas;
-
     const Vector2 clientSize = 
     { 
         static_cast<float>(WinSystem::clientWidth), 
@@ -28,9 +25,6 @@ void OpeningAnimation::Initialize(Canvas* canvas)
     spriteBackground_->Initialize("white1x1.png");
     spriteBackground_->SetSize(clientSize);
     spriteBackground_->SetColor({ 0.0f, 0.0f, 0.0f, 1.0f });
-
-    // Canvasへ登録
-    canvas->RegisterDrawable(spriteBackground_.get());
 
     // Tweenの生成
     AnimationTween<float> tweenOpacity(1.0f, 3.0f, 1.0f, 0.0f);

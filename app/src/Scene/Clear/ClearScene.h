@@ -3,6 +3,7 @@
 #include <Scene/SceneBase.h>
 #include <drawable/sprite/Sprite.h>
 #include <memory>
+#include <Features/Layer/Canvas.h>
 
 /// <summary>
 /// クリアシーン
@@ -40,4 +41,5 @@ public:
 private:
     std::unique_ptr<Sprite> pClear_ = nullptr;
     std::unique_ptr<Sprite> pSpace_ = nullptr;
+    std::unique_ptr<Canvas> canvasUI_ = nullptr;
 };

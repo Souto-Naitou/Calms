@@ -9,6 +9,7 @@
 #include <Features/Collision/Manager/CollisionManager.h>
 #include <Features/Primitive/OBB.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
+#include <drawable/particle/Type/ParticleType.h>
 
 
 /// <summary>
@@ -17,8 +18,19 @@
 class PlayerBullet : public EntityBase
 {
 public:
-    PlayerBullet(IModel* _pModelSelfBody)
-        : pModelSelfBody_(_pModelSelfBody) {};
+    struct Params
+    {
+        ParticleData* particleData = nullptr;
+    };
+
+    PlayerBullet(const Params& param);
+    ~PlayerBullet()
+    {
+        if (params_.particleData->currentColor_.x != 0.0f)
+        {
+            assert(false);
+        }
+    }
 
     /// <summary>
     /// 弾の初期化を行います。
@@ -84,17 +96,14 @@ private:
     void CollidersInitialize();
 
     std::unique_ptr<TimeMeasurer> timer_ = nullptr;
-    
-    IModel* pModelSelfBody_ = nullptr;
-    std::unique_ptr<Object3d> pBody_ = nullptr;
-    
+    Params params_ = {};
     /// パラメータ
     float lifeTimeLimit_ = 8.0f;
     Vector3 moveVelocity_ = {};
 
     /// コライダー
     std::unique_ptr<Collider> collider_ = nullptr;
-    OBB obb_ = {};
+    Sphere sphere_ = {};
 
     /// フラグ
     bool isDrawCollisionArea_ = false;

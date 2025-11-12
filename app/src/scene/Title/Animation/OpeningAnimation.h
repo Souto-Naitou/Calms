@@ -17,7 +17,7 @@ public:
     /// <summary>
     /// アニメーション用リソースの初期化を行います。
     /// </summary>
-    void Initialize(Canvas* canvas);
+    void Initialize();
 
     /// <summary>
     /// アニメーションの更新を行います。
@@ -40,7 +40,6 @@ public:
     void ImGui();
 
 private:
-    Canvas* pCanvas_ = nullptr;
     std::unique_ptr<Sprite> spriteBackground_ = {};
     std::unique_ptr<AnimationTimeline<float>> timelineOpacity_ = {};
     std::unique_ptr<DebugEntry<OpeningAnimation>> pDebugEntry_ = {};

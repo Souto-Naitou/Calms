@@ -5,6 +5,7 @@
 
 #include <Features/SceneManager/SceneManager.h>
 #include <Effects/SceneTransition/TransFadeInOut.h>
+#include <Features/Layer/CanvasScope.h>
 
 void ClearScene::Initialize()
 {
@@ -19,12 +20,27 @@ void ClearScene::Initialize()
     pClear_->SetName("ClearSprite");
     pClear_->SetAnchorPoint({ 0.5f, 0.5f });
     pClear_->SetPosition({ WinSystem::clientWidth / 2, WinSystem::clientHeight / 2 });
+
+    Canvas::Params canvasParams = {};
+    canvasParams.name = "ClearSceneUI";
+    canvasParams.pDx12 = std::any_cast<DirectX12*>(pArgs_->Get("DirectX12"));
+    #ifdef _DEBUG
+    canvasParams.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs_->Get("ImGuiManager"));
+    #endif // _DEBUG
+
+    canvasUI_ = std::make_unique<Canvas>();
+    canvasUI_->Initialize(canvasParams);
+
+    pLayer_->AddCanvas(canvasUI_.get());
 }
 
 void ClearScene::Finalize()
 {
     pClear_->Finalize();
     pSpace_->Finalize();
+
+    canvasUI_->Finalize();
+    pLayer_->RemoveCanvas(canvasUI_.get());
 }
 
 void ClearScene::Update()
@@ -40,8 +56,9 @@ void ClearScene::Update()
 
 void ClearScene::Draw()
 {
-    pClear_->DrawCall();
-    pSpace_->DrawCall();
+    CanvasScope canvasScope(canvasUI_.get());
+    pClear_->Draw1F();
+    pSpace_->Draw1F();
 }
 
 void ClearScene::DrawTexts()

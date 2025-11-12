@@ -1,8 +1,8 @@
 #include "Enemy.h"
 
 #include <imgui.h>
-#include <Features/Model/Helper/ModelHelper.h>
 #include <Utility/Debug/dbgutl.h>
+#include <config/ResourcePath.h>
 
 Enemy::Enemy(const Params& params)
 {
@@ -47,9 +47,7 @@ void Enemy::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
     this->InitializeParticleEmitters();
 
     /// オーディオの初期化
-    audioHit_   = AudioManager::GetInstance()->GetNewAudio("Effect", "kill_snare.wav");
-    audioDeath_ = AudioManager::GetInstance()->GetNewAudio("Effect", "hit_snare.wav");
-    audioHit_->SetVolume(0.05f);
+    audioDeath_ = AudioManager::GetInstance()->GetNewAudio("Effect", Path::Audio::kSeEnemyDeath);
     audioDeath_->SetVolume(0.05f);
 
     if (params.pDirLight) objectSelfBody_->SetDirectionalLight(params.pDirLight);
@@ -66,8 +64,9 @@ void Enemy::Finalize()
     pParticleDeath_->SetPosition(translation_);
     pParticleDeath_->Emit();
 
-    pParticleHit_->Finalize();
     pParticleDeath_->Finalize();
+
+    commonParams_.pDirLight->intensity += 0.5f;
 
     EntityBase::Finalize();
 }
@@ -87,7 +86,6 @@ void Enemy::Update()
     this->UpdateCollider();
 
     // パーティクルの更新
-    pParticleHit_->Update();
     pParticleDeath_->Update();
 }
 
@@ -99,7 +97,6 @@ void Enemy::Draw1F()
 void Enemy::DrawLine()
 {
     if (isDrawCollisionArea_) collider_->DrawArea();
-    pParticleHit_->Draw();
     pParticleDeath_->Draw();
 }
 
@@ -120,6 +117,7 @@ void Enemy::InitializeObjects()
     auto& option = objectSelfBody_->GetOption();
     option.materialData->environmentCoefficient = 0.0f;
     option.materialData->color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+    option.lightingData->enableLighting = false;
 }
 
 void Enemy::InitializeCollider()
@@ -142,17 +140,9 @@ void Enemy::InitializeParticleEmitters()
 {
     /// パラメータを作成
     ParticleEmitterInitParams params;
-    params.jsonPath = "resources/json/Spark.json";
-
-    /// パーティクルエミッタの初期化
-    params.particle = params_.pParticleHit;
-    pParticleHit_ = std::make_unique<ParticleEmitter>();
-    pParticleHit_->Initialize(params);
-    pParticleHit_->SetEnableBillboard(true);
-    pParticleHit_->SetPosition(translation_);
-    pParticleHit_->EnableManualMode();
 
     params.particle = params_.pParticleDeath;
+    params.jsonPath = "resources/json/particles/Death.json";
     pParticleDeath_ = std::make_unique<ParticleEmitter>();
     pParticleDeath_->Initialize(params);
     pParticleDeath_->SetEnableBillboard(true);
@@ -236,15 +226,9 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
             assert(0);
         }
 
-        pParticleHit_->SetPosition(hitPos);
-        pParticleHit_->Emit();
-
         Vector3 dir = translation_ - hitPos;
 
         accelerationRefl_ = dir * bulletReflectionPower_;
-
-        /// ヒット効果音
-        audioHit_->Play();
 
         (*ppGameEye_)->Shake(0.1f);
     }

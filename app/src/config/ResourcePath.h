@@ -32,4 +32,15 @@ namespace Path::Image
 
     inline constexpr const char* kCountDownEndString = "common/font/start.png";
     inline constexpr const char* kSpaceText = "common/font/space.png";
+    inline constexpr const char* kParticleCircle = "particle/circle_256x256_white.png";
+}
+
+namespace Path::Audio
+{
+    inline constexpr const char* kSeStartButton = "se_title_startbutton.wav";
+    inline constexpr const char* kSePlayerShoot = "se_player_shoot.wav";
+    inline constexpr const char* kSePlayerDeath = "se_player_death.wav";
+    inline constexpr const char* kSePlayerSlowOn = "se_player_slow_on.wav";
+    inline constexpr const char* kSePlayerSlowOff = "se_player_slow_off.wav";
+    inline constexpr const char* kSeEnemyDeath = "se_enemy_death.wav";
 }

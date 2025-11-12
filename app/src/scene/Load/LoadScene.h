@@ -51,6 +51,7 @@ private:
     const float     kWaitTime_ = 2.0f;
     TimeMeasurer    waitTimer_ = {};
 
+    std::unique_ptr<Canvas>     pCanvas_            = nullptr; // !< ロードシーン用キャンバス
     std::vector<std::string>    texturePaths_       = {};
     bool                        isAggregated_       = false;
     bool                        isChangingScene_    = false; // !< シーン遷移中かどうか
@@ -60,7 +61,6 @@ private:
     std::unique_ptr<Sprite>     pSpriteLBackground_ = nullptr; // !< ローディングスプライト背景
     std::unique_ptr<Bar2d>      pBar_               = nullptr; // !< ローディングバー
 
-    std::unique_ptr<Canvas>     pCanvas_            = nullptr; // !< ロードシーン用キャンバス
 
     /// <summary>
     /// 指定ディレクトリ以下のテクスチャパスを収集します。

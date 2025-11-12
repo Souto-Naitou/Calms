@@ -111,7 +111,7 @@ void GameOverTestScene::Initialize()
         particleDeath_ = ParticleStorage::GetInstance()->CreateParticle();
         particleDeath_->Initialize(pModelManager_->Load("Particle/ParticleSpark.obj"));
 
-        GameOverAnimationInitParams params = {};
+        GameOverAnimation::Params params = {};
         params.pGameEye = gameEye_.get();
         params.pPlayer = player_.get();
         params.pPointLight = &pointLight_;

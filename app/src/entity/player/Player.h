@@ -13,6 +13,7 @@
 #include <Features/Audio/Audio.h>
 #include <Features/Model/ModelManager.h>
 #include <Features/Model/IModel.h>
+#include "PlayerInput.h"
 
 
 /// <summary>
@@ -66,12 +67,11 @@ public:
 
 public: /// Getter
     bool IsShot() const { return isShot_; }
-    bool IsSlow() const { return isSlow_; }
+    bool IsSlow() const { return pInput_->GetData().isSlowPressed; }
     Object3d* GetObject3d() const { return object_.get(); }
 
 public: /// Setter
     void SetIsDrawCollisionArea(bool isDraw) { isDrawCollisionArea_ = isDraw; }
-    void SetEnableInput(bool enable) { enableInput_ = enable; }
 
 
 private:
@@ -107,20 +107,23 @@ private:
     /// </summary>
     void UpdateInputCommands();
 
+    /// <summary>
+    /// オーディオハンドルの初期化を行います。
+    /// </summary>
+    void AudioHandleInitialize();
+
     // 初期化パラメータ
     Params                          params_;
 
+    std::unique_ptr<PlayerInput>    pInput_ = nullptr;
+
+    std::unique_ptr<TimeMeasurer>   timerShot_ = {};
+
     std::unique_ptr<IModel>         pModelSelfBody_ = nullptr;
     std::unique_ptr<Object3d>       object_ = {};
-    std::unique_ptr<TimeMeasurer>   timerShot_ = {};
     float movePower_ = 0.0f;
-
-    /// 射撃
+    float shotInterval_ = 0.05f;
     bool isShot_ = false;
-    double shotInterval_ = 0.05;
-
-    /// スロー
-    bool isSlow_ = false;
 
     /// コライダー
     std::unique_ptr<Collider> collider_ = nullptr;
@@ -131,18 +134,17 @@ private:
     Vector3 accelerationRefl_ = {};
     float reflectionPower_ = 70.0f;
 
-    /// マルチプレイ用
-    bool enableInput_ = true;
-
     /// パーティクルエミッター
     std::unique_ptr<ParticleEmitter> emitterConstant_ = nullptr;    // 常時発生エミッター
 
     /// オーディオ
     Audio* audioShot_ = nullptr;
+    Audio* audioDeath_ = nullptr;
+    Audio* audioSlowOn_ = nullptr;
+    Audio* audioSlowOff_ = nullptr;
 
 
 private: /// 他クラスの所有物
-    Input* input_ = nullptr;
     CollisionManager* collisionManager_ = nullptr;
     DeltaTimeManager* deltaTimeManager_ = nullptr;
     AudioManager* audioManager_ = nullptr;

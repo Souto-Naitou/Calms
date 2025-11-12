@@ -17,6 +17,7 @@
 #include <Effects/PostEffects/GaussianBloom/GaussianBloom.h>
 #include <Effects/PostEffects/RadialBlur/RadialBlur.h>
 #include <Effects/SceneTransition/TransShutter.h>
+#include "nima_engine/src/Features/Audio/Audio.h"
 
 /// <summary>
 /// タイトルシーン
@@ -68,9 +69,10 @@ private:
     /// </summary>
     void UpdateStartPromptAnimation();
 
+    bool                                isChangingScene_    = false;
     std::unique_ptr<TransShutter>       pTransShutter_      = nullptr;      // !< シャッター遷移エフェクト
-    std::unique_ptr<Canvas>             pCanvas_            = nullptr;      // !< タイトルキャンバス
-    std::unique_ptr<Canvas>             pCanvas2_           = nullptr;      // !< タイトルキャンバス
+    std::unique_ptr<Canvas>             pCanvasBack_            = nullptr;      // !< タイトルキャンバス
+    std::unique_ptr<Canvas>             pCanvasSprite_      = nullptr;      // !< タイトルキャンバス
     std::unique_ptr<GameEye>            gameEye_            = {};           // !< ゲームアイ
     std::unique_ptr<Sprite>             pSpriteTitle_       = nullptr;      // !< タイトル
     std::unique_ptr<Sprite>             pSpriteFrameScreen_ = nullptr;      // !< タイトル
@@ -82,6 +84,7 @@ private:
     RandomFilter*                       pRandomFilter_      = nullptr;      // !< ランダムフィルタ
     GaussianBloom*                      pGaussianBloom_     = nullptr;      // !< ガウスぼかし
     RadialBlur*                         pRadialBlur_        = nullptr;      // !< 放射状ブラー
+    Audio*                              pSoundStartButton_  = nullptr;      // !< スタートボタン音声
 
     /// 他クラスのインスタンス
     PostEffectExecuter*         pPostEffectExecuter_    = nullptr;      // !< ポストエフェクト実行クラス
