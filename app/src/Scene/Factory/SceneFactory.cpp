@@ -36,8 +36,9 @@ std::unique_ptr<SceneBase> SceneFactory::CreateScene(const std::string& _sceneNa
             std::format(L"シーン名 {} は登録されていません。", ConvertString(_sceneName)).c_str(),
             L"Scene Creation Error",
             MB_OK | MB_ICONERROR
-        );
+        ); 
         assert(false && e.what());
+        e;
     }
 
     return nullptr;

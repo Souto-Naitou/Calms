@@ -7,17 +7,17 @@
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Lighting/PointLight/PointLight.h>
 
-struct GameOverAnimationInitParams
-{
-    GameEye*            pGameEye            = nullptr;
-    Player*             pPlayer             = nullptr;
-    PointLight*         pPointLight         = nullptr;
-    Particle*           pParticle           = nullptr;
-};
-
 class GameOverAnimation
 {
 public:
+    struct Params
+    {
+        GameEye* pGameEye = nullptr;
+        Player* pPlayer = nullptr;
+        PointLight* pPointLight = nullptr;
+        Particle* pParticle = nullptr;
+    };
+
     enum class State
     {
         Start,
@@ -37,7 +37,7 @@ public:
 
     GameOverAnimation() = default;
     ~GameOverAnimation() = default;
-    void Initialize(GameOverAnimationInitParams params);
+    void Initialize(Params params);
     void Finalize() {};
     void Update();
     void Play();
@@ -64,7 +64,7 @@ private:
     TimeMeasurer timer_ = {};
 
     std::unique_ptr<ParticleEmitter> pEmitter_ = nullptr;
-    GameOverAnimationInitParams initParams_ = {};
+    Params initParams_ = {};
 
 
     bool isFinished_ = false;

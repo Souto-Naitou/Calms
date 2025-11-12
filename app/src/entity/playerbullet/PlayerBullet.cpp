@@ -2,6 +2,11 @@
 
 #include <imgui.h>
 
+PlayerBullet::PlayerBullet(const Params& param)
+{
+    params_ = param;
+}
+
 void PlayerBullet::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
 {
     EntityBase::Initialize(params, enableDebugWindow);
@@ -26,21 +31,15 @@ void PlayerBullet::Initialize(const EntityCommonParams& params, bool enableDebug
     attackPower_ = 5.0f;
     stats_.Initalize(1.0f, 5.0f, 1.0f);
 
-    // OBBの初期化
-    obb_.Initialize();
-
     // コライダーの初期化
     this->CollidersInitialize();
-
-    if (params.pDirLight) pBody_->SetDirectionalLight(params.pDirLight);
-    if (params.pPointLight) pBody_->SetPointLight(params.pPointLight);
 }
 
 
 void PlayerBullet::Finalize()
 {
-    pBody_->Finalize();
-    pBody_.reset();
+    params_.particleData->currentColor_ = {};
+    params_.particleData->colorRange_ = {};
 
     collisionManager_->DeleteCollider(collider_.get());
 
@@ -66,11 +65,10 @@ void PlayerBullet::Update()
     this->ObjectsUpdate();
 
     // OBBの更新
-    obb_.SetCenter(translation_);
-    obb_.SetOrientations(pBody_->GetRotateMatrix());
-    obb_.SetSize(Vector3(0.3f, 0.3f, 0.3f));
+    sphere_.center = translation_;
+    sphere_.radius = 0.3f;
 
-    collider_->SetShapeData(&obb_);
+    collider_->SetShapeData(&sphere_);
 }
 
 
@@ -103,20 +101,19 @@ void PlayerBullet::ImGui()
 void PlayerBullet::ObjectsInitialize()
 {
     /// オブジェクトの初期化
-    pBody_ = std::make_unique<Object3d>();
-    pBody_->Initialize(false);
-    pBody_->SetScale(Vector3(0.3f, 0.3f, 0.3f));
-    pBody_->SetTranslate(Vector3(0, 0.5f, 0));
-    pBody_->SetRotate(Vector3(0, 0, 0));
-    pBody_->SetModel(pModelSelfBody_);
-    pBody_->GetOption().materialData->environmentCoefficient = 0.0f;
+    auto& data = params_.particleData;
+    data->transform_.translate = {0.0f, 0.5f, 0.0f};
+    data->colorRange_ = Range(RGBA(0xffffffff).to_Vector4(), RGBA(0x91bbffff).to_Vector4());
+    data->transform_.scale = { 0.1f, 0.1f, 0.1f };
+    data->scaleRange_ = Range<Vector3>({ 0.1f, 0.1f, 0.1f }, { 0.1f, 0.1f, 0.1f });
+    data->deleteCondition_ = ParticleDeleteCondition::ZeroAlpha;
 }
 
 void PlayerBullet::ObjectsUpdate()
 {
     // 位置の反映
-    pBody_->SetTranslate(translation_);
-    pBody_->Update();
+    auto& data = params_.particleData;
+    data->transform_.translate = translation_;
 }
 
 void PlayerBullet::CollidersInitialize()
@@ -126,7 +123,7 @@ void PlayerBullet::CollidersInitialize()
     collider_->SetColliderID("playerBullet");
     collider_->SetAttribute(collisionManager_->GetNewAttribute("playerBullet"));
     collider_->SetOwner(this);
-    collider_->SetShape(Shape::OBB);
+    collider_->SetShape(Shape::Sphere);
     collider_->SetRadius(1);
     collider_->SetMask(collisionManager_->GetNewMask("playerBullet", "player"));
     collider_->SetOnCollisionTrigger(std::bind(&PlayerBullet::OnCollisionTrigger, this, std::placeholders::_1));

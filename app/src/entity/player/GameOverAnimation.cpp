@@ -3,7 +3,7 @@
 #include <Math/Easing.h>
 
 
-void GameOverAnimation::Initialize(GameOverAnimationInitParams params)
+void GameOverAnimation::Initialize(Params params)
 {
     initParams_ = params;
     ParticleEmitterInitParams emitterParams = {};

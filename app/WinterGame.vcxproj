@@ -158,6 +158,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\entity\player\GameOverAnimation.cpp" />
+    <ClCompile Include="src\entity\player\PlayerInput.cpp" />
     <ClCompile Include="src\scene\GameOverTest\GameOverTestScene.cpp" />
     <ClCompile Include="src\scene\Load\LoadScene.cpp" />
     <ClCompile Include="src\scene\Title\Animation\OpeningAnimation.cpp" />
@@ -191,6 +192,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\entity\player\GameOverAnimation.h" />
+    <ClInclude Include="src\entity\player\PlayerInput.h" />
+    <ClInclude Include="src\entity\player\PlayerMovement.h" />
     <ClInclude Include="src\scene\GameOverTest\GameOverTestScene.h" />
     <ClInclude Include="src\scene\Load\LoadScene.h" />
     <ClInclude Include="src\scene\Title\Animation\OpeningAnimation.h" />

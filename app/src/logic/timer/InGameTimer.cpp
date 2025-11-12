@@ -79,9 +79,8 @@ void InGameTimer::Start()
     }
 }
 
-void InGameTimer::Initialize(Canvas* canvas, bool _useSystemClock, double _gameDuration)
+void InGameTimer::Initialize(bool _useSystemClock, double _gameDuration)
 {
-    pCanvas_ = canvas;
     gameDuration_ = _gameDuration;
 
     for (int i = 0; i < 10; i++)
@@ -91,16 +90,14 @@ void InGameTimer::Initialize(Canvas* canvas, bool _useSystemClock, double _gameD
         tensPlaceNums_[i]->SetName("tensPlaceNum_" + std::to_string(i));
         tensPlaceNums_[i]->SetAnchorPoint({ 0.5f, 0.5f });
         tensPlaceNums_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.2f });
-        tensPlaceNums_[i]->SetSizeWithFactor(0.75f);
-        canvas->RegisterDrawable(tensPlaceNums_[i].get());
+        tensPlaceNums_[i]->SetSizeWithFactor(0.25f);
 
         onesPlaceNums_[i] = std::make_unique<Sprite>();
         onesPlaceNums_[i]->Initialize(Path::Image::kNumbers[i]);
         onesPlaceNums_[i]->SetName("onesPlaceNum_" + std::to_string(i));
         onesPlaceNums_[i]->SetAnchorPoint({ 0.5f, 0.5f });
         onesPlaceNums_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.2f });
-        onesPlaceNums_[i]->SetSizeWithFactor(0.75f);
-        canvas->RegisterDrawable(onesPlaceNums_[i].get());
+        onesPlaceNums_[i]->SetSizeWithFactor(0.25f);
     }
 
     if (_useSystemClock)
@@ -116,12 +113,6 @@ void InGameTimer::Update()
     this->CurrentTimeUpdate();
 
     this->SpriteUpdate();
-
-    //for (int i = 0; i < 10; i++)
-    //{
-    //    tensPlaceNums_[i]->Update();
-    //    onesPlaceNums_[i]->Update();
-    //}
 }
 
 void InGameTimer::Draw1F()
@@ -140,8 +131,6 @@ void InGameTimer::Finalize()
     for (int i = 0; i < 10; i++)
     {
         tensPlaceNums_[i]->Finalize();
-        pCanvas_->UnregisterDrawable(tensPlaceNums_[i].get());
         onesPlaceNums_[i]->Finalize();
-        pCanvas_->UnregisterDrawable(onesPlaceNums_[i].get());
     }
 }

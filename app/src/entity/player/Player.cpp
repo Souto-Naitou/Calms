@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 #include <Features/Model/ObjModel.h>
+#include <config/ResourcePath.h>
 
 Player::Player(const Params& params) : pModelManager_(params.pModelManager)
 {
@@ -16,12 +17,14 @@ void Player::Initialize(const EntityCommonParams& params, bool enableDebugWindow
 
 
     /// インスタンスの取得
-    input_ = Input::GetInstance();
     collisionManager_ = CollisionManager::GetInstance();
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
     audioManager_ = AudioManager::GetInstance();
 
-    
+    /// コンポーネントの初期化
+    pInput_ = std::make_unique<PlayerInput>();
+    pInput_->Initialize();
+
     /// タイマーの初期化
     timerShot_ = std::make_unique<TimeMeasurer>();
     timerShot_->Start();
@@ -30,7 +33,7 @@ void Player::Initialize(const EntityCommonParams& params, bool enableDebugWindow
     this->ParticleEmittersInitialize();
 
     /// パラメータの初期化
-    movePower_ = 20.0f;
+    movePower_ = 25.0f;
     friction_ = 0.95f;
     translation_ = Vector3(0, 0.5f, 0);
     stats_.Initalize(100.0f, 0.0f, 20.0f);
@@ -44,13 +47,12 @@ void Player::Initialize(const EntityCommonParams& params, bool enableDebugWindow
     // コライダーの初期化
     this->ColliderInitialize();
 
-    audioShot_ = audioManager_->GetNewAudio("Effect", "hit_hat.wav");
-    audioShot_->SetVolume(0.1f);
+    // オーディオハンドルの初期化
+    this->AudioHandleInitialize();
 
     if (commonParams_.pDirLight) object_->SetDirectionalLight(commonParams_.pDirLight);
     if (commonParams_.pPointLight) object_->SetPointLight(commonParams_.pPointLight);
 }
-
 
 void Player::Finalize()
 {
@@ -60,23 +62,28 @@ void Player::Finalize()
     EntityBase::Finalize();
 }
 
-
 void Player::Update()
 {
     // 入力コマンドの更新
-    if (enableInput_) UpdateInputCommands();
+    pInput_->Update();
+
+    this->UpdateInputCommands();
 
     /// 反発の速度を適用
     acceleration_ += accelerationRefl_;
     accelerationRefl_ = Vector3(0, 0, 0);
 
-    // 座標更新
+    /// 座標更新
     EntityBase::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
+    if (velocity_.Length() > 0.2f)
+    {
+        emitterConstant_->Emit();
+    }
 
-    // 座標の反映
+    /// 座標の反映
     object_->SetTranslate(translation_);
 
-    // オブジェクトの更新
+    /// オブジェクトの更新
     object_->Update();
 
     /// コライダーの更新
@@ -90,7 +97,6 @@ void Player::Update()
     emitterConstant_->SetPosition(translation_);
     emitterConstant_->Update();
 }
-
 
 void Player::Draw1F()
 {
@@ -142,33 +148,32 @@ void Player::ParticleEmittersInitialize()
 {
     ParticleEmitterInitParams emitterParams = {};
     emitterParams.particle = params_.particle;
-    emitterParams.jsonPath = "resources/json/Spark.json";
+    emitterParams.jsonPath = "resources/json/particles/PlayerConstant.json";
     emitterConstant_ = std::make_unique<ParticleEmitter>();
     emitterConstant_->Initialize(emitterParams);
+    emitterConstant_->EnableManualMode();
     emitterConstant_->SetEnableBillboard(true);
 }
 
 void Player::UpdateInputCommands()
 {
-    if (input_->PushKey(DIK_W))
+    if (isAlive_ == false) return;
+
+    const auto& inputData = pInput_->GetData();
+    isShot_ = false;
+    inputData.move.Normalize();
+    acceleration_ = inputData.move * movePower_;
+
+    if (inputData.isSlowTriggered)
     {
-        acceleration_.z = movePower_;
+        audioSlowOn_->Play();
     }
-    if (input_->PushKey(DIK_S))
+    else if (inputData.isSlowReleased)
     {
-        acceleration_.z = -movePower_;
-    }
-    if (input_->PushKey(DIK_A))
-    {
-        acceleration_.x = -movePower_;
-    }
-    if (input_->PushKey(DIK_D))
-    {
-        acceleration_.x = movePower_;
+        audioSlowOff_->Play();
     }
 
-    isShot_ = false;
-    if (input_->PushMouse(Input::MouseNum::Left))
+    if (inputData.isShotPressed)
     {
         if (timerShot_->GetNow<float>() > shotInterval_)
         {
@@ -177,14 +182,19 @@ void Player::UpdateInputCommands()
             timerShot_->Reset();
             timerShot_->Start();
         }
-        emitterConstant_->Emit();
     }
+}
 
-    isSlow_ = false;
-    if (input_->PushKey(DIK_LSHIFT))
-    {
-        isSlow_ = true;
-    }
+void Player::AudioHandleInitialize()
+{
+    audioShot_ = audioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerShoot);
+    audioShot_->SetVolume(0.1f);
+    audioDeath_ = audioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerDeath);
+    audioDeath_->SetVolume(0.15f);
+    audioSlowOn_ = audioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerSlowOn);
+    audioSlowOn_->SetVolume(0.1f);
+    audioSlowOff_ = audioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerSlowOff);
+    audioSlowOff_->SetVolume(0.1f);
 }
 
 void Player::ImGui()
@@ -205,6 +215,15 @@ void Player::OnCollisionTrigger(const Collider* other)
     if (other->GetColliderID() == "enemy")
     {
         stats_.OnCollision(other->GetOwner<EntityBase>()->GetStats());
+
+        commonParams_.pDirLight->intensity -= 1.0f;
+
+        if (stats_.GetHp() <= 0.0f)
+        {
+            isAlive_ = false;
+            collider_->SetEnable(false);
+            audioDeath_->Play();
+        }
     }
 }
 

@@ -21,7 +21,6 @@ class Enemy : public EntityBase
 public:
     struct Params
     {
-        Particle*   pParticleHit    = nullptr;      // ヒットパーティクル
         Particle*   pParticleDeath  = nullptr;      // デスパーティクル
         IModel*     pModelSelfBody  = nullptr;      // 本体モデル
     };
@@ -132,11 +131,9 @@ private:
     OBB                         obb_                 = {};
     bool                        isDrawCollisionArea_ = false;
 
-    Audio* audioHit_    = nullptr;
     Audio* audioDeath_  = nullptr;
 
     /// パーティクル
-    std::unique_ptr<ParticleEmitter>    pParticleHit_               = nullptr;
     std::unique_ptr<ParticleEmitter>    pParticleDeath_             = nullptr;
     std::unique_ptr<IModel>             pModelSelfBody_             = nullptr;
 

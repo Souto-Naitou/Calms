@@ -17,7 +17,7 @@ public:
     /// </summary>
     /// <param name="_useSystemClock">システムクロックを使用する場合は true。</param>
     /// <param name="_gameDuration">ゲームの制限時間（秒）。</param>
-    void Initialize(Canvas* canvas, bool _useSystemClock, double _gameDuration);
+    void Initialize(bool _useSystemClock, double _gameDuration);
 
     /// <summary>
     /// タイマーの状態を更新します。
@@ -69,7 +69,6 @@ private:
     void SpriteUpdate();
 
 private:
-    Canvas* pCanvas_ = nullptr;
     /// タイマー
     std::unique_ptr<TimeMeasurer> pTimer_ = nullptr;
     double nowTime_ = 0.0;

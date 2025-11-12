@@ -9,6 +9,8 @@
 #include <Color.h>
 #include <cmath>
 #include <DebugTools/Logger/Logger.h>
+#include <Features/Audio/AudioManager.h>
+#include <Features/Layer/CanvasScope.h>
 
 void TitleScene::Initialize()
 {
@@ -28,16 +30,16 @@ void TitleScene::Initialize()
         params.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs_->Get("ImGuiManager"));
         #endif // _DEBUG
 
-        pCanvas_ = std::make_unique<Canvas>();
-        pCanvas_->Initialize(params);
+        pCanvasBack_ = std::make_unique<Canvas>();
+        pCanvasBack_->Initialize(params);
 
         params.name = "TitleCanvas2";
 
-        pCanvas2_ = std::make_unique<Canvas>();
-        pCanvas2_->Initialize(params);
+        pCanvasSprite_ = std::make_unique<Canvas>();
+        pCanvasSprite_->Initialize(params);
 
-        pLayer_->AddCanvas(pCanvas_.get());
-        pLayer_->AddCanvas(pCanvas2_.get());
+        pLayer_->AddCanvas(pCanvasBack_.get());
+        pLayer_->AddCanvas(pCanvasSprite_.get());
     }
 
     // ゲームアイの初期化
@@ -51,9 +53,9 @@ void TitleScene::Initialize()
 
     /// フィルタの初期化と登録
     {
-        auto tempBloom = pCanvas_->GetPostEffectExecuter().AddEffect(PostEffectClassName::GaussianBloom);
-        auto tempRandom = pCanvas_->GetPostEffectExecuter().AddEffect(PostEffectClassName::RandomFilter);
-        auto tempRadial = pCanvas2_->GetPostEffectExecuter().AddEffect(PostEffectClassName::RadialBlur);
+        auto tempBloom = pCanvasBack_->GetPostEffectExecuter().AddEffect(PostEffectClassName::GaussianBloom);
+        auto tempRandom = pCanvasBack_->GetPostEffectExecuter().AddEffect(PostEffectClassName::RandomFilter);
+        auto tempRadial = pCanvasSprite_->GetPostEffectExecuter().AddEffect(PostEffectClassName::RadialBlur);
         pRandomFilter_ = static_cast<RandomFilter*>(tempRandom);
         pGaussianBloom_ = static_cast<GaussianBloom*>(tempBloom);
         pRadialBlur_ = static_cast<RadialBlur*>(tempRadial);
@@ -61,22 +63,25 @@ void TitleScene::Initialize()
 
     this->InitializePostEffects();
 
+    pSoundStartButton_ = AudioManager::GetInstance()->GetNewAudio("Effect", Path::Audio::kSeStartButton);
+    pSoundStartButton_->SetVolume(0.1f);
+
     // オープニングアニメーションの初期化と再生
     // - 実時間をもとに再生されるためPlay関数のあとに時間のかかる処理(I/O など)を入れないこと
     pOpeningAnimation_ = std::make_unique<OpeningAnimation>();
-    pOpeningAnimation_->Initialize(pCanvas2_.get());
+    pOpeningAnimation_->Initialize();
     pOpeningAnimation_->Play();
 }
 
 void TitleScene::Finalize()
 {
     gameEye_.reset();
-    pCanvas_->GetPostEffectExecuter().RemoveEffect(pRandomFilter_);
+    pCanvasBack_->GetPostEffectExecuter().RemoveEffect(pRandomFilter_);
 
-    pLayer_->RemoveCanvas(pCanvas_.get());
-    pLayer_->RemoveCanvas(pCanvas2_.get());
-    pCanvas_->Finalize();
-    pCanvas2_->Finalize();
+    pLayer_->RemoveCanvas(pCanvasBack_.get());
+    pLayer_->RemoveCanvas(pCanvasSprite_.get());
+    pCanvasBack_->Finalize();
+    pCanvasSprite_->Finalize();
 }
 
 void TitleScene::Update()
@@ -86,10 +91,12 @@ void TitleScene::Update()
     gameEye_->SetRotate(eyeRotate);
     gameEye_->Update();
 
-    if (pInput_->TriggerKey(DIK_SPACE))
+    if (pInput_->TriggerKey(DIK_SPACE) && !isChangingScene_)
     {
+        pSoundStartButton_->Play();
         pTransShutter_ = std::make_unique<TransShutter>();
         pSceneManager_->ReserveScene("LoadScene", std::move(pTransShutter_));
+        isChangingScene_ = true;
     }
 
     this->UpdateTitleAnimation();
@@ -106,10 +113,10 @@ void TitleScene::Update()
 
 void TitleScene::Draw()
 {
-    pSpriteTitle_->Draw1F();
+    CanvasScope canvasScopeBack(pCanvasSprite_.get());
     pSpriteFrameScreen_->Draw1F();
+    pSpriteTitle_->Draw1F();
     pSpritePressStart_->Draw1F();
-
     pOpeningAnimation_->Draw1F();
 }
 
@@ -157,10 +164,6 @@ void TitleScene::InitializeSprites()
     pSpritePressStart_->SetAnchorPoint({ 0.5f, 0.5f });
     pSpritePressStart_->SetPosition({ WinSystem::clientWidth / 2.0f, WinSystem::clientHeight / 2.0f + 200.0f });
     pSpritePressStart_->SetSizeWithFactor(1.05f);
-
-    pCanvas2_->RegisterDrawable(pSpriteTitle_.get());
-    pCanvas2_->RegisterDrawable(pSpriteFrameScreen_.get());
-    pCanvas2_->RegisterDrawable(pSpritePressStart_.get());
 }
 
 void TitleScene::InitializeSkybox()
@@ -172,7 +175,7 @@ void TitleScene::InitializeSkybox()
     pSkybox_->Initialize(pCubemapSystem_);
     pSkybox_->SetSkyboxTexture(pTM->GetSrvHandleGPU(Path::Image::kTitleSkybox));
 
-    pCanvas_->RegisterDrawable(pSkybox_.get());
+    pCanvasBack_->RegisterDrawable(pSkybox_.get());
 }
 
 void TitleScene::InitializePostEffects()

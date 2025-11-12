@@ -13,6 +13,7 @@
 #include <drawable/object3d/Object3d.h>
 #include <drawable/particle/Particle.h>
 #include <DebugTools/DebugManager/DebugManager.h>
+#include <Features/Bar2d/Bar2d.h>
 
 // game
 #include <entity/ScreenToWorld/ScreenToWorld.h>
@@ -29,6 +30,7 @@
 #include <list>
 #include <memory>
 #include <array>
+#include <entity/player/GameOverAnimation.h>
 
 /// <summary>
 /// ゲームシーン
@@ -65,20 +67,28 @@ public:
     /// </summary>
     void DrawTexts() override;
 
+    /// <summary>
+    /// シーン用のデバッグウィンドウを描画します。
+    /// </summary>
+    void ImGui();
+
 
 private:
     enum class ParticleID
     {
         PlayerConstant,
-        EnemyHit,
+        PlayerDeath,
         EnemyDeath,
+        PlayerBullet,
 
         Size
     };
 
     static constexpr inline size_t kParticleIDMax = static_cast<size_t>(ParticleID::Size);
 
-    std::unique_ptr<Canvas>                     canvas_             = {};       // !< ゲームキャンバス
+    std::unique_ptr<Canvas>                     canvasUI_           = {};       // !< ゲームキャンバス
+    std::unique_ptr<Canvas>                     canvasGrid_         = {};       // !< Gridキャンバス
+    std::unique_ptr<Canvas>                     canvas3dObject_     = {};       // !< MainCharactorキャンバス
     std::unique_ptr<Canvas>                     canvasParticle_     = {};       // !< パーティクルキャンバス
 
     std::unique_ptr<Object3d>                   grid_               = {};       // !< グリッド
@@ -87,10 +97,14 @@ private:
     std::vector<std::unique_ptr<Enemy>>         enemies_            = {};       // !< 敵s
     std::list<std::unique_ptr<PlayerBullet>>    playerBullets_      = {};       // !< プレイヤー弾s
     std::unique_ptr<ScreenToWorld>              screenToWorld_      = {};       // !< 座標変換
+    std::array<Particle*, kParticleIDMax>       particles_          = {};       // !< パーティクル
+    /// UI
     std::unique_ptr<InGameTimer>                gameTimer_          = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                 inputGuide_         = {};       // !< 入力ガイド
-    std::unique_ptr<Text>                       fpsText_            = {};       // !< テキスト
-    std::array<Particle*, kParticleIDMax>       particles_          = {};       // !< パーティクル
+    std::unique_ptr<Bar2d>                      healthBar_          = {};       // !< 体力バー
+
+    std::unique_ptr<GameOverAnimation>          gameOverAnimation_  = {};       // !< ゲームオーバーアニメーション
+
 
     EntityCommonParams                          entityCommonParams_ = {};       // !< エンティティ共通パラメータ
 
@@ -105,14 +119,13 @@ private:
     std::unique_ptr<Line>                       lines_              = nullptr;  // !< エリア用ライン
     float                                       areaWidth_          = 25.0f;    // !< エリアの幅
 
-    const uint32_t                              kMaxEnemyCount_     = 30;       // !< 最大敵数
+    const uint32_t                              kMaxEnemyCount_     = 120;       // !< 最大敵数
 
     TimeMeasurer     titleTimer_ = {}; // タイトル表示用タイマー
 
 
 private: /// デバッグ用
-    DebugManager* pDebugManager_ = nullptr;
-    std::string name_ = "GameScene";
+    std::unique_ptr<DebugEntry<GameScene>> pDebugEntry_ = nullptr;
 
     /// コライダーの描画
     bool isDisplayColliderEnemy_ = false;
@@ -123,11 +136,12 @@ private: /// デバッグ用
 
 
 private:
+    void CanvasInitialize();
     void ParticlesInitialize();
     void CreatePlayerBullet();
     void RemovePlayerBullet();
-
     void RemoveEnemy();
+    void KillAllEnemies();
 
     /// <summary>
     /// </summary>
@@ -137,12 +151,6 @@ private:
     /// プレイヤーのスロー（低速移動）状態に関連する更新処理を行います。
     /// </summary>
     void PlayerSlowUpdate();
-
-    /// <summary>
-    /// <summary>
-    /// シーン用のデバッグウィンドウを描画します。
-    /// </summary>
-    void DebugWindow();
 
 
 private:
