@@ -3,7 +3,6 @@
 #include <Entity/EntityBase.h>
 #include <drawable/object3d/Object3d.h>
 #include <memory>
-#include <Features/Input/Input.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Collision/Manager/CollisionManager.h>
 #include <Features/Collision/Collider/Collider.h>
