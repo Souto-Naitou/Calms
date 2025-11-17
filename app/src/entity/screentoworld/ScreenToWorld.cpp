@@ -47,7 +47,7 @@ void ScreenToWorld::Update()
 
     origin_ = pGameEye_->GetTransform().translate;
     direction_ = farPos - nearPos;
-    direction_ = direction_.Normalize();
+    direction_ = direction_.Normalized();
     
     float dot = FMath::Dot(normal_, direction_);
     if (dot == 0.0f)
