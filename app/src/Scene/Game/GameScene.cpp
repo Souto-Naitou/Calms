@@ -478,10 +478,10 @@ void GameScene::CreatePlayerBullet()
     Vector3 direction = screenToWorld_->GetWorldPoint() - player_->GetTranslation();
 
     direction.y = 0.0f;
-    direction = direction.Normalize();
+    direction = direction.Normalized();
     direction.x += randomGenerator_->Generate(-0.05f, 0.05f);
     direction.z += randomGenerator_->Generate(-0.05f, 0.05f);
-    direction = direction.Normalize();
+    direction = direction.Normalized();
 
     auto& particle = particles_[static_cast<size_t>(ParticleID::PlayerBullet)];
     particle->emplace_back({});

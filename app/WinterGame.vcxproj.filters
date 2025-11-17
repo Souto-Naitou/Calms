@@ -155,7 +155,9 @@
     <ClCompile Include="src\scene\GameOverTest\GameOverTestScene.cpp">
       <Filter>Scene\GameOverTest</Filter>
     </ClCompile>
-    <ClCompile Include="src\entity\player\PlayerInput.cpp" />
+    <ClCompile Include="src\entity\player\PlayerInput.cpp">
+      <Filter>Entity\Player\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -225,8 +227,12 @@
     <ClInclude Include="src\scene\GameOverTest\GameOverTestScene.h">
       <Filter>Scene\GameOverTest</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\player\PlayerInput.h" />
-    <ClInclude Include="src\entity\player\PlayerMovement.h" />
+    <ClInclude Include="src\entity\player\PlayerInput.h">
+      <Filter>Entity\Player\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\player\PlayerMovement.h">
+      <Filter>Entity\Player\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

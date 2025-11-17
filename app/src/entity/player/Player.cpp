@@ -161,8 +161,7 @@ void Player::UpdateInputCommands()
 
     const auto& inputData = pInput_->GetData();
     isShot_ = false;
-    inputData.move.Normalize();
-    acceleration_ = inputData.move * movePower_;
+    acceleration_ = inputData.move.Normalized() * movePower_;
 
     if (inputData.isSlowTriggered)
     {
