@@ -174,10 +174,12 @@ void GameLayer::Finalize()
     canvas3dObject_->Finalize();
     canvasParticle_->Finalize();
     canvasUI_->Finalize();
+    canvasOverall_->Finalize();
     pLayer_->RemoveCanvas(canvasGrid_.get());
     pLayer_->RemoveCanvas(canvas3dObject_.get());
     pLayer_->RemoveCanvas(canvasParticle_.get());
     pLayer_->RemoveCanvas(canvasUI_.get());
+    pLayer_->RemoveCanvas(canvasOverall_.get());
 }
 
 void GameLayer::Update()
@@ -331,10 +333,19 @@ void GameLayer::Draw()
 
     CanvasScope particleCanvasScope(canvasParticle_.get());
     {
+        canvasUI_->Draw1F();
         for (auto& particle : particles_)
         {
             particle->Draw1F();
         }
+    }
+
+    CanvasScope overallCanvasScope(canvasOverall_.get());
+    {
+        canvasGrid_->Draw1F();
+        canvas3dObject_->Draw1F();
+        canvasParticle_->Draw1F();
+        canvasUI_->Draw1F();
     }
 }
 
@@ -393,6 +404,7 @@ void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
         canvasParams.name = "Grid_Canvas";
         canvasGrid_ = std::make_unique<Canvas>();
         canvasGrid_->Initialize(canvasParams);
+        canvasGrid_->SetEnableManualDraw(true);
         pLayer_->AddCanvas(canvasGrid_.get());
     }
 
@@ -401,6 +413,7 @@ void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
         canvasParams.name = "3DObject_Canvas";
         canvas3dObject_ = std::make_unique<Canvas>();
         canvas3dObject_->Initialize(canvasParams);
+        canvas3dObject_->SetEnableManualDraw(true);
         IPostEffect* effect = nullptr;
 
         effect = canvas3dObject_->GetPostEffectExecuter().AddEffect(PostEffectClassName::GaussianBloom);
@@ -430,6 +443,7 @@ void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
         canvasParams.name = "Particle_Canvas";
         canvasParticle_ = std::make_unique<Canvas>();
         canvasParticle_->Initialize(canvasParams);
+        canvasParticle_->SetEnableManualDraw(true);
         IPostEffect* effect = canvasParticle_->GetPostEffectExecuter().AddEffect(PostEffectClassName::GaussianBloom);
         auto bloom = static_cast<GaussianBloom*>(effect);
         {
@@ -450,9 +464,26 @@ void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
         canvasParams.name = "UI_Canvas";
         canvasUI_ = std::make_unique<Canvas>();
         canvasUI_->Initialize(canvasParams);
+        canvasUI_->SetEnableManualDraw(true);
         pLayer_->AddCanvas(canvasUI_.get());
     }
 
+    /// 全体用キャンバス
+    {
+        canvasParams.name = "Overall_Canvas";
+        canvasOverall_ = std::make_unique<Canvas>();
+        canvasOverall_->Initialize(canvasParams);
+        IPostEffect* effect = nullptr;
+        effect = canvasOverall_->GetPostEffectExecuter().AddEffect(PostEffectClassName::SeparatedGaussianFilter);
+        auto gaussian = static_cast<SeparatedGaussianFilter*>(effect);
+        {
+            auto& optionGaussian = gaussian->GetOption();
+            optionGaussian.kernelSize = 15;
+            gaussian->SetSigma(10.0f);
+            gaussian->Enable(false);
+        }
+        pLayer_->AddCanvas(canvasOverall_.get());
+    }
 }
 
 void GameLayer::LimitPlayerPosition()

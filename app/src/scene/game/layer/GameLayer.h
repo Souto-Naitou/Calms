@@ -82,6 +82,7 @@ private:
     std::unique_ptr<Canvas>                     canvasGrid_         = {};       // !< Gridキャンバス
     std::unique_ptr<Canvas>                     canvas3dObject_     = {};       // !< MainCharactorキャンバス
     std::unique_ptr<Canvas>                     canvasParticle_     = {};       // !< パーティクルキャンバス
+    std::unique_ptr<Canvas>                     canvasOverall_      = {};       // !< 全体キャンバス
 
     std::unique_ptr<Object3d>                   grid_               = {};       // !< グリッド
     std::unique_ptr<GameEye>                    gameEye_            = {};       // !< ゲームアイ
