@@ -83,6 +83,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -114,6 +115,7 @@ powershell -ExecutionPolicy RemoteSigned -File $(SolutionDir)automation\copy_eng
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,6 +146,7 @@ powershell -ExecutionPolicy RemoteSigned -File $(SolutionDir)automation\copy_eng
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>MinSpace</Optimization>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,6 +164,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\entity\player\PlayerInput.cpp" />
     <ClCompile Include="src\entity\player\PlayerMovement.cpp" />
     <ClCompile Include="src\scene\GameOverTest\GameOverTestScene.cpp" />
+    <ClCompile Include="src\scene\game\layer\GameLayer.cpp" />
+    <ClCompile Include="src\scene\game\layer\ResultLayer.cpp" />
+    <ClCompile Include="src\scene\game\layer\TitleLayer.cpp" />
+    <ClCompile Include="src\scene\game\layer\TitleLayer.h" />
     <ClCompile Include="src\scene\Load\LoadScene.cpp" />
     <ClCompile Include="src\scene\Title\Animation\OpeningAnimation.cpp" />
     <ClCompile Include="src\Entity\EntityBase.cpp" />
@@ -180,7 +187,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </ClCompile>
     <ClCompile Include="src\scene\Clear\ClearScene.cpp" />
     <ClCompile Include="src\scene\Factory\SceneFactory.cpp" />
-    <ClCompile Include="src\scene\Game\GameScene.cpp" />
+    <ClCompile Include="src\scene\game\GameScene.cpp" />
     <ClCompile Include="src\scene\Title\TitleScene.cpp" />
     <ClCompile Include="src\logic\score\ScoreCalculator.cpp" />
     <ClCompile Include="src\stdafx.cpp">
@@ -192,10 +199,13 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\framework\Calms.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\core\IGameLayer.h" />
     <ClInclude Include="src\entity\player\GameOverAnimation.h" />
     <ClInclude Include="src\entity\player\PlayerInput.h" />
     <ClInclude Include="src\entity\player\PlayerMovement.h" />
     <ClInclude Include="src\scene\GameOverTest\GameOverTestScene.h" />
+    <ClInclude Include="src\scene\game\layer\GameLayer.h" />
+    <ClInclude Include="src\scene\game\layer\ResultLayer.h" />
     <ClInclude Include="src\scene\Load\LoadScene.h" />
     <ClInclude Include="src\scene\Title\Animation\OpeningAnimation.h" />
     <ClInclude Include="src\config\ResourcePath.h" />
@@ -211,7 +221,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\logic\spawner\EnemySpawner.h" />
     <ClInclude Include="src\scene\Clear\ClearScene.h" />
     <ClInclude Include="src\scene\Factory\SceneFactory.h" />
-    <ClInclude Include="src\scene\Game\GameScene.h" />
+    <ClInclude Include="src\scene\game\GameScene.h" />
     <ClInclude Include="src\scene\Title\TitleScene.h" />
     <ClInclude Include="src\logic\score\ScoreCalculator.h" />
     <ClInclude Include="src\stdafx.h" />
