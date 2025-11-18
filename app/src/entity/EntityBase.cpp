@@ -24,7 +24,7 @@ void EntityBase::UpdatePhysics(float dt)
     velocity_ *= friction_;
 
     // 速度から位置を更新
-    translation_ += velocity_ * dt;
+    transform_.translate += velocity_ * dt;
 
     // 加速度をリセット
     acceleration_ = {};
@@ -34,9 +34,9 @@ void EntityBase::ImGui()
 {
 #ifdef _DEBUG
 
-    ImGui::DragFloat3("Scale", &scale_.x, 0.12f);
-    ImGui::DragFloat3("Rotation", &rotation_.x, 0.12f);
-    ImGui::DragFloat3("Translation", &translation_.x, 0.12f);
+    ImGui::DragFloat3("Scale", &transform_.scale.x, 0.12f);
+    ImGui::DragFloat3("Rotation", &transform_.rotate.x, 0.12f);
+    ImGui::DragFloat3("Translation", &transform_.translate.x, 0.12f);
     ImGui::DragFloat3("Velocity", &velocity_.x, 0.12f);
     ImGui::DragFloat3("Acceleration", &acceleration_.x, 0.12f);
     ImGui::SliderFloat("Friction", &friction_, 0.0f, 1.0f);

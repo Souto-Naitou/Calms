@@ -13,6 +13,8 @@
 #include <Features/Model/ModelManager.h>
 #include <Features/Model/IModel.h>
 #include "PlayerInput.h"
+#include "PlayerMovement.h"
+
 
 
 /// <summary>
@@ -115,6 +117,7 @@ private:
     Params                          params_;
 
     std::unique_ptr<PlayerInput>    pInput_ = nullptr;
+    std::unique_ptr<PlayerMovement> pMovement_ = nullptr;
 
     std::unique_ptr<TimeMeasurer>   timerShot_ = {};
 

@@ -7,6 +7,7 @@
 void PlayerMovement::Initialize(PlayerInput* pInput, EulerTransform* pTransform)
 {
     pTransform_ = pTransform;
+    pInput_ = pInput;
 }
 
 void PlayerMovement::Update(float dt)

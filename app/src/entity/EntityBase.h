@@ -62,9 +62,9 @@ public:
 
 
 public: /// Getter
-    const Vector3& GetRotation() const { return rotation_; }
-    const Vector3& GetScale() const { return scale_; }
-    const Vector3& GetTranslation() const { return translation_; }
+    const Vector3& GetRotation() const { return transform_.rotate; }
+    const Vector3& GetScale() const { return transform_.scale; }
+    const Vector3& GetTranslation() const { return transform_.translate; }
     const Vector3& GetVelocity() const { return velocity_; }
     const Vector3& GetAcceleration() const { return acceleration_; }
     float GetFriction() const { return friction_; }
@@ -74,9 +74,9 @@ public: /// Getter
 
 
 public: /// Setter
-    void SetRotation(const Vector3& rotation) { rotation_ = rotation; }
-    void SetScale(const Vector3& scale) { scale_ = scale; }
-    void SetTranslation(const Vector3& translation) { translation_ = translation; }
+    void SetRotation(const Vector3& rotation) { transform_.rotate = rotation; }
+    void SetScale(const Vector3& scale) { transform_.scale = scale; }
+    void SetTranslation(const Vector3& translation) { transform_.translate = translation; }
     void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
     void SetAcceleration(const Vector3& acceleration) { acceleration_ = acceleration; }
     void SetFriction(float friction) { friction_ = friction; }
@@ -93,9 +93,7 @@ protected:
 
     EntityStats  stats_                 = {};
 
-    Vector3 rotation_                   = {};
-    Vector3 scale_                      = {};
-    Vector3 translation_                = {};
+    EulerTransform transform_           = {};
     Vector3 velocity_                   = {};
     Vector3 acceleration_               = {};
 

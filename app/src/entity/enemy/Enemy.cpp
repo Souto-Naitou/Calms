@@ -25,10 +25,10 @@ void Enemy::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
     ppGameEye_        = Object3dSystem::GetInstance()->GetGlobalEye();
 
     /// パラメータの初期化
-    friction_       = 0.95f;
-    moveSpeed_      = 10.0f;
-    translation_    = Vector3(0, 0.5f, 0);
-    attackPower_    = 10.0f;
+    friction_               = 0.95f;
+    moveSpeed_              = 10.0f;
+    transform_.translate    = Vector3(0, 0.5f, 0);
+    attackPower_            = 10.0f;
     stats_.Initalize(1.0f, 10.0f, 10.0f);
 
     // オブジェクトの初期化
@@ -61,7 +61,7 @@ void Enemy::Finalize()
 
     objectSelfBody_->Finalize();
 
-    pParticleDeath_->SetPosition(translation_);
+    pParticleDeath_->SetPosition(transform_.translate);
     pParticleDeath_->Emit();
 
     pParticleDeath_->Finalize();
@@ -146,14 +146,14 @@ void Enemy::InitializeParticleEmitters()
     pParticleDeath_ = std::make_unique<ParticleEmitter>();
     pParticleDeath_->Initialize(params);
     pParticleDeath_->SetEnableBillboard(true);
-    pParticleDeath_->SetPosition(translation_);
+    pParticleDeath_->SetPosition(transform_.translate);
     pParticleDeath_->EnableManualMode();
 }
 
 void Enemy::UpdateTransform()
 {
     if (locationProvider_) positionTarget_ = locationProvider_->GetTranslation().xz();
-    distanceToTarget = positionTarget_ - translation_.xz();
+    distanceToTarget = positionTarget_ - transform_.translate.xz();
 
     /// 追尾
     if (distanceToTarget.Length() > 0)
@@ -169,14 +169,14 @@ void Enemy::UpdateTransform()
     /// 方向を変更
     if ((distanceToTarget.x != 0 || distanceToTarget.y != 0))
     {
-        rotation_ = Vector3(0, -velocity_.xz().Theta(), 0);
+        transform_.rotate = Vector3(0, -velocity_.xz().Theta(), 0);
     }
 }
 
 void Enemy::UpdateCollider()
 {
     /// コライダーの更新
-    obb_.SetCenter(translation_);
+    obb_.SetCenter(transform_.translate);
     obb_.SetOrientations(objectSelfBody_->GetRotateMatrix());
     obb_.SetSize(Vector3(0.5f, 0.5f, 0.5f));
 
@@ -185,8 +185,8 @@ void Enemy::UpdateCollider()
 
 void Enemy::UpdateObjects()
 {
-    objectSelfBody_->SetTranslate(translation_);
-    objectSelfBody_->SetRotate(rotation_);
+    objectSelfBody_->SetTranslate(transform_.translate);
+    objectSelfBody_->SetRotate(transform_.rotate);
     objectSelfBody_->Update();
 }
 
@@ -198,8 +198,7 @@ void Enemy::OnCollision(const Collider* _other)
 
         /// 反発を速度に適用
         Vector3 otherPos = otherOwner->GetTranslation();
-        Vector3 dir = translation_ - otherPos;
-
+        Vector3 dir = transform_.translate - otherPos;
         accelerationRefl_ = dir * reflectionPower_;
     }
 }
@@ -226,7 +225,7 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
             assert(0);
         }
 
-        Vector3 dir = translation_ - hitPos;
+        Vector3 dir = transform_.translate - hitPos;
 
         accelerationRefl_ = dir * bulletReflectionPower_;
 

@@ -11,8 +11,8 @@ public:
         Vector3 acceleration = {};
         Vector3 velocity = {};
 
-        float movePower = 0.0f;
-        float friction = 1.0f;
+        float movePower = 25.0f;
+        float friction = 0.95f;
     };
 
     PlayerMovement() = default;
