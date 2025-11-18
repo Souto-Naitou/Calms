@@ -9,43 +9,22 @@ void PlayerInput::Initialize()
 
 void PlayerInput::Update()
 {
+    // 前回の入力データ
     PlayerInput::Data preData = data_;
     data_ = {};
 
-    if (pInput_->PushKey(DIK_W))
-    {
-        data_.move.z += 1.0f;
-    }
-    if (pInput_->PushKey(DIK_S))
-    {
-        data_.move.z -= 1.0f;
-    }
-    if (pInput_->PushKey(DIK_A))
-    {
-        data_.move.x -= 1.0f;
-    }
-    if (pInput_->PushKey(DIK_D))
-    {
-        data_.move.x += 1.0f;
-    }
-
-    if (pInput_->PushMouse(Input::MouseNum::Left))
-    {
-        data_.isShotPressed = true;
-    }
-
-    if (pInput_->TriggerKey(DIK_LSHIFT))
-    {
-        data_.isSlowTriggered = true;
-    }
-
-    if (pInput_->PushKey(DIK_LSHIFT))
-    {
-        data_.isSlowPressed = true;
-    }
-
-    if (preData.isSlowPressed && !data_.isSlowPressed)
-    {
-        data_.isSlowReleased = true;
-    }
+    /// [ プレイヤーの入力用に変換 ]
+    // 移動
+    auto dirX = pInput_->PushKey(DIK_D) - pInput_->PushKey(DIK_A);
+    auto dirZ = pInput_->PushKey(DIK_W) - pInput_->PushKey(DIK_S);
+    data_.move = Vector3(static_cast<float>(dirX), 0.0f, static_cast<float>(dirZ));
+    data_.move = data_.move.Normalized();
+    // 射撃
+    data_.isShotPressed = pInput_->PushMouse(Input::MouseNum::Left);
+    // スロー(トリガー)
+    data_.isSlowTriggered = pInput_->TriggerKey(DIK_LSHIFT);
+    // スロー(プレス)
+    data_.isSlowPressed = pInput_->PushKey(DIK_LSHIFT);
+    // スロー(リリース)
+    data_.isSlowReleased = preData.isSlowPressed && !data_.isSlowPressed;
 }

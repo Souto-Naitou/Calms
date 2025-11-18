@@ -65,7 +65,7 @@ void PlayerBullet::Update()
     this->ObjectsUpdate();
 
     // OBBの更新
-    sphere_.center = translation_;
+    sphere_.center = transform_.translate;
     sphere_.radius = 0.3f;
 
     collider_->SetShapeData(&sphere_);
@@ -74,7 +74,6 @@ void PlayerBullet::Update()
 
 void PlayerBullet::Draw1F()
 {
-    //pBody_->Draw1F();
 }
 
 void PlayerBullet::DrawLine()
@@ -113,7 +112,7 @@ void PlayerBullet::ObjectsUpdate()
 {
     // 位置の反映
     auto& data = params_.particleData;
-    data->transform_.translate = translation_;
+    data->transform_.translate = transform_.translate;
 }
 
 void PlayerBullet::CollidersInitialize()

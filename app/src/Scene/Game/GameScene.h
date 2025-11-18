@@ -86,7 +86,7 @@ private:
 
     static constexpr inline size_t kParticleIDMax = static_cast<size_t>(ParticleID::Size);
 
-    std::unique_ptr<Canvas>                     canvasUI_           = {};       // !< ゲームキャンバス
+    std::unique_ptr<Canvas>                     canvasUI_           = {};       // !< UIキャンバス
     std::unique_ptr<Canvas>                     canvasGrid_         = {};       // !< Gridキャンバス
     std::unique_ptr<Canvas>                     canvas3dObject_     = {};       // !< MainCharactorキャンバス
     std::unique_ptr<Canvas>                     canvasParticle_     = {};       // !< パーティクルキャンバス

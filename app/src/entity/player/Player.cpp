@@ -11,31 +11,36 @@ Player::Player(const Params& params) : pModelManager_(params.pModelManager)
 
 void Player::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
 {
-    // 基底クラスの初期化
+    /// [ 基底クラスの初期化 ]
     EntityBase::Initialize(params, enableDebugWindow);
+
+    /// [ デバッグ機能の初期化 ]
     pDebugEntry_->SetName("Player");
 
-
-    /// インスタンスの取得
+    /// [ インスタンスの取得 ]
     collisionManager_ = CollisionManager::GetInstance();
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
     audioManager_ = AudioManager::GetInstance();
 
-    /// コンポーネントの初期化
+    /// [ コンポーネントの初期化 ]
+    // 入力
     pInput_ = std::make_unique<PlayerInput>();
     pInput_->Initialize();
+    // 移動
+    pMovement_ = std::make_unique<PlayerMovement>();
+    pMovement_->Initialize(pInput_.get(), &transform_);
 
-    /// タイマーの初期化
+    /// [ タイマーの初期化 ]
     timerShot_ = std::make_unique<TimeMeasurer>();
     timerShot_->Start();
 
-    // パーティクルエミッターの初期化
+    /// [ パーティクルエミッターの初期化 ]
     this->ParticleEmittersInitialize();
 
-    /// パラメータの初期化
+    /// [ パラメータの初期化 ]
     movePower_ = 25.0f;
     friction_ = 0.95f;
-    translation_ = Vector3(0, 0.5f, 0);
+    transform_.translate = Vector3(0, 0.5f, 0);
     stats_.Initalize(100.0f, 0.0f, 20.0f);
 
     // オブジェクトの初期化
@@ -64,38 +69,27 @@ void Player::Finalize()
 
 void Player::Update()
 {
+    const float kDeltaTime = deltaTimeManager_->GetDeltaTime(1);
+
     // 入力コマンドの更新
     pInput_->Update();
 
+    /// #TODO: 関数内の処理を別クラスに分離する
     this->UpdateInputCommands();
 
-    /// 反発の速度を適用
-    acceleration_ += accelerationRefl_;
-    accelerationRefl_ = Vector3(0, 0, 0);
-
     /// 座標更新
-    EntityBase::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
-    if (velocity_.Length() > 0.2f)
-    {
-        emitterConstant_->Emit();
-    }
+    pMovement_->Update(kDeltaTime);
+    const auto& movementData = pMovement_->GetData();
 
-    /// 座標の反映
-    object_->SetTranslate(translation_);
-
-    /// オブジェクトの更新
+    /// 3dモデルの更新
+    object_->SetTranslate(transform_.translate);
     object_->Update();
 
     /// コライダーの更新
-    obb_.SetCenter(translation_);
+    obb_.SetCenter(transform_.translate);
     obb_.SetOrientations(object_->GetRotateMatrix());
     obb_.SetSize(Vector3(0.5f, 0.5f, 0.5f));
-
     collider_->SetShapeData(&obb_);
-
-    /// パーティクルエミッターの更新
-    emitterConstant_->SetPosition(translation_);
-    emitterConstant_->Update();
 }
 
 void Player::Draw1F()
@@ -161,7 +155,6 @@ void Player::UpdateInputCommands()
 
     const auto& inputData = pInput_->GetData();
     isShot_ = false;
-    acceleration_ = inputData.move.Normalized() * movePower_;
 
     if (inputData.isSlowTriggered)
     {
@@ -234,8 +227,11 @@ void Player::OnCollision(const Collider* other)
     {
         /// 反発を速度に適用
         Vector3 otherPos = otherOwner->GetTranslation();
-        Vector3 dir = translation_ - otherPos;
+        Vector3 dir = transform_.translate - otherPos;
 
-        accelerationRefl_ = dir * reflectionPower_;
+        if (pMovement_)
+        {
+            pMovement_->AddAcceleration(dir * reflectionPower_);
+        }
     }
 }
