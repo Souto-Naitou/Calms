@@ -2,6 +2,11 @@
 #include <Features/Text/Text.h>
 #include <memory>
 
+namespace ScorePerUnit
+{
+    static constexpr auto kEnemy = 100u;
+}
+
 /// <summary>
 /// スコア計算クラス
 /// </summary>
@@ -34,13 +39,12 @@ public:
     void CountEnemyDeath();
 
 private:
-    static const unsigned int kEnemyScore = 100;
+    float score_ = 0.0f;
+    unsigned int enemyDeathCount_ = 0u;
+    float receiveAddScore_ = 0.0f;
 
-    float score_;
-    unsigned int enemyDeathCount_;
-    float receiveAddScore_;
-
-    unsigned int framesAddScore_ = 20u;
+    // 毎フレーム加算するスコア量
+    unsigned int scoreIncrementPerFrame_ = 20u;
     std::unique_ptr<Text> pName_ = nullptr;
     std::unique_ptr<Text> pScore_ = nullptr;
 };

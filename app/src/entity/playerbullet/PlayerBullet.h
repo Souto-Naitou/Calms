@@ -26,7 +26,7 @@ public:
     PlayerBullet(const Params& param);
     ~PlayerBullet()
     {
-        if (params_.particleData->currentColor_.x != 0.0f)
+        if (params_.particleData->currentColor.x != 0.0f)
         {
             assert(false);
         }

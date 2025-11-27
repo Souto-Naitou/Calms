@@ -12,6 +12,7 @@
 #include <imgui.h>
 #include <mathExtension.h>
 #include <config/ResourcePath.h>
+#include <mathExtension.h>
 
 
 void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
@@ -99,7 +100,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
 
     /// ゲームタイマーの初期化
     gameTimer_ = std::make_unique<InGameTimer>();
-    gameTimer_->Initialize(false, 60.0f);
+    gameTimer_->Initialize(false, kGameLimitTime);
 
     /// 入力ガイド
     inputGuide_ = std::make_unique<InputGuide>();
@@ -125,6 +126,20 @@ void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
     // 敵の予約
     enemies_.reserve(kMaxEnemyCount_);
 
+    spriteClear_ = std::make_unique<Sprite>();
+    pTextureManager_->LoadTexture(Path::Image::kClearText);
+    spriteClear_->Initialize(Path::Image::kClearText);
+    spriteClear_->SetAnchorPoint({ 0.5f, 0.5f });
+    spriteClear_->SetPosition({ WinSystem::clientWidth / 4.0f, WinSystem::clientHeight / 2.8f });
+    spriteClear_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
+
+    spriteSpace_ = std::make_unique<Sprite>();
+    pTextureManager_->LoadTexture(Path::Image::kSpaceText);
+    spriteSpace_->Initialize(Path::Image::kTitleStartPrompt);
+    spriteSpace_->SetAnchorPoint({ 0.5f, 0.5f });
+    spriteSpace_->SetPosition({ WinSystem::clientWidth / 4.0f, WinSystem::clientHeight / 1.6f });
+    spriteSpace_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
+
     /// 体力バーの初期化
     Bar2dInitParams healthBarParams = {};
     healthBarParams.barSize = Vector2(300.0f, 10.0f);
@@ -143,6 +158,16 @@ void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
     goaParams.pParticle = particles_[static_cast<size_t>(ParticleID::PlayerDeath)];
     gameOverAnimation_ = std::make_unique<GameOverAnimation>();
     gameOverAnimation_->Initialize(goaParams);
+
+    GameClearAnimation::Params gcaParams = {};
+    gcaParams.pGameEye = gameEye_.get();
+    gcaParams.pPlayer = player_.get();
+    gcaParams.pPointLight = &pointLight_;
+    gcaParams.pParticle = particles_[static_cast<size_t>(ParticleID::PlayerDeath)];
+    gcaParams.pSpriteClear = spriteClear_.get();
+    gcaParams.pSpriteSpace = spriteSpace_.get();
+    gameClearAnimation_ = std::make_unique<GameClearAnimation>();
+    gameClearAnimation_->Initialize(gcaParams);
 }
 
 void GameLayer::Finalize()
@@ -185,25 +210,37 @@ void GameLayer::Finalize()
 void GameLayer::Update()
 {
     static constexpr float kDirectionalLightTargetIntensity = 0.25f;
-    directionalLight_.intensity = Math::Lerp(directionalLight_.intensity, kDirectionalLightTargetIntensity, 0.01f);
 
     gameEye_->Update();
     grid_->Update();
     screenToWorld_->Update();
+    spriteClear_->Update();
+    spriteSpace_->Update();
 
     /// プレイヤーの更新
+    if (!isEnding_)
+    {
+        directionalLight_.intensity = Math::Lerp(directionalLight_.intensity, kDirectionalLightTargetIntensity, 0.0125f);
+    }
     player_->Update();
 
-    if (!player_->IsAlive() && !gameOverAnimation_->IsPlaying())
+    bool isPlayerDead = !player_->IsAlive() && !gameOverAnimation_->IsPlaying();
+    bool isClear = gameTimer_->IsEnd() && !gameClearAnimation_->IsPlaying();
+    if (isPlayerDead) gameOverAnimation_->Play();
+    if (isClear) gameClearAnimation_->Play();
+    if (isPlayerDead || isClear)
     {
-        gameOverAnimation_->Play();
         this->KillAllEnemies();
+        player_->DisableInput();
+        player_->DisableMovement();
         enemyPopSystem_.StopPop();
         gameTimer_->Reset();
         gameTimer_->SetDisplay(false);
+        isEnding_ = true;
     }
 
     gameOverAnimation_->Update();
+    gameClearAnimation_->Update();
 
     /// プレイヤーの移動範囲制限
     this->LimitPlayerPosition();
@@ -239,7 +276,7 @@ void GameLayer::Update()
 
     /// カウントダウンの更新
     countDown_->Update();
-    if (countDown_->IsEnd() && !enemyPopSystem_.IsEnablePop() && !gameTimer_->GetNowTime())
+    if (countDown_->IsEnd() && !enemyPopSystem_.IsEnablePop() && !gameTimer_->GetNowTime() && !isEnding_)
     {
         enemyPopSystem_.StartPop();
         gameTimer_->Start();
@@ -264,7 +301,7 @@ void GameLayer::Update()
 
     /// ゲームタイマーの更新
     gameTimer_->Update();
-    if (gameTimer_->IsEnd() && !isChangingScene_)
+    if (gameClearAnimation_->IsFinished() && !isChangingScene_ && Input::GetInstance()->TriggerKey(DIK_SPACE))
     {
         SceneManager::GetInstance()->ReserveScene("TitleScene", std::make_unique<TransShutter>());
         isChangingScene_ = true;
@@ -324,11 +361,17 @@ void GameLayer::Draw()
     }
 
     CanvasScope uiCanvasScope(canvasUI_.get());
+    if (!isEnding_) 
     {
         gameTimer_->Draw1F();
         countDown_->Draw1F();
         inputGuide_->Draw1F();
         healthBar_->Draw1F();
+    }
+    else
+    {
+        spriteClear_->Draw1F();
+        spriteSpace_->Draw1F();
     }
 
     CanvasScope particleCanvasScope(canvasParticle_.get());
@@ -526,6 +569,12 @@ void GameLayer::ParticlesInitialize()
         particle->Initialize(pModelManager_->Load("Triangle/Triangle.obj"));
         particle->reserve(500);
     }
+    {
+        auto& particle = particles_[static_cast<size_t>(ParticleID::Background)] = ParticleStorage::GetInstance()->CreateParticle();
+        IModel* model = pModelManager_->Load("Particle/ParticleSpark.obj");
+        particle->Initialize(model);
+        particle->reserve(1000);
+    }
 }
 
 void GameLayer::CreatePlayerBullet()
@@ -605,7 +654,8 @@ void GameLayer::CreateEnemy()
 
         Enemy::Params enemyParams = {};
         enemyParams.pModelSelfBody = pModelManager_->Load("Cube/Cube.obj");
-        enemyParams.pParticleDeath = particles_[static_cast<size_t>(ParticleID::EnemyDeath)];
+        enemyParams.pParticleTriangle = particles_[static_cast<size_t>(ParticleID::EnemyDeath)];
+        enemyParams.pParticleCircle = particles_[static_cast<size_t>(ParticleID::PlayerBullet)];
 
         auto enemy = std::make_unique<Enemy>(enemyParams);
         enemy->Initialize(entityCommonParams_, false);
@@ -620,7 +670,11 @@ void GameLayer::CreateEnemy()
 void GameLayer::PlayerSlowUpdate()
 {
     Vector3 playerpos = player_->GetTranslation();
-    if (player_->IsSlow())
+    if (gameClearAnimation_->IsPlaying())
+    {
+        // Do nothing
+    }
+    else if (player_->IsSlow())
     {
         Vector3 eyepos = gameEye_->GetTransform().translate;
         eyepos.Lerp(eyepos, Vector3(playerpos.x, 30.0f, playerpos.z), 0.1f);

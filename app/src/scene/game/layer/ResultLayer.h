@@ -1,6 +1,8 @@
 #pragma once
 
+#include <Features/Layer/Canvas.h>
 #include <core/IGameLayer.h>
+#include <memory>
 
 class ResultLayer : public IGameLayer
 {
@@ -9,4 +11,7 @@ public:
     void Finalize() override;
     void Update() override;
     void Draw() override;
+
+public:
+    std::unique_ptr<Canvas> pCanvas_ = nullptr;
 };

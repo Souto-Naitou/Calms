@@ -38,8 +38,8 @@ void PlayerBullet::Initialize(const EntityCommonParams& params, bool enableDebug
 
 void PlayerBullet::Finalize()
 {
-    params_.particleData->currentColor_ = {};
-    params_.particleData->colorRange_ = {};
+    params_.particleData->currentColor = {};
+    params_.particleData->colorRange = {};
 
     collisionManager_->DeleteCollider(collider_.get());
 
@@ -99,20 +99,21 @@ void PlayerBullet::ImGui()
 
 void PlayerBullet::ObjectsInitialize()
 {
-    /// オブジェクトの初期化
+    /// [ オブジェクトの初期化 ]
+    /// - パーティクルを使用して弾を描画する
     auto& data = params_.particleData;
-    data->transform_.translate = {0.0f, 0.5f, 0.0f};
-    data->colorRange_ = Range(RGBA(0xffffffff).to_Vector4(), RGBA(0x91bbffff).to_Vector4());
-    data->transform_.scale = { 0.1f, 0.1f, 0.1f };
-    data->scaleRange_ = Range<Vector3>({ 0.1f, 0.1f, 0.1f }, { 0.1f, 0.1f, 0.1f });
-    data->deleteCondition_ = ParticleDeleteCondition::ZeroAlpha;
+    data->transform.translate = {0.0f, 0.5f, 0.0f};
+    data->colorRange = Range(RGBA(0xffffffff).to_Vector4(), RGBA(0x91bbffff).to_Vector4());
+    data->transform.scale = { 0.1f, 0.1f, 0.1f };
+    data->scaleRange = Range<Vector3>({ 0.1f, 0.1f, 0.1f }, { 0.1f, 0.1f, 0.1f });
+    data->deleteCondition = ParticleDeleteCondition::ZeroAlpha;
 }
 
 void PlayerBullet::ObjectsUpdate()
 {
     // 位置の反映
     auto& data = params_.particleData;
-    data->transform_.translate = transform_.translate;
+    data->transform.translate = transform_.translate;
 }
 
 void PlayerBullet::CollidersInitialize()

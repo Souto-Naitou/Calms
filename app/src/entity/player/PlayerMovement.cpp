@@ -12,6 +12,8 @@ void PlayerMovement::Initialize(PlayerInput* pInput, EulerTransform* pTransform)
 
 void PlayerMovement::Update(float dt)
 {
+    if (!isEnabled_) return;
+
     if (!pTransform_) 
     { 
         assert(false && "pTransform is nullptr"); 

@@ -31,20 +31,13 @@ void TitleScene::Initialize()
 
         pCanvasBack_ = std::make_unique<Canvas>();
         pCanvasBack_->Initialize(params);
-        pCanvasBack_->SetEnableManualDraw(true);
 
         params.name = "TitleCanvas2";
         pCanvasSprite_ = std::make_unique<Canvas>();
         pCanvasSprite_->Initialize(params);
-        pCanvasSprite_->SetEnableManualDraw(true);
-
-        params.name = "TitleCanvasTest";
-        pCanvasTest_ = std::make_unique<Canvas>();
-        pCanvasTest_->Initialize(params);
 
         pLayer_->AddCanvas(pCanvasBack_.get());
         pLayer_->AddCanvas(pCanvasSprite_.get());
-        pLayer_->AddCanvas(pCanvasTest_.get());
     }
 
     // ゲームアイの初期化
@@ -85,10 +78,8 @@ void TitleScene::Finalize()
 
     pLayer_->RemoveCanvas(pCanvasBack_.get());
     pLayer_->RemoveCanvas(pCanvasSprite_.get());
-    pLayer_->RemoveCanvas(pCanvasTest_.get());
     pCanvasBack_->Finalize();
     pCanvasSprite_->Finalize();
-    pCanvasTest_->Finalize();
 }
 
 void TitleScene::Update()
@@ -125,10 +116,6 @@ void TitleScene::Draw()
     pSpriteTitle_->Draw1F();
     pSpritePressStart_->Draw1F();
     pOpeningAnimation_->Draw1F();
-
-    CanvasScope canvasScopeTest(pCanvasTest_.get());
-    pCanvasBack_->Draw1F();
-    pCanvasSprite_->Draw1F();
 }
 
 void TitleScene::DrawTexts()

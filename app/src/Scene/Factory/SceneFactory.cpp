@@ -4,11 +4,14 @@
 #include <Scene/Game/GameScene.h>
 #include <Scene/Clear/ClearScene.h>
 #include <Scene/GameOverTest/GameOverTestScene.h>
+#include <scene/Edit/EditScene.h>
 #include <Utility/ConvertString/ConvertString.h>
 
 #include <cassert>
 #include <format>
 #include <scene/Load/LoadScene.h>
+#include <DebugTools/Logger/Logger.h>
+#include <cstdlib>
 
 #define JUDGE_SCENE(class, arg) if (_sceneName == #class) { return std::make_unique<class>(arg); }
 
@@ -20,26 +23,32 @@ SceneFactory::SceneFactory()
     sceneCreators_["GameScene"] = [](ISceneArgs* args) { return std::make_unique<GameScene>(args); };
     sceneCreators_["ClearScene"] = [](ISceneArgs* args) { return std::make_unique<ClearScene>(args); };
     sceneCreators_["GameOverTestScene"] = [](ISceneArgs* args) { return std::make_unique<GameOverTestScene>(args); };
+    sceneCreators_["EditScene"] = [](ISceneArgs* args) { return std::make_unique<EditScene>(args); };
 }
 
-std::unique_ptr<SceneBase> SceneFactory::CreateScene(const std::string& _sceneName, ISceneArgs* _pArgs)
+std::unique_ptr<SceneBase> SceneFactory::CreateScene(const std::string& sceneName, ISceneArgs* pArgs)
 {
     // シーン名に応じてシーンを生成
-    try
+    auto it = sceneCreators_.find(sceneName);
+
+    if (it != sceneCreators_.end())
     {
-        return sceneCreators_.at(_sceneName)(_pArgs);
+        return it->second(pArgs);
     }
-    catch (const std::exception& e)
-    {
-        MessageBoxW(
-            nullptr,
-            std::format(L"シーン名 {} は登録されていません。", ConvertString(_sceneName)).c_str(),
-            L"Scene Creation Error",
-            MB_OK | MB_ICONERROR
-        ); 
-        assert(false && e.what());
-        e;
-    }
+
+    // シーン名が登録されていない場合
+    Logger::GetInstance()->LogError(
+        __FILE__,
+        __FUNCTION__,
+        std::format("SceneMissing : {}", sceneName)
+    );
+
+    MessageBoxW(
+        nullptr,
+        std::format(L"シーン名 {} は登録されていません。", ConvertString(sceneName)).c_str(),
+        L"Scene Creation Error",
+        MB_OK | MB_ICONERROR
+    );
 
     return nullptr;
 }

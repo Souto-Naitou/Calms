@@ -61,12 +61,22 @@ void Enemy::Finalize()
 
     objectSelfBody_->Finalize();
 
-    pParticleDeath_->SetPosition(transform_.translate);
-    pParticleDeath_->Emit();
+    pParticleDeathShort_->SetPosition(transform_.translate);
+    pParticleDeathShort_->Emit();
+    pParticleDeathSplatter_->SetPosition(transform_.translate);
+    pParticleDeathSplatter_->Emit();
 
-    pParticleDeath_->Finalize();
+    pParticleDeathShort_->Finalize();
+    pParticleDeathSplatter_->Finalize();
 
-    commonParams_.pDirLight->intensity += 0.5f;
+    if (commonParams_.pDirLight) 
+    {
+        commonParams_.pDirLight->intensity += 0.5f;
+        if (commonParams_.pDirLight->intensity > 8.0f)
+        {
+            commonParams_.pDirLight->intensity = 8.0f;
+        }
+    }
 
     EntityBase::Finalize();
 }
@@ -86,7 +96,8 @@ void Enemy::Update()
     this->UpdateCollider();
 
     // パーティクルの更新
-    pParticleDeath_->Update();
+    pParticleDeathShort_->Update();
+    pParticleDeathSplatter_->Update();
 }
 
 void Enemy::Draw1F()
@@ -97,7 +108,6 @@ void Enemy::Draw1F()
 void Enemy::DrawLine()
 {
     if (isDrawCollisionArea_) collider_->DrawArea();
-    pParticleDeath_->Draw();
 }
 
 void Enemy::InitializeObjects()
@@ -141,18 +151,28 @@ void Enemy::InitializeParticleEmitters()
     /// パラメータを作成
     ParticleEmitterInitParams params;
 
-    params.particle = params_.pParticleDeath;
+    params.particle = params_.pParticleTriangle;
     params.jsonPath = "resources/json/particles/Death.json";
-    pParticleDeath_ = std::make_unique<ParticleEmitter>();
-    pParticleDeath_->Initialize(params);
-    pParticleDeath_->SetEnableBillboard(true);
-    pParticleDeath_->SetPosition(transform_.translate);
-    pParticleDeath_->EnableManualMode();
+    pParticleDeathShort_ = std::make_unique<ParticleEmitter>();
+    pParticleDeathShort_->Initialize(params);
+    pParticleDeathShort_->SetEnableBillboard(true);
+    pParticleDeathShort_->SetPosition(transform_.translate);
+    pParticleDeathShort_->EnableManualMode();
+    
+    params.particle = params_.pParticleCircle;
+    params.jsonPath = "resources/json/particles/Death2.json";
+    pParticleDeathSplatter_ = std::make_unique<ParticleEmitter>();
+    pParticleDeathSplatter_->Initialize(params);
+    pParticleDeathSplatter_->SetEnableBillboard(true);
+    pParticleDeathSplatter_->SetPosition(transform_.translate);
+    pParticleDeathSplatter_->EnableManualMode();
 }
 
 void Enemy::UpdateTransform()
 {
-    if (locationProvider_) positionTarget_ = locationProvider_->GetTranslation().xz();
+    if (!locationProvider_) return;
+
+    positionTarget_ = locationProvider_->GetTranslation().xz();
     distanceToTarget = positionTarget_ - transform_.translate.xz();
 
     /// 追尾

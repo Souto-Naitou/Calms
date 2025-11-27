@@ -23,11 +23,13 @@ public:
     const auto& GetData() const { return data_; }
 
     inline void AddAcceleration(const Vector3& acc) { data_.acceleration += acc; }
+    inline void SetEnable(bool flag) { isEnabled_ = flag; }
 
 private:
     void UpdateByInput(float dt);
     void ApplyPhysics(float dt);
 
+    bool isEnabled_ = true;
     Data data_ = {};
     PlayerInput* pInput_ = nullptr;
     EulerTransform* pTransform_ = nullptr;

@@ -38,6 +38,9 @@
 #include <array>
 #include <vector>
 #include <memory>
+#include <scene/game/animation/GameClearAnimation.h>
+#include <drawable/sprite/Sprite.h>
+#include <drawable/particle/Emitter/ParticleEmitter.h>
 
 class GameLayer : public IGameLayer
 {
@@ -72,11 +75,18 @@ private:
         PlayerDeath,
         EnemyDeath,
         PlayerBullet,
+        Background,
 
         Size
     };
 
     static constexpr inline size_t kParticleIDMax = static_cast<size_t>(ParticleID::Size);
+
+#ifdef _DEBUG
+    static constexpr inline uint32_t kGameLimitTime = 6;
+#else
+    static constexpr inline uint32_t kGameLimitTime = 60u;
+#endif // _DEBUG
 
     std::unique_ptr<Canvas>                     canvasUI_           = {};       // !< UIキャンバス
     std::unique_ptr<Canvas>                     canvasGrid_         = {};       // !< Gridキャンバス
@@ -95,8 +105,11 @@ private:
     std::unique_ptr<InGameTimer>                gameTimer_          = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                 inputGuide_         = {};       // !< 入力ガイド
     std::unique_ptr<Bar2d>                      healthBar_          = {};       // !< 体力バー
+    std::unique_ptr<Sprite>                     spriteClear_        = {};       // !< クリアスプライト
+    std::unique_ptr<Sprite>                     spriteSpace_        = {};       // !< クリアスプライト
 
     std::unique_ptr<GameOverAnimation>          gameOverAnimation_  = {};       // !< ゲームオーバーアニメーション
+    std::unique_ptr<GameClearAnimation>         gameClearAnimation_ = {};       // !< ゲームクリアアニメーション
 
     EntityCommonParams                          entityCommonParams_ = {};       // !< エンティティ共通パラメータ
 
@@ -107,6 +120,7 @@ private:
     TimeMeasurer                                timer_              = {};       // !< タイマー
     double                                      countDownOffset_    = 2.0;      // !< カウントダウンのオフセット
 
+    bool                                        isEnding_           = false;    // !< ゲーム終了フラグ
     bool                                        isChangingScene_    = false;    // !< シーン遷移中かどうか
     std::unique_ptr<Line>                       lines_              = nullptr;  // !< エリア用ライン
     float                                       areaWidth_          = 25.0f;    // !< エリアの幅

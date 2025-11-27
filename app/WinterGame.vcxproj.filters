@@ -73,9 +73,6 @@
     <Filter Include="Logic\Timer">
       <UniqueIdentifier>{7e57411c-5795-47fe-bd26-eaea6b828de2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Type">
-      <UniqueIdentifier>{a054c6e7-0a23-441a-8a5f-995110a91dd8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scene\Load">
       <UniqueIdentifier>{f4d730e1-b8e5-41fb-9d79-b0eafe7b5496}</UniqueIdentifier>
     </Filter>
@@ -87,6 +84,15 @@
     </Filter>
     <Filter Include="Entity\Player\Component">
       <UniqueIdentifier>{c1477ffa-c207-4def-bacf-9dfc04be9155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Game\animation">
+      <UniqueIdentifier>{f9527286-dfbd-447d-baac-50b563ac1289}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Game\layer">
+      <UniqueIdentifier>{daa0d51d-6670-44b7-9f2c-9ba76ac73a09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{a054c6e7-0a23-441a-8a5f-995110a91dd8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -161,10 +167,22 @@
     <ClCompile Include="src\entity\player\PlayerMovement.cpp">
       <Filter>Entity\Player\Component</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\game\layer\TitleLayer.h" />
-    <ClCompile Include="src\scene\game\layer\GameLayer.cpp" />
-    <ClCompile Include="src\scene\game\layer\TitleLayer.cpp" />
-    <ClCompile Include="src\scene\game\layer\ResultLayer.cpp" />
+    <ClCompile Include="src\scene\game\animation\GameClearAnimation.cpp">
+      <Filter>Scene\Game\animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\game\layer\GameLayer.cpp">
+      <Filter>Scene\Game\layer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\game\layer\ResultLayer.cpp">
+      <Filter>Scene\Game\layer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\game\layer\TitleLayer.h">
+      <Filter>Scene\Game\layer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\game\layer\TitleLayer.cpp">
+      <Filter>Scene\Game\layer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\Edit\EditScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -240,9 +258,20 @@
     <ClInclude Include="src\entity\player\PlayerMovement.h">
       <Filter>Entity\Player\Component</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\IGameLayer.h" />
-    <ClInclude Include="src\scene\game\layer\GameLayer.h" />
-    <ClInclude Include="src\scene\game\layer\ResultLayer.h" />
+    <ClInclude Include="src\scene\game\animation\GameClearAnimation.h">
+      <Filter>Scene\Game\animation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\game\layer\GameLayer.h">
+      <Filter>Scene\Game\layer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\game\layer\ResultLayer.h">
+      <Filter>Scene\Game\layer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\IGameLayer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\player\PlayerContext.h" />
+    <ClInclude Include="src\scene\Edit\EditScene.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">
