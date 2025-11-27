@@ -78,7 +78,6 @@ public: /// Getter
     Object3d* GetObject3d() const { return object_.get(); }
 
 public: /// Setter
-    void SetIsDrawCollisionArea(bool isDraw) { isDrawCollisionArea_ = isDraw; }
     void DisableMovement();
     void DisableInput();
 
