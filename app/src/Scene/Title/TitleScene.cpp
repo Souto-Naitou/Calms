@@ -8,7 +8,6 @@
 #include <config/ResourcePath.h>
 #include <Color.h>
 #include <cmath>
-#include <DebugTools/Logger/Logger.h>
 #include <Features/Audio/AudioManager.h>
 #include <Features/Layer/CanvasScope.h>
 
@@ -34,7 +33,6 @@ void TitleScene::Initialize()
         pCanvasBack_->Initialize(params);
 
         params.name = "TitleCanvas2";
-
         pCanvasSprite_ = std::make_unique<Canvas>();
         pCanvasSprite_->Initialize(params);
 

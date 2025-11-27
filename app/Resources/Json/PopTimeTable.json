@@ -7,7 +7,7 @@
                 "endTime" : 15.000,
                 "enemyType" : "Normal",
                 "enemyCount" : 5,
-                "interval" : 5.000
+                "interval" : 2.000
             },
             {
                 "name" : "Wave2",

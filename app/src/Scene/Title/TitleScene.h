@@ -71,7 +71,7 @@ private:
 
     bool                                isChangingScene_    = false;
     std::unique_ptr<TransShutter>       pTransShutter_      = nullptr;      // !< シャッター遷移エフェクト
-    std::unique_ptr<Canvas>             pCanvasBack_            = nullptr;      // !< タイトルキャンバス
+    std::unique_ptr<Canvas>             pCanvasBack_        = nullptr;      // !< タイトルキャンバス
     std::unique_ptr<Canvas>             pCanvasSprite_      = nullptr;      // !< タイトルキャンバス
     std::unique_ptr<GameEye>            gameEye_            = {};           // !< ゲームアイ
     std::unique_ptr<Sprite>             pSpriteTitle_       = nullptr;      // !< タイトル

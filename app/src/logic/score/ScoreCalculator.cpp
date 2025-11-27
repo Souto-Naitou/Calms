@@ -37,7 +37,7 @@ void ScoreCalculator::Update()
     pScore_->SetText(std::format("{:010}", static_cast<int>(score_)));
 
     float addScore = 0;
-    addScore = receiveAddScore_ / static_cast<float>(framesAddScore_);
+    addScore = receiveAddScore_ / static_cast<float>(scoreIncrementPerFrame_);
     receiveAddScore_ -= addScore;
 
     score_ += addScore;
@@ -63,6 +63,6 @@ void ScoreCalculator::Finalize()
 
 void ScoreCalculator::CountEnemyDeath()
 {
-    enemyDeathCount_++;
-    receiveAddScore_ += kEnemyScore;
+    ++enemyDeathCount_;
+    receiveAddScore_ += ScorePerUnit::kEnemy;
 }

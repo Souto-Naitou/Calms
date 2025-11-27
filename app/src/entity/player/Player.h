@@ -16,7 +16,6 @@
 #include "PlayerMovement.h"
 
 
-
 /// <summary>
 /// プレイヤークラス
 /// </summary>
@@ -27,6 +26,13 @@ public:
     {
         Particle* particle = nullptr;
         ModelManager* pModelManager = nullptr;
+    };
+
+    enum class Flags : uint32_t
+    {
+        None            = 0x00000000,
+        DisableMovement = 0x00000001,
+        DisableInput    = 0x00000002,
     };
 
     Player(const Params& params);
@@ -73,6 +79,8 @@ public: /// Getter
 
 public: /// Setter
     void SetIsDrawCollisionArea(bool isDraw) { isDrawCollisionArea_ = isDraw; }
+    void DisableMovement();
+    void DisableInput();
 
 
 private:
@@ -115,14 +123,14 @@ private:
 
     // 初期化パラメータ
     Params                          params_;
+    uint32_t                        flags_      = static_cast<uint32_t>(Flags::None);
 
-    std::unique_ptr<PlayerInput>    pInput_ = nullptr;
-    std::unique_ptr<PlayerMovement> pMovement_ = nullptr;
-
-    std::unique_ptr<TimeMeasurer>   timerShot_ = {};
-
+    std::unique_ptr<PlayerInput>    pInput_         = nullptr;
+    std::unique_ptr<PlayerMovement> pMovement_      = nullptr;
+    std::unique_ptr<TimeMeasurer>   timerShot_      = {};
     std::unique_ptr<IModel>         pModelSelfBody_ = nullptr;
-    std::unique_ptr<Object3d>       object_ = {};
+    std::unique_ptr<Object3d>       object_         = {};
+
     float movePower_ = 0.0f;
     float shotInterval_ = 0.05f;
     bool isShot_ = false;
@@ -130,7 +138,6 @@ private:
     /// コライダー
     std::unique_ptr<Collider> collider_ = nullptr;
     OBB obb_ = {};
-    bool isDrawCollisionArea_ = false;
 
     /// 反発用
     Vector3 accelerationRefl_ = {};

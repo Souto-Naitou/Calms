@@ -71,15 +71,30 @@ void Player::Update()
 {
     const float kDeltaTime = deltaTimeManager_->GetDeltaTime(1);
 
-    // 入力コマンドの更新
-    pInput_->Update();
+    isShot_ = false;
 
-    /// #TODO: 関数内の処理を別クラスに分離する
-    this->UpdateInputCommands();
+    // 入力コマンドの更新
+    if (!(flags_ & static_cast<uint32_t>(Flags::DisableInput)))
+    {
+        pInput_->Update();
+        /// #TODO: 関数内の処理を別クラスに分離する
+        this->UpdateInputCommands();
+    }
 
     /// 座標更新
-    pMovement_->Update(kDeltaTime);
-    const auto& movementData = pMovement_->GetData();
+    if (!(flags_ & static_cast<uint32_t>(Flags::DisableMovement)))
+    { 
+        pMovement_->Update(kDeltaTime);
+    }
+
+    // パーティクルエミッターの更新
+    if ((pMovement_->GetData().velocity.Length() > 0.2f ) || flags_ & static_cast<uint32_t>(Flags::DisableMovement))
+    {
+        emitterConstant_->SetPosition(transform_.translate);
+        emitterConstant_->Emit();
+    }
+    emitterConstant_->Update();
+
 
     /// 3dモデルの更新
     object_->SetTranslate(transform_.translate);
@@ -100,7 +115,6 @@ void Player::Draw1F()
 
 void Player::DrawLine()
 {
-    if (isDrawCollisionArea_) collider_->DrawArea();
     // パーティクルエミッターの描画
     emitterConstant_->Draw();
 }
@@ -154,7 +168,6 @@ void Player::UpdateInputCommands()
     if (isAlive_ == false) return;
 
     const auto& inputData = pInput_->GetData();
-    isShot_ = false;
 
     if (inputData.isSlowTriggered)
     {
@@ -194,10 +207,18 @@ void Player::ImGui()
 #ifdef _DEBUG
     EntityBase::ImGui();
     ImGui::DragFloat("MovePower", &movePower_, 0.12f);
-
-    ImGui::SeparatorText("Debug");
-    ImGui::Checkbox("Draw2D Collision Area", &isDrawCollisionArea_);
 #endif
+}
+
+void Player::DisableMovement()
+{
+    pMovement_->SetEnable(false);
+    flags_ |= static_cast<uint32_t>(Flags::DisableMovement);
+}
+
+void Player::DisableInput()
+{
+    flags_ |= static_cast<uint32_t>(Flags::DisableInput);
 }
 
 void Player::OnCollisionTrigger(const Collider* other)

@@ -20,7 +20,7 @@ public:
     /// </summary>
     /// <param name="_sceneName">シーン名</param>
     /// <returns>生成したシーン</returns>
-    std::unique_ptr<SceneBase> CreateScene(const std::string& _sceneName, ISceneArgs* _pArgs) override;
+    std::unique_ptr<SceneBase> CreateScene(const std::string& sceneName, ISceneArgs* pArgs) override;
 
 private:
     std::map<std::string, std::function<std::unique_ptr<SceneBase>(ISceneArgs*)>> sceneCreators_;

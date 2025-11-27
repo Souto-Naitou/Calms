@@ -149,6 +149,7 @@ void EnemySpawner::StopPop()
     timerOverall_.Reset();
     timerPop_.Reset();
     isEnablePop_ = false;
+    popPoints_ = {};
 }
 
 void EnemySpawner::PopRandom()
@@ -200,7 +201,7 @@ void EnemySpawner::ImGui()
     ImGui::InputInt("Pop Count", reinterpret_cast<int*>(&popCount_));
     ImGui::DragFloat3("Pop Range Begin", &popRangeBegin_.x, 0.01f);
     ImGui::DragFloat3("Pop Range End", &popRangeEnd_.x, 0.01f);
-    ImGui::DragFloat3("Ignore Position", &ignorePosition_.x), 0.01f;
+    ImGui::DragFloat3("Ignore Position", &ignorePosition_.x, 0.01f);
     ImGui::DragFloat("Ignore Range", &ignoreRange_, 0.01f);
 #endif
 }

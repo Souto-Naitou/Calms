@@ -32,6 +32,7 @@ namespace Path::Image
 
     inline constexpr const char* kCountDownEndString = "common/font/start.png";
     inline constexpr const char* kSpaceText = "common/font/space.png";
+    inline constexpr const char* kClearText = "common/font/clear.png";
     inline constexpr const char* kParticleCircle = "particle/circle_256x256_white.png";
 }
 
