@@ -83,7 +83,7 @@ private:
     static constexpr inline size_t kParticleIDMax = static_cast<size_t>(ParticleID::Size);
 
 #ifdef _DEBUG
-    static constexpr inline uint32_t kGameLimitTime = 6;
+    static constexpr inline uint32_t kGameLimitTime = 3600u;
 #else
     static constexpr inline uint32_t kGameLimitTime = 60u;
 #endif // _DEBUG

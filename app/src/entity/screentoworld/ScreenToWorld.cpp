@@ -1,21 +1,20 @@
 #include "ScreenToWorld.h"
 
 #include <Core/Win32/WinSystem.h>
+#include <config/ResourcePath.h>
 
 void ScreenToWorld::Initialize()
 {
-    object_ = std::make_unique<Object3d>();
-    object_->Initialize("Cube.obj");
-    object_->SetScale(Vector3(0.3f, 0.3f, 0.3f));
-    object_->SetTranslate(Vector3(0, 0, 0));
-    object_->SetRotate(Vector3(0, 0, 0));
-
+    reticle_ = std::make_unique<Sprite>();
+    reticle_->Initialize(Path::Image::kReticle);
+    reticle_->SetSizeWithFactor(0.2f);
+    reticle_->SetAnchorPoint({ 0.5f, 0.5f });
     normal_ = Vector3(0, 1, 0);
 }
 
 void ScreenToWorld::Finalize()
 {
-    object_->Finalize();
+    reticle_->Finalize();
 }
 
 void ScreenToWorld::Update()
@@ -24,8 +23,8 @@ void ScreenToWorld::Update()
     POINT cursor = {};
     GetCursorPos(&cursor);
     ScreenToClient(WinSystem::GetInstance()->GetHwnd(), &cursor);
-    Vector3 mousePosNear = { (float)cursor.x, (float)cursor.y, 0.0f };
-    Vector3 mousePosFar = { (float)cursor.x, (float)cursor.y, 1.0f };
+    Vector3 mousePosNear    = { static_cast<float>(cursor.x), static_cast<float>(cursor.y), 0.0f };
+    Vector3 mousePosFar     = { static_cast<float>(cursor.x), static_cast<float>(cursor.y), 1.0f };
 
     Matrix4x4 vpMatrix = pGameEye_->GetViewProjectionMatrix();
 
@@ -65,16 +64,11 @@ void ScreenToWorld::Update()
     worldPoint_ = origin_ + direction_ * t;
 
     nearPos.y = 0;
-    object_->SetTranslate(worldPoint_);
-    object_->Update();
+    reticle_->SetPosition({ static_cast<float>(cursor.x), static_cast<float>(cursor.y) });
+    reticle_->Update();
 }
 
 void ScreenToWorld::Draw1F()
 {
-    object_->Draw1F();
-}
-
-void ScreenToWorld::ModifyGameEye(GameEye* _eye)
-{
-    object_->SetGameEye(_eye);
+    reticle_->Draw1F();
 }

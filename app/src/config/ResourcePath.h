@@ -5,16 +5,9 @@
 /// </summary>
 namespace Path::Image
 {
-    inline constexpr const char* kTitle = "title/title.png";
-    inline constexpr const char* kTitleSkybox = "title/skybox.v2.dds";
-    inline constexpr const char* kTitleStartPrompt = "title/start_prompt.png";
-
-    inline constexpr const char* kLoading = "load/NOWLOADING.png";
-
-    inline constexpr const char* kFrameScreen = "title/frame_screen.png";
-
-    inline constexpr const char* kNumbers[] = 
-    { 
+    /// [ 共通 ]
+    inline constexpr const char* kNumbers[] =
+    {
         "common/font/number_0.png",
         "common/font/number_1.png",
         "common/font/number_2.png",
@@ -26,14 +19,28 @@ namespace Path::Image
         "common/font/number_8.png",
         "common/font/number_9.png",
     };
-
-    inline constexpr const char* kGuideShoot = "guide/leftclick.png";
-    inline constexpr const char* kGuideSlow = "guide/shift.png";
-
     inline constexpr const char* kCountDownEndString = "common/font/start.png";
     inline constexpr const char* kSpaceText = "common/font/space.png";
     inline constexpr const char* kClearText = "common/font/clear.png";
+
+    /// [ パーティクル ]
     inline constexpr const char* kParticleCircle = "particle/circle_256x256_white.png";
+
+    /// [ タイトルシーン ]
+    inline constexpr const char* kTitle = "title/title.png";
+    inline constexpr const char* kTitleSkybox = "title/skybox.v2.dds";
+    inline constexpr const char* kTitleStartPrompt = "title/start_prompt.png";
+    inline constexpr const char* kFrameScreen = "title/frame_screen.png";
+
+    /// [ ローディング画面 ]
+    inline constexpr const char* kLoading = "load/NOWLOADING.png";
+
+    /// [ ゲームシーン ]
+    // ガイド画像
+    inline constexpr const char* kGuideShoot = "guide/leftclick.png";
+    inline constexpr const char* kGuideSlow = "guide/shift.png";
+    // レティクル
+    inline constexpr const char* kReticle = "reticle.png";
 }
 
 namespace Path::Audio
