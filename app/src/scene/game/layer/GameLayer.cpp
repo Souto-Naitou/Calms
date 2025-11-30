@@ -666,7 +666,8 @@ void GameLayer::PlayerSlowUpdate()
     Vector3 playerpos = player_->GetTranslation();
     if (gameClearAnimation_->IsPlaying())
     {
-        // Do nothing
+        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 60.0f);
+        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, 1.0f / 60.0f);
     }
     else if (player_->IsSlow())
     {
