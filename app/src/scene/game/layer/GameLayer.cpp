@@ -93,7 +93,6 @@ void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
     screenToWorld_ = std::make_unique<ScreenToWorld>();
     screenToWorld_->Initialize();
     screenToWorld_->SetGameEye(gameEye_.get());
-    canvasUI_->RegisterDrawable(screenToWorld_->GetObject3d());
 
     /// タイマー
     timer_.Start();
@@ -345,7 +344,6 @@ void GameLayer::Draw()
         {
             bullet->Draw1F();
         }
-        screenToWorld_->Draw1F();
 
         pLineSystem_->PresentDraw();
         player_->DrawLine();
@@ -367,6 +365,7 @@ void GameLayer::Draw()
         countDown_->Draw1F();
         inputGuide_->Draw1F();
         healthBar_->Draw1F();
+        screenToWorld_->Draw1F();
     }
     else
     {
@@ -402,11 +401,6 @@ void GameLayer::ImGui()
         {
             enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
         }
-    }
-
-    if (ImGui::Checkbox("Player", &isDisplayColliderPlayer_))
-    {
-        player_->SetIsDrawCollisionArea(isDisplayColliderPlayer_);
     }
 
     if (ImGui::Checkbox("PlayerBullet", &isDisplayColliderPlayerBullet_))
@@ -672,7 +666,8 @@ void GameLayer::PlayerSlowUpdate()
     Vector3 playerpos = player_->GetTranslation();
     if (gameClearAnimation_->IsPlaying())
     {
-        // Do nothing
+        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 60.0f);
+        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, 1.0f / 60.0f);
     }
     else if (player_->IsSlow())
     {
@@ -681,7 +676,8 @@ void GameLayer::PlayerSlowUpdate()
 
         gameEye_->SetTranslate(eyepos);
 
-        deltaTimeManager_->SetDeltaTime(1, 1.0f / 120.0f);
+        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 120.0f);
+        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, 1.0f / 180.0f);
     }
     else
     {
@@ -690,6 +686,7 @@ void GameLayer::PlayerSlowUpdate()
 
         gameEye_->SetTranslate(eyepos);
 
-        deltaTimeManager_->SetDeltaTime(1, 1.0f / 60.0f);
+        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 60.0f);
+        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, 1.0f / 60.0f);
     }
 }

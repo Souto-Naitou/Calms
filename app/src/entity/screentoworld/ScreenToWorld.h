@@ -3,7 +3,8 @@
 #include <Vector3.h>
 #include <Matrix4x4.h>
 #include <Features/GameEye/GameEye.h>
-#include <drawable/object3d/Object3d.h>
+#include <drawable/sprite/Sprite.h>
+#include <memory>
 
 /// <summary>
 /// スクリーン座標をワールド座標に変換してレティクルを表示するクラス
@@ -33,7 +34,6 @@ public:
 
     void SetGameEye(GameEye* _eye) { pGameEye_ = _eye; ModifyGameEye(_eye); }
     Vector3 GetWorldPoint() const { return worldPoint_; }
-    Object3d* GetObject3d() const { return object_.get(); }
 
 private:
     /// ワールド上の座標
@@ -47,7 +47,7 @@ private:
     Vector3 direction_ = {};
 
     /// カーソル
-    std::unique_ptr<Object3d> object_ = {};
+    std::unique_ptr<Sprite> reticle_ = {};
 
 private:
     /// カメラ
@@ -58,5 +58,5 @@ private:
     /// カメラ変更に伴う内部データの更新を行います。
     /// </summary>
     /// <param name="_eye">新しい GameEye。</param>
-    void ModifyGameEye(GameEye* _eye);
+    inline void ModifyGameEye(GameEye* _eye) { pGameEye_ = _eye; }
 };

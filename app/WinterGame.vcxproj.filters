@@ -94,6 +94,9 @@
     <Filter Include="Core">
       <UniqueIdentifier>{a054c6e7-0a23-441a-8a5f-995110a91dd8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\Edit">
+      <UniqueIdentifier>{08db82f0-00d8-4eed-9e66-a47a5cd82d05}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\Calms.cpp">
@@ -182,7 +185,9 @@
     <ClCompile Include="src\scene\game\layer\TitleLayer.cpp">
       <Filter>Scene\Game\layer</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\Edit\EditScene.cpp" />
+    <ClCompile Include="src\scene\Edit\EditScene.cpp">
+      <Filter>Scene\Edit</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -270,8 +275,12 @@
     <ClInclude Include="src\core\IGameLayer.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\player\PlayerContext.h" />
-    <ClInclude Include="src\scene\Edit\EditScene.h" />
+    <ClInclude Include="src\scene\Edit\EditScene.h">
+      <Filter>Scene\Edit</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\player\PlayerContext.h">
+      <Filter>Entity\Player\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

@@ -19,11 +19,11 @@ SceneFactory::SceneFactory()
 {
     // シーンの登録
     sceneCreators_["TitleScene"] = [](ISceneArgs* args) { return std::make_unique<TitleScene>(args); };
-    sceneCreators_["LoadScene"] = [](ISceneArgs* args) { return std::make_unique<LoadScene>(args); };
-    sceneCreators_["GameScene"] = [](ISceneArgs* args) { return std::make_unique<GameScene>(args); };
-    sceneCreators_["ClearScene"] = [](ISceneArgs* args) { return std::make_unique<ClearScene>(args); };
+    sceneCreators_["LoadScene"]         = [](ISceneArgs* args) { return std::make_unique<LoadScene>(args); };
+    sceneCreators_["GameScene"]         = [](ISceneArgs* args) { return std::make_unique<GameScene>(args); };
+    sceneCreators_["ClearScene"]        = [](ISceneArgs* args) { return std::make_unique<ClearScene>(args); };
     sceneCreators_["GameOverTestScene"] = [](ISceneArgs* args) { return std::make_unique<GameOverTestScene>(args); };
-    sceneCreators_["EditScene"] = [](ISceneArgs* args) { return std::make_unique<EditScene>(args); };
+    sceneCreators_["EditScene"]         = [](ISceneArgs* args) { return std::make_unique<EditScene>(args); };
 }
 
 std::unique_ptr<SceneBase> SceneFactory::CreateScene(const std::string& sceneName, ISceneArgs* pArgs)
