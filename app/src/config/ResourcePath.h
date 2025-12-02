@@ -6,6 +6,7 @@
 namespace Path::Image
 {
     /// [ 共通 ]
+    inline constexpr const char* kWhite = "white1x1.png";
     inline constexpr const char* kNumbers[] =
     {
         "common/font/number_0.png",

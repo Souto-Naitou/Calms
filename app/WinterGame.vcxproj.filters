@@ -97,6 +97,9 @@
     <Filter Include="Scene\Edit">
       <UniqueIdentifier>{08db82f0-00d8-4eed-9e66-a47a5cd82d05}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\RingGauge">
+      <UniqueIdentifier>{b7932800-956a-433d-8ea4-219e0a9ecaa3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\Calms.cpp">
@@ -188,6 +191,7 @@
     <ClCompile Include="src\scene\Edit\EditScene.cpp">
       <Filter>Scene\Edit</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\gauge\RingGauge.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -281,6 +285,7 @@
     <ClInclude Include="src\entity\player\PlayerContext.h">
       <Filter>Entity\Player\Component</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\gauge\RingGauge.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

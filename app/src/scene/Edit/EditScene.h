@@ -13,6 +13,8 @@
 #include <DebugTools/DebugEntry/DebugEntry.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Common/structs.h>
+#include <Features/Primitive/RingModel.h>
+#include <ui/gauge/RingGauge.h>
 
 class EditScene : public SceneBase
 {
@@ -41,6 +43,7 @@ private:
     void InitializeCanvas();
     void InitializeParticle();
     void InitializeEnemy();
+    void InitializeObject3d();
 
     void EnemyUpdate();
     void KillEnemy();
@@ -52,6 +55,7 @@ private:
     std::unique_ptr<Canvas>                 pCanvasGrid_        = nullptr;
     std::unique_ptr<Canvas>                 pCanvasParticle_    = nullptr;
     std::unique_ptr<Object3d>               pGrid_              = nullptr;
+    std::unique_ptr<RingGauge>              pRing_              = nullptr;
     std::unique_ptr<GameEye>                pGameEye_           = nullptr;
     std::unique_ptr<ParticleEmitter>        pParticleEmitter_   = nullptr;
     std::unique_ptr<Enemy>                  pEnemy_             = nullptr;
@@ -59,7 +63,7 @@ private:
 
     bool                                    isKillEnemy_        = false;
 
-
+    DirectX12*      pDx12_              = nullptr;
     TextureManager* pTextureManager_    = nullptr;
     ModelManager*   pModelManager_      = nullptr;
     Particle*       pParticleCircle_    = nullptr;
