@@ -180,6 +180,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\Entity\Status\EntityStats.cpp" />
     <ClCompile Include="src\logic\event\EventListener.cpp" />
     <ClCompile Include="src\logic\timer\InGameTimer.cpp" />
+    <ClCompile Include="src\ui\gauge\RingGauge.cpp" />
     <ClCompile Include="src\ui\guide\InputGuide.cpp" />
     <ClCompile Include="src\logic\spawner\EnemySpawner.cpp" />
     <ClCompile Include="src\main.cpp">
@@ -222,6 +223,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\Entity\Status\EntityStats.h" />
     <ClInclude Include="src\logic\event\EventListener.h" />
     <ClInclude Include="src\logic\timer\InGameTimer.h" />
+    <ClInclude Include="src\ui\gauge\RingGauge.h" />
     <ClInclude Include="src\ui\guide\InputGuide.h" />
     <ClInclude Include="src\logic\spawner\EnemySpawner.h" />
     <ClInclude Include="src\scene\Clear\ClearScene.h" />

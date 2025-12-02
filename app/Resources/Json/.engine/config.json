@@ -2,7 +2,7 @@
     "settings": {
         "common": {
             "window_title": "LE3B_20_ナイトウ_ソウト",
-            "start_scene" : "TitleScene",
+            "start_scene" : "EditScene",
             "screen_width": 1600,
             "screen_height": 900
         },

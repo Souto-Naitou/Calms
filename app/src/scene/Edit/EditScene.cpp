@@ -6,11 +6,13 @@
 #include <Features/GameEye/FreeLook/FreeLookEye.h>
 #include <drawable/sprite/SpriteSystem.h>
 #include <drawable/object3d/Object3dSystem.h>
+#include <Features/Primitive/RingModel.h>
 
 
 void EditScene::Initialize()
 {
     /// [ インスタンスの取得 ]
+    pDx12_ = std::any_cast<DirectX12*>(pArgs_->Get("DirectX12"));
     pTextureManager_ = TextureManager::GetInstance();
     pModelManager_ = std::any_cast<ModelManager*>(pArgs_->Get("ModelManager"));
 
@@ -39,11 +41,8 @@ void EditScene::Initialize()
     pParticleEmitter_->Initialize(emitterParams);
     pParticleEmitter_->SetEnableBillboard(true);
 
-    /// [ グリッドの初期化 ]
-    pGrid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
-    pGrid_->GetOption().lightingData->enableLighting = true;
-    pGrid_->SetDirectionalLight(&directionalLight_);
-    pGrid_->GetOption().tilingData->tilingMultiply = Vector2(10.0f, 10.0f);
+    /// [ 3dオブジェクトの初期化 ]
+    this->InitializeObject3d();
 
     /// [ 平行光源の初期化 ]
     directionalLight_.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
@@ -76,6 +75,7 @@ void EditScene::Update()
 {
     pGameEye_->Update();
     pGrid_->Update();
+    pRing_->Update();
     pParticleEmitter_->Update();
 
     /// 敵が死んだら再生成
@@ -86,6 +86,7 @@ void EditScene::Draw()
 {
     CanvasScope canvasScopeGrid(pCanvasGrid_.get());
     pGrid_->Draw1F();
+    pRing_->Draw1F();
     if (pEnemy_) pEnemy_->Draw1F();
 
     CanvasScope canvasScopeParticle(pCanvasParticle_.get());
@@ -153,6 +154,32 @@ void EditScene::InitializeEnemy()
 
     pEnemy_ = std::make_unique<Enemy>(params);
     pEnemy_->Initialize({&directionalLight_, nullptr});
+}
+
+void EditScene::InitializeObject3d()
+{
+    pGrid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
+    pGrid_->GetOption().lightingData->enableLighting = true;
+    pGrid_->SetDirectionalLight(&directionalLight_);
+    pGrid_->GetOption().tilingData->tilingMultiply = Vector2(10.0f, 10.0f);
+
+    RingModel::Params ringParams = {};
+    ringParams.pDx12 = pDx12_;
+    ringParams.radiusOuter = 1.0f;
+    ringParams.radiusInner = 0.9f;
+    ringParams.textureFilePath = Path::Image::kWhite;
+
+    RingGauge::Params gaugeParams   = {};
+    gaugeParams.backgroundParams    = ringParams;
+    gaugeParams.fillParams          = ringParams;
+    gaugeParams.colorBackground     = RGBA(0x404040ff);
+    gaugeParams.colorFill           = RGBA(0xffffffff);
+    gaugeParams.lerpFactor          = 0.1f;
+    gaugeParams.valueInit           = 1.0f;
+
+    pRing_ = std::make_unique<RingGauge>();
+    pRing_->Initialize(gaugeParams);
+    pRing_->SetPosition(Vector3(0.0f, 5.0f, 0.0f));
 }
 
 void EditScene::EnemyUpdate()
