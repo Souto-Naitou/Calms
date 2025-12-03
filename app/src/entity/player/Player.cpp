@@ -23,12 +23,7 @@ void Player::Initialize(const EntityCommonParams& params, bool enableDebugWindow
     audioManager_ = AudioManager::GetInstance();
 
     /// [ コンポーネントの初期化 ]
-    // 入力
-    pInput_ = std::make_unique<PlayerInput>();
-    pInput_->Initialize();
-    // 移動
-    pMovement_ = std::make_unique<PlayerMovement>();
-    pMovement_->Initialize(pInput_.get(), &transform_);
+    this->ComponentInitialize();
 
     /// [ タイマーの初期化 ]
     timerShot_ = std::make_unique<TimeMeasurer>();
@@ -200,6 +195,19 @@ void Player::AudioHandleInitialize()
     audioSlowOn_->SetVolume(0.1f);
     audioSlowOff_ = audioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerSlowOff);
     audioSlowOff_->SetVolume(0.1f);
+}
+
+void Player::ComponentInitialize()
+{
+    // 入力
+    pInput_ = std::make_unique<PlayerInput>();
+    pInput_->Initialize();
+    // 移動
+    pMovement_ = std::make_unique<PlayerMovement>();
+    pMovement_->Initialize(pInput_.get(), &transform_);
+    // 爆発トリガー
+    pExplosionTrigger_ = std::make_unique<PlayerExplosionTrigger>();
+    pExplosionTrigger_->Initialize();
 }
 
 void Player::ImGui()

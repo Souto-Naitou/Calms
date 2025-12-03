@@ -29,6 +29,7 @@ public:
     void Draw1F();
     void ImGui();
     void SetPosition(const Vector3& pos);
+    void SetName(const std::string& name);
 
 private:
     void InitializeModels();

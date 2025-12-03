@@ -14,6 +14,7 @@
 #include <Features/Model/IModel.h>
 #include "PlayerInput.h"
 #include "PlayerMovement.h"
+#include "PlayerExplosionTrigger.h"
 
 
 /// <summary>
@@ -120,15 +121,19 @@ private:
     /// </summary>
     void AudioHandleInitialize();
 
+    void ComponentInitialize();
+
     // 初期化パラメータ
     Params                          params_;
     uint32_t                        flags_      = static_cast<uint32_t>(Flags::None);
 
-    std::unique_ptr<PlayerInput>    pInput_         = nullptr;
-    std::unique_ptr<PlayerMovement> pMovement_      = nullptr;
-    std::unique_ptr<TimeMeasurer>   timerShot_      = {};
-    std::unique_ptr<IModel>         pModelSelfBody_ = nullptr;
-    std::unique_ptr<Object3d>       object_         = {};
+    std::unique_ptr<PlayerInput>            pInput_             = nullptr;
+    std::unique_ptr<PlayerMovement>         pMovement_          = nullptr;
+    std::unique_ptr<PlayerExplosionTrigger> pExplosionTrigger_  = nullptr;
+
+    std::unique_ptr<TimeMeasurer>           timerShot_          = {};
+    std::unique_ptr<IModel>                 pModelSelfBody_     = nullptr;
+    std::unique_ptr<Object3d>               object_             = {};
 
     float movePower_ = 0.0f;
     float shotInterval_ = 0.05f;

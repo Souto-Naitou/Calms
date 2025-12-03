@@ -161,6 +161,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\entity\player\GameOverAnimation.cpp" />
+    <ClCompile Include="src\entity\player\PlayerExplosionTrigger.cpp" />
     <ClCompile Include="src\entity\player\PlayerInput.cpp" />
     <ClCompile Include="src\entity\player\PlayerMovement.cpp" />
     <ClCompile Include="src\scene\Edit\EditScene.cpp" />
@@ -178,7 +179,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\Entity\Player\Player.cpp" />
     <ClCompile Include="src\Entity\ScreenToWorld\ScreenToWorld.cpp" />
     <ClCompile Include="src\Entity\Status\EntityStats.cpp" />
-    <ClCompile Include="src\logic\event\EventListener.cpp" />
     <ClCompile Include="src\logic\timer\InGameTimer.cpp" />
     <ClCompile Include="src\ui\gauge\RingGauge.cpp" />
     <ClCompile Include="src\ui\guide\InputGuide.cpp" />
@@ -205,8 +205,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\core\IGameLayer.h" />
     <ClInclude Include="src\entity\player\GameOverAnimation.h" />
     <ClInclude Include="src\entity\player\PlayerContext.h" />
+    <ClInclude Include="src\entity\player\PlayerExplosionTrigger.h" />
     <ClInclude Include="src\entity\player\PlayerInput.h" />
     <ClInclude Include="src\entity\player\PlayerMovement.h" />
+    <ClInclude Include="src\logic\event\KillEnemyEvent.h" />
     <ClInclude Include="src\scene\Edit\EditScene.h" />
     <ClInclude Include="src\scene\GameOverTest\GameOverTestScene.h" />
     <ClInclude Include="src\scene\game\animation\GameClearAnimation.h" />
@@ -221,7 +223,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\Entity\Player\Player.h" />
     <ClInclude Include="src\Entity\ScreenToWorld\ScreenToWorld.h" />
     <ClInclude Include="src\Entity\Status\EntityStats.h" />
-    <ClInclude Include="src\logic\event\EventListener.h" />
     <ClInclude Include="src\logic\timer\InGameTimer.h" />
     <ClInclude Include="src\ui\gauge\RingGauge.h" />
     <ClInclude Include="src\ui\guide\InputGuide.h" />

@@ -115,9 +115,6 @@
     <ClCompile Include="src\scene\game\GameScene.cpp">
       <Filter>Scene\Game</Filter>
     </ClCompile>
-    <ClCompile Include="src\logic\event\EventListener.cpp">
-      <Filter>Logic\Event</Filter>
-    </ClCompile>
     <ClCompile Include="src\ui\CountDown\CountDown.cpp">
       <Filter>UI\CountDown</Filter>
     </ClCompile>
@@ -191,7 +188,10 @@
     <ClCompile Include="src\scene\Edit\EditScene.cpp">
       <Filter>Scene\Edit</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\gauge\RingGauge.cpp" />
+    <ClCompile Include="src\ui\gauge\RingGauge.cpp">
+      <Filter>UI\RingGauge</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\player\PlayerExplosionTrigger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -205,9 +205,6 @@
     </ClInclude>
     <ClInclude Include="src\scene\game\GameScene.h">
       <Filter>Scene\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\logic\event\EventListener.h">
-      <Filter>Logic\Event</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\CountDown\CountDown.h">
       <Filter>UI\CountDown</Filter>
@@ -285,7 +282,11 @@
     <ClInclude Include="src\entity\player\PlayerContext.h">
       <Filter>Entity\Player\Component</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\gauge\RingGauge.h" />
+    <ClInclude Include="src\ui\gauge\RingGauge.h">
+      <Filter>UI\RingGauge</Filter>
+    </ClInclude>
+    <ClInclude Include="src\logic\event\KillEnemyEvent.h" />
+    <ClInclude Include="src\entity\player\PlayerExplosionTrigger.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">
