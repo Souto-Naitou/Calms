@@ -90,6 +90,7 @@ void Player::Update()
     }
     emitterConstant_->Update();
 
+    pExplosionTrigger_->Update();
 
     /// 3dモデルの更新
     object_->SetTranslate(transform_.translate);
@@ -215,6 +216,8 @@ void Player::ImGui()
 #ifdef _DEBUG
     EntityBase::ImGui();
     ImGui::DragFloat("MovePower", &movePower_, 0.12f);
+
+    pExplosionTrigger_->ImGui();
 #endif
 }
 
