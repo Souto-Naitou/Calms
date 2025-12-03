@@ -121,6 +121,8 @@ private:
     /// </summary>
     void AudioHandleInitialize();
 
+    void ComponentInitialize();
+
     // 初期化パラメータ
     Params                          params_;
     uint32_t                        flags_      = static_cast<uint32_t>(Flags::None);
