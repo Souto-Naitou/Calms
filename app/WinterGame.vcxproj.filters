@@ -287,6 +287,7 @@
     </ClInclude>
     <ClInclude Include="src\logic\event\KillEnemyEvent.h" />
     <ClInclude Include="src\entity\player\PlayerExplosionTrigger.h" />
+    <ClInclude Include="src\logic\event\PlayerExplosionEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

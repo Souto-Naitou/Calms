@@ -208,7 +208,7 @@ void Player::ComponentInitialize()
     pMovement_->Initialize(pInput_.get(), &transform_);
     // 爆発トリガー
     pExplosionTrigger_ = std::make_unique<PlayerExplosionTrigger>();
-    pExplosionTrigger_->Initialize();
+    pExplosionTrigger_->Initialize(pInput_.get());
 }
 
 void Player::ImGui()
