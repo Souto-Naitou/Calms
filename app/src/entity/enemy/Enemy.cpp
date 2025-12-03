@@ -3,6 +3,8 @@
 #include <imgui.h>
 #include <Utility/Debug/dbgutl.h>
 #include <config/ResourcePath.h>
+#include <Features/Event/EventListener.h>
+#include <logic/event/KillEnemyEvent.h>
 
 Enemy::Enemy(const Params& params)
 {
@@ -235,6 +237,7 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
         {
             isAlive_ = false;
             audioDeath_->Play();
+            EventListener::GetInstance()->Publish(KillEnemyEvent());
         }
 
         /// ヒットパーティクルの再生

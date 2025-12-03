@@ -9,6 +9,7 @@ void RingGauge::Initialize(const Params& params)
     pDebugEntry_ = std::make_unique<DebugEntry<RingGauge>>("UI", "RingGauge", this);
     params_ = params;
     currentValue_ = params_.valueInit;
+    targetValue_ = params_.valueInit;
     this->InitializeModels();
     this->InitializeObjects();
 }
@@ -21,11 +22,13 @@ void RingGauge::Finalize()
 
 void RingGauge::Update()
 {
+    /// 値から角度を計算してリングモデルに反映
     currentValue_ = std::clamp(currentValue_, 0.0f, 1.0f);
+    currentValue_ = std::lerp(currentValue_, targetValue_, params_.lerpFactor);
+
     const float angleStart = params_.fillParams.radAngleStart;
     const float angleEnd = params_.fillParams.radAngleEnd;
     const float angleEndNew = std::lerp(angleStart, angleEnd, currentValue_);
-
     modelRingFill_->SetAngleRange(Range(angleStart, angleEndNew));
 
     objectRingBackground_->Update();
@@ -40,7 +43,10 @@ void RingGauge::Draw1F()
 
 void RingGauge::ImGui()
 {
-    ImGui::DragFloat("Current Value", & currentValue_, 0.01f, 0.0f, 1.0f);
+    #ifdef _DEBUG
+
+    ImGui::SliderFloat("Target Value", &targetValue_, 0.0f, 1.0f);
+    ImGui::SliderFloat("Current Value", & currentValue_, 0.0f, 1.0f);
     float angleStart = params_.backgroundParams.radAngleStart;
     if (ImGui::SliderAngle("StartAngle", &angleStart, 0.01f))
     {
@@ -57,6 +63,8 @@ void RingGauge::ImGui()
         modelRingBackground_->SetAngleRange(Range<float>(params_.backgroundParams.radAngleStart, angleEnd));
         modelRingFill_->SetAngleRange(Range<float>(params_.fillParams.radAngleStart, angleEnd));
     }
+
+    #endif
 }
 
 void RingGauge::SetPosition(const Vector3& pos)
@@ -65,6 +73,13 @@ void RingGauge::SetPosition(const Vector3& pos)
     objectRingBackground_->SetTranslate(position_);
     position_.y += 0.01f;
     objectRingFill_->SetTranslate(position_);
+}
+
+void RingGauge::SetName(const std::string& name)
+{
+    if (pDebugEntry_) pDebugEntry_->SetName(name);
+    modelRingBackground_->SetName(name + "_Background");
+    modelRingFill_->SetName(name + "_Fill");
 }
 
 void RingGauge::InitializeModels()
