@@ -42,6 +42,8 @@ namespace Path::Image
     inline constexpr const char* kGuideSlow = "guide/shift.png";
     // レティクル
     inline constexpr const char* kReticle = "reticle.png";
+    // 爆発エンティティ
+    inline constexpr const char* kExplosionRing = "game/player_explosion.png";
 }
 
 namespace Path::Audio

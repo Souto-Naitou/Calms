@@ -58,8 +58,6 @@ void Player::Finalize()
 {
     object_->Finalize();
     emitterConstant_->Finalize();
-    
-    EntityBase::Finalize();
 }
 
 void Player::Update()

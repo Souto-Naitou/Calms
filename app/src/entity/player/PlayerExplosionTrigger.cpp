@@ -70,7 +70,7 @@ void PlayerExplosionTrigger::UpdateTriggerIf()
     if (!pInput_) return;
     
     bool doExplosion = pInput_->GetData().isExplosionTriggered;
-    doExplosion &= (currentScore_ >= targetTriggerScore_);
+    //doExplosion &= (currentScore_ >= targetTriggerScore_);
 
     if (doExplosion)
     {

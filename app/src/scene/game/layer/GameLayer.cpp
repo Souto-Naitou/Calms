@@ -7,6 +7,7 @@
 #include <Effects/SceneTransition/TransFadeInOut.h>
 #include <Effects/SceneTransition/TransShutter.h>
 #include <Features/Layer/CanvasScope.h>
+#include <Features/event/EventListener.h>
 #include <Presets/Object3d/Grid/Preset_Grid.h>
 #include <drawable/sprite/SpriteSystem.h>
 #include <imgui.h>
@@ -18,6 +19,7 @@
 void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
 {
     /// インスタンスの取得
+    pDx12_ = std::any_cast<DirectX12*>(pArgs->Get("DirectX12"));
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
     randomGenerator_ = RandomGenerator::GetInstance();
     pTextureManager_ = TextureManager::GetInstance();
@@ -167,6 +169,11 @@ void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
     gcaParams.pSpriteSpace = spriteSpace_.get();
     gameClearAnimation_ = std::make_unique<GameClearAnimation>();
     gameClearAnimation_->Initialize(gcaParams);
+
+    /// イベント登録
+    playerExplosionSub_ = EventListener::GetInstance()->Subscribe<PlayerExplosionEvent>(
+        std::bind(&GameLayer::AddPlayerExplosion, this, std::placeholders::_1)
+    );
 }
 
 void GameLayer::Finalize()
@@ -258,7 +265,7 @@ void GameLayer::Update()
     /// プレイヤー弾の生成
     if (player_->IsShot())
     {
-        CreatePlayerBullet();
+        AddPlayerBullet();
     }
 
     /// プレイヤー弾の更新
@@ -322,6 +329,8 @@ void GameLayer::Update()
     healthBar_->SetCurrentValue(playerStats->GetHp());
     healthBar_->Update();
 
+    UpdatePlayerExplosion();
+
     /// ラインの更新
     lines_->Update();
 }
@@ -356,6 +365,10 @@ void GameLayer::Draw()
             bullet->DrawLine();
         }
         enemyPopSystem_.DrawArea();
+        for (auto& explosion : playerExplosions_)
+        {
+            explosion->Draw1F();
+        }
     }
 
     CanvasScope uiCanvasScope(canvasUI_.get());
@@ -425,12 +438,11 @@ void GameLayer::ImGui()
 
 void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
 {
-    auto pDx12 = std::any_cast<DirectX12*>(pArgs->Get("DirectX12"));
     auto pCubemapSystem = std::any_cast<CubemapSystem*>(pArgs->Get("CubemapSystem"));
 
     /// キャンバス共通パラメータ
     Canvas::Params canvasParams = {};
-    canvasParams.pDx12 = pDx12;
+    canvasParams.pDx12 = pDx12_;
     canvasParams.pCubemapSystem = pCubemapSystem;
     #ifdef _DEBUG
     canvasParams.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs->Get("ImGuiManager"));
@@ -571,7 +583,7 @@ void GameLayer::ParticlesInitialize()
     }
 }
 
-void GameLayer::CreatePlayerBullet()
+void GameLayer::AddPlayerBullet()
 {
     Vector3 direction = screenToWorld_->GetWorldPoint() - player_->GetTranslation();
 
@@ -631,6 +643,35 @@ void GameLayer::KillAllEnemies()
         enemy->Finalize();
     }
     enemies_.clear();
+}
+
+void GameLayer::AddPlayerExplosion(const PlayerExplosionEvent&)
+{
+    PlayerExplosion::Params explosionParams = {};
+    explosionParams.pDx12 = pDx12_;
+    auto explosion = std::make_unique<PlayerExplosion>(explosionParams);
+    explosion->Initialize(entityCommonParams_, false);
+    explosion->SetTranslation(player_->GetTranslation());
+    playerExplosions_.emplace_back(std::move(explosion));
+}
+
+void GameLayer::UpdatePlayerExplosion()
+{
+    for (auto& explosion : playerExplosions_)
+    {
+        explosion->SetTranslation(player_->GetTranslation());
+        explosion->Update();
+    }
+
+    playerExplosions_.erase(std::remove_if(playerExplosions_.begin(), playerExplosions_.end(), [&](auto& e)
+    {
+        bool isFinished = !e->IsAlive();
+        if (isFinished)
+        {
+            e->Finalize();
+        }
+        return isFinished;
+    }), playerExplosions_.end());
 }
 
 void GameLayer::CreateEnemy()
