@@ -4,9 +4,11 @@
 #include <functional>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <imgui.h>
+#include <logic/event/PlayerExplosionEvent.h>
 
-void PlayerExplosionTrigger::Initialize()
+void PlayerExplosionTrigger::Initialize(PlayerInput* pInput)
 {
+    pInput_ = pInput;
     subscription_ = EventListener::GetInstance()->Subscribe<KillEnemyEvent>(
         std::bind(
             &PlayerExplosionTrigger::OnKillEnemyEvent,
@@ -24,8 +26,10 @@ void PlayerExplosionTrigger::Update()
 
     if (decreaseTimer_->GetNow<float>() > kDecreaseBeginTime)
     {
-        DecreaseScore();
+        this->DecreaseScore();
     }
+
+    this->UpdateTriggerIf();
 }
 
 void PlayerExplosionTrigger::ImGui()
@@ -59,4 +63,20 @@ void PlayerExplosionTrigger::DecreaseScore()
     float dt = DeltaTimeManager::GetInstance()->GetDeltaTime(channel);
     currentScore_ -= kDecreasePerSec * dt;
     if (currentScore_ < 0.0f) currentScore_ = 0.0f;
+}
+
+void PlayerExplosionTrigger::UpdateTriggerIf()
+{
+    if (!pInput_) return;
+    
+    bool doExplosion = pInput_->GetData().isExplosionTriggered;
+    doExplosion &= (currentScore_ >= targetTriggerScore_);
+
+    if (doExplosion)
+    {
+        // トリガー発動
+        currentScore_ = 0.0f;
+        decreaseTimer_->Reset();
+        EventListener::GetInstance()->Publish(PlayerExplosionEvent{});
+    }
 }

@@ -27,4 +27,7 @@ void PlayerInput::Update()
     data_.isSlowPressed = pInput_->PushKey(DIK_LSHIFT);
     // スロー(リリース)
     data_.isSlowReleased = preData.isSlowPressed && !data_.isSlowPressed;
+    // 爆発トリガー
+    data_.isExplosionTriggered |= pInput_->TriggerKey(DIK_SPACE);
+    data_.isExplosionTriggered |= pInput_->TriggerMouse(Input::MouseNum::Right);
 }

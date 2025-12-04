@@ -209,6 +209,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\entity\player\PlayerInput.h" />
     <ClInclude Include="src\entity\player\PlayerMovement.h" />
     <ClInclude Include="src\logic\event\KillEnemyEvent.h" />
+    <ClInclude Include="src\logic\event\PlayerExplosionEvent.h" />
     <ClInclude Include="src\scene\Edit\EditScene.h" />
     <ClInclude Include="src\scene\GameOverTest\GameOverTestScene.h" />
     <ClInclude Include="src\scene\game\animation\GameClearAnimation.h" />
