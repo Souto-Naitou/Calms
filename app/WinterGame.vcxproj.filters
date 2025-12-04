@@ -192,6 +192,7 @@
       <Filter>UI\RingGauge</Filter>
     </ClCompile>
     <ClCompile Include="src\entity\player\PlayerExplosionTrigger.cpp" />
+    <ClCompile Include="src\entity\explosion\PlayerExplosion.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -288,6 +289,7 @@
     <ClInclude Include="src\logic\event\KillEnemyEvent.h" />
     <ClInclude Include="src\entity\player\PlayerExplosionTrigger.h" />
     <ClInclude Include="src\logic\event\PlayerExplosionEvent.h" />
+    <ClInclude Include="src\entity\explosion\PlayerExplosion.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

@@ -79,8 +79,6 @@ void Enemy::Finalize()
             commonParams_.pDirLight->intensity = 8.0f;
         }
     }
-
-    EntityBase::Finalize();
 }
 
 void Enemy::Update()
@@ -227,10 +225,12 @@ void Enemy::OnCollision(const Collider* _other)
 
 void Enemy::OnCollisionTrigger(const Collider* _other)
 {
-    if (_other->GetColliderID() == "playerBullet")
+    Logger::GetInstance()->LogInfo(__FILE__, __FUNCTION__, "Enemy hit by " + _other->GetColliderID());
+    bool isCollide = _other->GetColliderID() == "playerBullet";
+    isCollide |= _other->GetColliderID() == "PlayerExplosion";
+    if (isCollide)
     {
         const EntityBase* otherOwner = _other->GetOwner<EntityBase>();
-
         stats_.OnCollision(otherOwner->GetStats());
         
         if (stats_.GetHp() <= 0) 

@@ -21,7 +21,7 @@ private:
     void DecreaseScore();
     void UpdateTriggerIf();
 
-    static constexpr float kScorePerEnemy = 5.0f;
+    static constexpr float kScorePerEnemy = 20.0f;
     static constexpr float kDecreaseBeginTime = 1.0f;
     static constexpr float kDecreasePerSec = 20.0f; // 20 points per second
 

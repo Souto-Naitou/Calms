@@ -36,7 +36,7 @@ public:
     /// エンティティの終了処理を行います。
     /// リソースの解放などを想定しています。
     /// </summary>
-    virtual void Finalize() {};
+    virtual void Finalize() = 0;
 
     /// <summary>
     /// エンティティの状態更新を行います。
@@ -48,12 +48,6 @@ public:
     /// エンティティの描画処理を行います。
     /// </summary>
     virtual void Draw1F() = 0;
-
-    /// <summary>
-    /// ライン等の補助的な描画処理を行います。
-    /// デバッグ用のワイヤー表示などを想定しています。
-    /// </summary>
-    virtual void DrawLine() = 0;
 
     /// <summary>
     /// ImGui を用いたデバッグUIの描画を行います。

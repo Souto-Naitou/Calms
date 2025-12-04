@@ -55,7 +55,7 @@ public:
     /// <summary>
     /// 敵のライン等の補助描画を行います。
     /// </summary>
-    void DrawLine() override;
+    void DrawLine();
 
     /// <summary>
     /// ImGuiを用いたデバッグUIの描画を行います。

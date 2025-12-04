@@ -42,8 +42,6 @@ void PlayerBullet::Finalize()
     params_.particleData->colorRange = {};
 
     collisionManager_->DeleteCollider(collider_.get());
-
-    EntityBase::Finalize();
 }
 
 

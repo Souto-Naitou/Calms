@@ -58,7 +58,7 @@ public:
     /// <summary>
     /// ライン等の補助描画を行います。
     /// </summary>
-    void DrawLine() override;
+    void DrawLine();
 
     /// <summary>
     /// ImGui を用いたデバッグUIの描画を行います。
