@@ -43,7 +43,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
 
     /// ゲームアイの初期化
     gameEye_ = std::make_unique<GameEye>();
-    gameEye_->SetTranslate(Vector3(0, 65.0f, 0));
+    gameEye_->SetTranslate(Vector3(0, kGameEyeHeightDefault, 0));
     gameEye_->SetRotate(Vector3(1.57f, 0, 0));
     gameEye_->SetName("main");
 
@@ -77,6 +77,9 @@ void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
     playerParams.pModelManager = pModelManager_;
     player_ = std::make_unique<Player>(playerParams);
     player_->Initialize(entityCommonParams_);
+
+    playerUI3d_ = std::make_unique<PlayerUI3d>();
+    playerUI3d_->Initialize(player_.get(), pDx12_);
 
     /// 敵生成システムの初期化
     enemyPopSystem_.Initialize();
@@ -141,14 +144,6 @@ void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
     spriteSpace_->SetPosition({ WinSystem::clientWidth / 4.0f, WinSystem::clientHeight / 1.6f });
     spriteSpace_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
 
-    /// 体力バーの初期化
-    Bar2dInitParams healthBarParams = {};
-    healthBarParams.barSize = Vector2(300.0f, 10.0f);
-    healthBar_ = std::make_unique<Bar2d>();
-    healthBar_->Initialize(healthBarParams);
-    healthBar_->SetAnchorPoint({ 0.5f, 0.5f });
-    healthBar_->SetPosition(Vector2(WinSystem::clientWidth / 2.0f, WinSystem::clientHeight - WinSystem::clientHeight / 9.0f));
-
     titleTimer_.Start();
 
     /// ゲームオーバーアニメーションの初期化
@@ -193,7 +188,7 @@ void GameLayer::Finalize()
     }
 
     CollisionManager::GetInstance()->ClearCollider();
-
+    playerUI3d_->Finalize();
     enemyPopSystem_.Finalize();
     countDown_->Finalize();
     screenToWorld_->Finalize();
@@ -205,11 +200,13 @@ void GameLayer::Finalize()
     canvas3dObject_->Finalize();
     canvasParticle_->Finalize();
     canvasUI_->Finalize();
+    canvasUIEffected_->Finalize();
     canvasOverall_->Finalize();
     pLayer_->RemoveCanvas(canvasGrid_.get());
     pLayer_->RemoveCanvas(canvas3dObject_.get());
     pLayer_->RemoveCanvas(canvasParticle_.get());
     pLayer_->RemoveCanvas(canvasUI_.get());
+    pLayer_->RemoveCanvas(canvasUIEffected_.get());
     pLayer_->RemoveCanvas(canvasOverall_.get());
 }
 
@@ -229,7 +226,8 @@ void GameLayer::Update()
         directionalLight_.intensity = Math::Lerp(directionalLight_.intensity, kDirectionalLightTargetIntensity, 0.0125f);
     }
     player_->Update();
-
+    playerUI3d_->SetPosition(player_->GetTranslation());
+    playerUI3d_->Update();
     bool isPlayerDead = !player_->IsAlive() && !gameOverAnimation_->IsPlaying();
     bool isClear = gameTimer_->IsEnd() && !gameClearAnimation_->IsPlaying();
     if (isPlayerDead) gameOverAnimation_->Play();
@@ -323,12 +321,6 @@ void GameLayer::Update()
     /// インプットガイドの更新
     inputGuide_->Update();
 
-    auto playerStats = static_cast<const EntityStats*>(player_->GetStats());
-
-    healthBar_->SetMaxValue(playerStats->GetMaxHp());
-    healthBar_->SetCurrentValue(playerStats->GetHp());
-    healthBar_->Update();
-
     UpdatePlayerExplosion();
 
     /// ラインの更新
@@ -377,13 +369,20 @@ void GameLayer::Draw()
         gameTimer_->Draw1F();
         countDown_->Draw1F();
         inputGuide_->Draw1F();
-        healthBar_->Draw1F();
         screenToWorld_->Draw1F();
     }
     else
     {
         spriteClear_->Draw1F();
         spriteSpace_->Draw1F();
+    }
+
+    CanvasScope uiEffectedCanvasScope(canvasUIEffected_.get());
+    {
+        if (!isEnding_)
+        {
+            playerUI3d_->Draw1F();
+        }
     }
 
     CanvasScope particleCanvasScope(canvasParticle_.get());
@@ -401,6 +400,7 @@ void GameLayer::Draw()
         canvas3dObject_->Draw1F();
         canvasParticle_->Draw1F();
         canvasUI_->Draw1F();
+        canvasUIEffected_->Draw1F();
     }
 }
 
@@ -515,6 +515,30 @@ void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
         canvasUI_->Initialize(canvasParams);
         canvasUI_->SetEnableManualDraw(true);
         pLayer_->AddCanvas(canvasUI_.get());
+    }
+
+    /// UI用キャンバス(エフェクトあり)
+    {
+        canvasParams.name = "UI_Effected_Canvas";
+        canvasUIEffected_ = std::make_unique<Canvas>();
+        canvasUIEffected_->Initialize(canvasParams);
+        canvasUIEffected_->SetEnableManualDraw(true);
+        IPostEffect* effect = nullptr;
+
+        effect = canvasUIEffected_->GetPostEffectExecuter().AddEffect(PostEffectClassName::GaussianBloom);
+        {
+            auto bloom = static_cast<GaussianBloom*>(effect);
+            auto& optionBloom = bloom->GetOption();
+            auto& optionLuminance = bloom->GetLuminanceOutputFilter()->GetOption();
+            auto& optionGaussian = bloom->GetSeparatedGaussianFilter()->GetOption();
+            optionLuminance.threshold = 0.251f;
+            optionGaussian.kernelSize = 21;
+            optionBloom.bloomIntensity = 1.0f;
+            bloom->GetSeparatedGaussianFilter()->SetSigma(27.0f);
+            bloom->Enable(true);
+        }
+
+        pLayer_->AddCanvas(canvasUIEffected_.get());
     }
 
     /// 全体用キャンバス
@@ -713,7 +737,7 @@ void GameLayer::PlayerSlowUpdate()
     else if (player_->IsSlow())
     {
         Vector3 eyepos = gameEye_->GetTransform().translate;
-        eyepos.Lerp(eyepos, Vector3(playerpos.x, 30.0f, playerpos.z), 0.1f);
+        eyepos.Lerp(eyepos, Vector3(playerpos.x, kGameEyeHeightDuringSlow, playerpos.z), 0.1f);
 
         gameEye_->SetTranslate(eyepos);
 
@@ -723,7 +747,7 @@ void GameLayer::PlayerSlowUpdate()
     else
     {
         Vector3 eyepos = gameEye_->GetTransform().translate;
-        eyepos.Lerp(eyepos, Vector3(playerpos.x, 50.0f, playerpos.z), 0.1f);
+        eyepos.Lerp(eyepos, Vector3(playerpos.x, kGameEyeHeightDefault, playerpos.z), 0.1f);
 
         gameEye_->SetTranslate(eyepos);
 

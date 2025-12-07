@@ -193,6 +193,8 @@
     </ClCompile>
     <ClCompile Include="src\entity\player\PlayerExplosionTrigger.cpp" />
     <ClCompile Include="src\entity\explosion\PlayerExplosion.cpp" />
+    <ClCompile Include="src\entity\player\PlayerContext.cpp" />
+    <ClCompile Include="src\ui\PlayerUI3d.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -290,6 +292,7 @@
     <ClInclude Include="src\entity\player\PlayerExplosionTrigger.h" />
     <ClInclude Include="src\logic\event\PlayerExplosionEvent.h" />
     <ClInclude Include="src\entity\explosion\PlayerExplosion.h" />
+    <ClInclude Include="src\ui\PlayerUI3d.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

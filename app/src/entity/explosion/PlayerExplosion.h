@@ -41,7 +41,7 @@ private:
 
     static constexpr uint32_t kDeltaTimeChannelNum = static_cast<uint32_t>(DeltaTimeChannelReserved::Game);
     static constexpr float kRingThickness           = 0.1f;
-    static constexpr float kRingRadiusTarget        = 20.0f;
+    static constexpr float kRingRadiusTarget        = 10.0f;
     static constexpr float kRingLifeTimeSec         = 0.5f;
 
     Params params_;

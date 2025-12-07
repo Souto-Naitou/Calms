@@ -9,7 +9,6 @@ void RingGauge::Initialize(const Params& params)
     pDebugEntry_ = std::make_unique<DebugEntry<RingGauge>>("UI", "RingGauge", this);
     params_ = params;
     currentValue_ = params_.valueInit;
-    targetValue_ = params_.valueInit;
     this->InitializeModels();
     this->InitializeObjects();
 }
@@ -24,12 +23,24 @@ void RingGauge::Update()
 {
     /// 値から角度を計算してリングモデルに反映
     currentValue_ = std::clamp(currentValue_, 0.0f, 1.0f);
-    currentValue_ = std::lerp(currentValue_, targetValue_, params_.lerpFactor);
+    currentValue_ = std::lerp(currentValue_, rawValue_, params_.lerpFactor);
 
     const float angleStart = params_.fillParams.radAngleStart;
     const float angleEnd = params_.fillParams.radAngleEnd;
     const float angleEndNew = std::lerp(angleStart, angleEnd, currentValue_);
     modelRingFill_->SetAngleRange(Range(angleStart, angleEndNew));
+
+    /// 生データが最大値に達したら色を変える (optional)
+    if (params_.colorTarget.has_value() && rawValue_ >= 1.0f)
+    {
+        auto& option = objectRingFill_->GetOption();
+        option.materialData->color = params_.colorTarget->to_Vector4();
+    }
+    else // 元の色に戻す
+    {
+        auto& option = objectRingFill_->GetOption();
+        option.materialData->color = params_.colorFill.to_Vector4();
+    }
 
     objectRingBackground_->Update();
     objectRingFill_->Update();
@@ -45,7 +56,7 @@ void RingGauge::ImGui()
 {
     #ifdef _DEBUG
 
-    ImGui::SliderFloat("Target Value", &targetValue_, 0.0f, 1.0f);
+    ImGui::SliderFloat("Target Value", &rawValue_, 0.0f, 1.0f);
     ImGui::SliderFloat("Current Value", & currentValue_, 0.0f, 1.0f);
     float angleStart = params_.backgroundParams.radAngleStart;
     if (ImGui::SliderAngle("StartAngle", &angleStart, 0.01f))
@@ -110,5 +121,11 @@ void RingGauge::InitializeObjects()
         option.materialData->color = params_.colorFill.to_Vector4();
         option.lightingData->enableLighting = false;
         option.materialData->environmentCoefficient = 0.0f;
+    }
+
+    if (params_.isFlipRing)
+    {
+        objectRingBackground_->SetScale(Vector3(-1.0f, 1.0f, 1.0f));
+        objectRingFill_->SetScale(Vector3(-1.0f, 1.0f, 1.0f));
     }
 }
