@@ -67,7 +67,7 @@ void PlayerExplosionTrigger::UpdateTriggerIf()
 
     if (doExplosion)
     {
-        // トリガー発動
+        /// トリガーイベント発行
         pContext_->ResetExplosionScore();
         decreaseTimer_->Reset();
         EventListener::GetInstance()->Publish(PlayerExplosionEvent{});
