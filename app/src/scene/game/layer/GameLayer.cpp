@@ -169,6 +169,12 @@ void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
     playerExplosionSub_ = EventListener::GetInstance()->Subscribe<PlayerExplosionEvent>(
         std::bind(&GameLayer::AddPlayerExplosion, this, std::placeholders::_1)
     );
+
+    /// [ イベント登録 ]
+    /// AddPlayerExplosion : 爆発エンティティの生成関数
+    EventListener::GetInstance()->Subscribe<PlayerExplosionEvent>(
+        std::bind(&GameLayer::AddPlayerExplosion, this, std::placeholders::_1)
+    );
 }
 
 void GameLayer::Finalize()
