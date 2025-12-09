@@ -1,6 +1,6 @@
 # Blender v3.2.0 OBJ File: 'plane.blend'
 # www.blender.org
-mtllib ParticleSpark.mtl
+mtllib ParticlePlane.mtl
 o Plane
 v -1.000000 -1.000000 -0.000000
 v 1.000000 -1.000000 -0.000000

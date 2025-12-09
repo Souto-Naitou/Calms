@@ -55,3 +55,9 @@ namespace Path::Audio
     inline constexpr const char* kSePlayerSlowOff = "se_player_slow_off.wav";
     inline constexpr const char* kSeEnemyDeath = "se_enemy_death.wav";
 }
+
+namespace Path::Model
+{
+    inline constexpr const char* kParticlePlane = "particle/ParticlePlane.obj";
+    inline constexpr const char* kPlayer = "Cube/Cube.obj";
+}

@@ -109,7 +109,7 @@ void GameOverTestScene::Initialize()
     /// ゲームオーバーアニメーションの初期化
     {
         particleDeath_ = ParticleStorage::GetInstance()->CreateParticle();
-        particleDeath_->Initialize(pModelManager_->Load("Particle/ParticleSpark.obj"));
+        particleDeath_->Initialize(pModelManager_->Load(Path::Model::kParticlePlane));
 
         GameOverAnimation::Params params = {};
         params.pGameEye = gameEye_.get();

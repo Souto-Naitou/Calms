@@ -27,6 +27,11 @@ void PlayerMovement::Update(float dt)
     this->ApplyPhysics(dt);
 }
 
+bool PlayerMovement::IsMove(float threshold /*= 0.0f*/) const
+{
+    return data_.velocity.LengthWithoutRoot() > threshold * threshold;
+}
+
 void PlayerMovement::UpdateByInput(float dt)
 {
     const auto& inputData = pInput_->GetData();

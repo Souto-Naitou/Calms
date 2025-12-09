@@ -575,7 +575,7 @@ void GameLayer::ParticlesInitialize()
     // SceneでParticleのDraw1Fを呼ぶ
     {
         auto& particle = particles_[static_cast<size_t>(ParticleID::PlayerConstant)] = ParticleStorage::GetInstance()->CreateParticle();
-        IModel* model = pModelManager_->Load("Particle/ParticleSpark.obj");
+        IModel* model = pModelManager_->Load(Path::Model::kParticlePlane);
         pTextureManager_->LoadTexture(Path::Image::kParticleCircle);
         model->ChangeTexture(pTextureManager_->GetSrvHandleGPU(Path::Image::kParticleCircle));
         particle->Initialize(model);
@@ -583,13 +583,13 @@ void GameLayer::ParticlesInitialize()
     }
     {
         auto& particle = particles_[static_cast<size_t>(ParticleID::PlayerDeath)] = ParticleStorage::GetInstance()->CreateParticle();
-        IModel* model = pModelManager_->Load("Particle/ParticleSpark.obj");
+        IModel* model = pModelManager_->Load(Path::Model::kParticlePlane);
         particle->Initialize(model);
         particle->reserve(500);
     }
     {
         auto& particle = particles_[static_cast<size_t>(ParticleID::PlayerBullet)] = ParticleStorage::GetInstance()->CreateParticle();
-        IModel* model = pModelManager_->Load("Particle/ParticleSpark.obj");
+        IModel* model = pModelManager_->Load(Path::Model::kParticlePlane);
         particle->Initialize(model);
         particle->reserve(100);
         particle->SetEnableBillboard(true);
@@ -601,7 +601,7 @@ void GameLayer::ParticlesInitialize()
     }
     {
         auto& particle = particles_[static_cast<size_t>(ParticleID::Background)] = ParticleStorage::GetInstance()->CreateParticle();
-        IModel* model = pModelManager_->Load("Particle/ParticleSpark.obj");
+        IModel* model = pModelManager_->Load(Path::Model::kParticlePlane);
         particle->Initialize(model);
         particle->reserve(1000);
     }

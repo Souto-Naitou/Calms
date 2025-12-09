@@ -20,6 +20,7 @@ public:
     void Update(float dt);
 
     const auto& GetData() const { return data_; }
+    bool IsMove(float threshold = 0.0f) const;
 
     inline void AddAcceleration(const Vector3& acc) { data_.acceleration += acc; }
     inline void SetEnable(bool flag) { isEnabled_ = flag; }

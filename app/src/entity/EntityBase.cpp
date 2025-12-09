@@ -3,6 +3,7 @@
 #include <DebugTools/DebugManager/DebugManager.h>
 #include <MathExtension/mathExtension.h>
 #include <imgui.h>
+#include <drawable/object3d/Object3dSystem.h>
 
 void EntityBase::Initialize(const EntityCommonParams& params, bool enableDebugWindow /*= true*/)
 {
@@ -12,6 +13,8 @@ void EntityBase::Initialize(const EntityCommonParams& params, bool enableDebugWi
         pDebugEntry_ = std::make_unique<DebugEntry<EntityBase>>("GameObject", this);
     }
     commonParams_ = params;
+
+    ppGameEye_ = Object3dSystem::GetInstance()->GetGlobalEye();
 }
 
 void EntityBase::UpdatePhysics(float dt)

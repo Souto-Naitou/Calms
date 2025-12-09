@@ -133,7 +133,7 @@ void EditScene::InitializeCanvas()
 void EditScene::InitializeParticle()
 {
     pParticleCircle_ = ParticleStorage::GetInstance()->CreateParticle();
-    IModel* model = pModelManager_->Load("Particle/ParticleSpark.obj");
+    IModel* model = pModelManager_->Load(Path::Model::kParticlePlane);
     pTextureManager_->LoadTexture(Path::Image::kParticleCircle);
     model->ChangeTexture(pTextureManager_->GetSrvHandleGPU(Path::Image::kParticleCircle));
     pParticleCircle_->Initialize(model);
