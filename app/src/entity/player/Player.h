@@ -12,7 +12,9 @@
 #include <Features/Audio/Audio.h>
 #include <Features/Model/ModelManager.h>
 #include <Features/Model/IModel.h>
+#include <ui/gauge/RingGauge.h>
 #include "PlayerInput.h"
+#include "PlayerContext.h"
 #include "PlayerMovement.h"
 #include "PlayerExplosionTrigger.h"
 
@@ -77,6 +79,7 @@ public: /// Getter
     bool IsShot() const { return isShot_; }
     bool IsSlow() const { return pInput_->GetData().isSlowPressed; }
     Object3d* GetObject3d() const { return object_.get(); }
+    const PlayerContext& GetContext() const { return *pContext_.get(); }
 
 public: /// Setter
     void DisableMovement();
@@ -128,6 +131,7 @@ private:
     uint32_t                        flags_      = static_cast<uint32_t>(Flags::None);
 
     std::unique_ptr<PlayerInput>            pInput_             = nullptr;
+    std::unique_ptr<PlayerContext>          pContext_           = nullptr;
     std::unique_ptr<PlayerMovement>         pMovement_          = nullptr;
     std::unique_ptr<PlayerExplosionTrigger> pExplosionTrigger_  = nullptr;
 
@@ -137,7 +141,7 @@ private:
 
     float movePower_ = 0.0f;
     float shotInterval_ = 0.05f;
-    bool isShot_ = false;
+    bool  isShot_ = false;
 
     /// コライダー
     std::unique_ptr<Collider> collider_ = nullptr;

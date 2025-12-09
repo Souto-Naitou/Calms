@@ -201,12 +201,15 @@ void Player::ComponentInitialize()
     // 入力
     pInput_ = std::make_unique<PlayerInput>();
     pInput_->Initialize();
+    // コンテキスト
+    pContext_ = std::make_unique<PlayerContext>();
+    pContext_->Initialize();
     // 移動
     pMovement_ = std::make_unique<PlayerMovement>();
     pMovement_->Initialize(pInput_.get(), &transform_);
     // 爆発トリガー
     pExplosionTrigger_ = std::make_unique<PlayerExplosionTrigger>();
-    pExplosionTrigger_->Initialize(pInput_.get());
+    pExplosionTrigger_->Initialize(pInput_.get(), pContext_.get());
 }
 
 void Player::ImGui()

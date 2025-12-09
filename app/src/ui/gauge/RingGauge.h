@@ -6,18 +6,23 @@
 #include <Features/Gauge/GaugeBase.h>
 #include <Vector3.h>
 #include <DebugTools/DebugEntry/DebugEntry.h>
+#include <optional>
 
 class RingGauge : public GaugeBase
 {
 public:
+    using GaugeBase::operator=;
+
     struct Params
     {
-        RingModel::Params backgroundParams;
-        RingModel::Params fillParams;
-        RGBA colorBackground = 0xffffffff;
-        RGBA colorFill = 0xffffffff;
-        float lerpFactor = 1.0f; // 0.0f ~ 1.0f (1.0fは即時)
-        float valueInit = 1.0f; // 0.0f ~ 1.0f
+        RingModel::Params   backgroundParams;
+        RingModel::Params   fillParams;
+        bool                isFlipRing          = false;            // リングを反転させるかどうか
+        RGBA                colorBackground     = 0xffffffff;
+        RGBA                colorFill           = 0xffffffff;
+        std::optional<RGBA> colorTarget         = std::nullopt;
+        float               lerpFactor          = 1.0f; // 0.0f ~ 1.0f (1.0fは即時)
+        float               valueInit           = 1.0f; // 0.0f ~ 1.0f
     };
 
     RingGauge() = default;

@@ -34,6 +34,7 @@
 #include <ui/guide/InputGuide.h>
 #include <Features/event/EventSubscription.h>
 #include <logic/event/PlayerExplosionEvent.h>
+#include <ui/PlayerUI3d.h>
 
 // stl
 #include <cstdint>
@@ -87,6 +88,8 @@ private:
     };
 
     static constexpr inline size_t kParticleIDMax = static_cast<size_t>(ParticleID::Size);
+    static constexpr inline float  kGameEyeHeightDefault = 65.0f;
+    static constexpr inline float  kGameEyeHeightDuringSlow = 30.0f;
 
 #ifdef _DEBUG
     static constexpr inline uint32_t kGameLimitTime = 3600u;
@@ -99,6 +102,7 @@ private:
     std::unique_ptr<Canvas>                         canvas3dObject_         = {};       // !< MainCharactorキャンバス
     std::unique_ptr<Canvas>                         canvasParticle_         = {};       // !< パーティクルキャンバス
     std::unique_ptr<Canvas>                         canvasOverall_          = {};       // !< 全体キャンバス
+    std::unique_ptr<Canvas>                         canvasUIEffected_       = {};       // !< ラインキャンバス
 
     std::unique_ptr<Object3d>                       grid_                   = {};       // !< グリッド
     std::unique_ptr<GameEye>                        gameEye_                = {};       // !< ゲームアイ
@@ -111,9 +115,9 @@ private:
     /// UI
     std::unique_ptr<InGameTimer>                    gameTimer_              = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                     inputGuide_             = {};       // !< 入力ガイド
-    std::unique_ptr<Bar2d>                          healthBar_              = {};       // !< 体力バー
     std::unique_ptr<Sprite>                         spriteClear_            = {};       // !< クリアスプライト
     std::unique_ptr<Sprite>                         spriteSpace_            = {};       // !< クリアスプライト
+    std::unique_ptr<PlayerUI3d>                     playerUI3d_             = {};       // !< プレイヤー3DUI
 
     std::unique_ptr<GameOverAnimation>              gameOverAnimation_      = {};       // !< ゲームオーバーアニメーション
     std::unique_ptr<GameClearAnimation>             gameClearAnimation_     = {};       // !< ゲームクリアアニメーション

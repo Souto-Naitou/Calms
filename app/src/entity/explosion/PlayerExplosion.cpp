@@ -104,8 +104,8 @@ void PlayerExplosion::Expand()
     const float radius = Math::Easing::EaseOutQuad(t) * kRingRadiusTarget;
 
     Range<float> radii = modelRing_->GetRadii();
-    radii.end() = radius;
-    radii.start() = radius - kRingThickness;
+    radii.end = radius;
+    radii.start = radius - kRingThickness;
     modelRing_->SetRadii(radii);
 }
 
@@ -122,7 +122,7 @@ void PlayerExplosion::UpdateOpacity()
 
 void PlayerExplosion::UpdateCollider()
 {
-    const float radius = modelRing_->GetRadii().end();
+    const float radius = modelRing_->GetRadii().end;
     sphere_.center = transform_.translate;
     sphere_.radius = radius;
     collider_->SetShapeData(&sphere_);
