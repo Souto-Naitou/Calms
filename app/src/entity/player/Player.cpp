@@ -80,14 +80,14 @@ void Player::Update()
         pMovement_->Update(kDeltaTime);
     }
 
-    // パーティクルエミッターの更新
-    if ((pMovement_->GetData().velocity.Length() > 0.2f ) || flags_ & static_cast<uint32_t>(Flags::DisableMovement))
+    // パーティクルエミッターの更新 (動いている or 動きが無効化されている場合にパーティクルをエミット)
+    if ((pMovement_->IsMove(0.2f)) || flags_ & static_cast<uint32_t>(Flags::DisableMovement))
     {
         emitterConstant_->SetPosition(transform_.translate);
         emitterConstant_->Emit();
     }
-    emitterConstant_->Update();
 
+    emitterConstant_->Update();
     pExplosionTrigger_->Update();
 
     /// 3dモデルの更新
@@ -116,7 +116,7 @@ void Player::DrawLine()
 void Player::ObjectsInitialize()
 {
     /// オブジェクトの初期化
-    auto originalModel = pModelManager_->Load("Cube/Cube.obj");
+    auto originalModel = pModelManager_->Load(Path::Model::kPlayer);
     pModelSelfBody_ = originalModel->Cloned();
     object_ = std::make_unique<Object3d>();
     object_->Initialize();
@@ -240,9 +240,8 @@ void Player::OnCollisionTrigger(const Collider* other)
     if (other->GetColliderID() == "enemy")
     {
         stats_.OnCollision(other->GetOwner<EntityBase>()->GetStats());
-
         commonParams_.pDirLight->intensity -= 1.0f;
-
+        (*ppGameEye_)->Shake(kGameEyeShakePowerWhenDamage);
         if (stats_.GetHp() <= 0.0f)
         {
             isAlive_ = false;

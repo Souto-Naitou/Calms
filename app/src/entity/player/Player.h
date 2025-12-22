@@ -126,6 +126,8 @@ private:
 
     void ComponentInitialize();
 
+    static constexpr float kGameEyeShakePowerWhenDamage = 0.3f;
+
     // 初期化パラメータ
     Params                          params_;
     uint32_t                        flags_      = static_cast<uint32_t>(Flags::None);

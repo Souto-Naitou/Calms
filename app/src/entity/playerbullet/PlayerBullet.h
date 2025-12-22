@@ -98,7 +98,7 @@ private:
     std::unique_ptr<TimeMeasurer> timer_ = nullptr;
     Params params_ = {};
     /// パラメータ
-    float lifeTimeLimit_ = 8.0f;
+    float lifeTimeLimit_ = 3.0f;
     Vector3 moveVelocity_ = {};
 
     /// コライダー

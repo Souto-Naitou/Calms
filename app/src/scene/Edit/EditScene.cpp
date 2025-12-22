@@ -54,7 +54,8 @@ void EditScene::Initialize()
     this->InitializeEnemy();
 
     /// [ デルタタイムの設定 ]
-    DeltaTimeManager::GetInstance()->SetDeltaTime(1, 1.0f / 60.0f);
+    DeltaTimeManager::GetInstance()->SetDeltaTime(static_cast<uint32_t>(DeltaTimeChannelReserved::Game), 1.0f / 60.0f);
+    DeltaTimeManager::GetInstance()->SetDeltaTime(static_cast<uint32_t>(DeltaTimeChannelReserved::Particle), 1.0f / 60.0f);
 }
 
 void EditScene::Finalize()
@@ -133,7 +134,7 @@ void EditScene::InitializeCanvas()
 void EditScene::InitializeParticle()
 {
     pParticleCircle_ = ParticleStorage::GetInstance()->CreateParticle();
-    IModel* model = pModelManager_->Load("Particle/ParticleSpark.obj");
+    IModel* model = pModelManager_->Load(Path::Model::kParticlePlane);
     pTextureManager_->LoadTexture(Path::Image::kParticleCircle);
     model->ChangeTexture(pTextureManager_->GetSrvHandleGPU(Path::Image::kParticleCircle));
     pParticleCircle_->Initialize(model);

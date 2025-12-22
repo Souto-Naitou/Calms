@@ -39,10 +39,10 @@ private:
     void UpdateOpacity();
     void UpdateCollider();
 
-    static constexpr uint32_t kDeltaTimeChannelNum = static_cast<uint32_t>(DeltaTimeChannelReserved::Game);
-    static constexpr float kRingThickness           = 0.1f;
-    static constexpr float kRingRadiusTarget        = 10.0f;
-    static constexpr float kRingLifeTimeSec         = 0.5f;
+    static constexpr uint32_t   kDeltaTimeChannelNum    = static_cast<uint32_t>(DeltaTimeChannelReserved::Game);
+    static constexpr float      kRingThickness          = 3.0f;
+    static constexpr float      kRingRadiusTarget       = 10.0f;
+    static constexpr float      kRingLifeTimeSec        = 0.5f;
 
     Params params_;
     std::unique_ptr<TimeMeasurerByDt>   timeMeasurer_   = nullptr;

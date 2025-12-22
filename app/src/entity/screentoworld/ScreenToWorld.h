@@ -5,6 +5,7 @@
 #include <Features/GameEye/GameEye.h>
 #include <drawable/sprite/Sprite.h>
 #include <memory>
+#include <Features/Input/Input.h>
 
 /// <summary>
 /// スクリーン座標をワールド座標に変換してレティクルを表示するクラス
@@ -49,9 +50,9 @@ private:
     /// カーソル
     std::unique_ptr<Sprite> reticle_ = {};
 
-private:
-    /// カメラ
-    GameEye* pGameEye_ = nullptr;
+    /// ポインタ
+    GameEye*    pGameEye_ = nullptr;
+    Input*      pInput_ = Input::GetInstance();
 
 private:
     /// <summary>
