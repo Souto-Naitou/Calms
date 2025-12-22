@@ -225,7 +225,6 @@ void Enemy::OnCollision(const Collider* _other)
 
 void Enemy::OnCollisionTrigger(const Collider* _other)
 {
-    Logger::GetInstance()->LogInfo(__FILE__, __FUNCTION__, "Enemy hit by " + _other->GetColliderID());
     bool isCollide = _other->GetColliderID() == "playerBullet";
     isCollide |= _other->GetColliderID() == "PlayerExplosion";
     if (isCollide)

@@ -20,9 +20,7 @@ void ScreenToWorld::Finalize()
 void ScreenToWorld::Update()
 {
     // マウス座標を取得
-    POINT cursor = {};
-    GetCursorPos(&cursor);
-    ScreenToClient(WinSystem::GetInstance()->GetHwnd(), &cursor);
+    POINT cursor = pInput_->GetCursorPosition();
     Vector3 mousePosNear    = { static_cast<float>(cursor.x), static_cast<float>(cursor.y), 0.0f };
     Vector3 mousePosFar     = { static_cast<float>(cursor.x), static_cast<float>(cursor.y), 1.0f };
 

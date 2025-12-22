@@ -27,9 +27,6 @@ void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
     pLineSystem_ = std::any_cast<LineSystem*>(pArgs->Get("LineSystem"));
     pLayer_ = pLayer;
 
-    /// デバッグウィンドウを登録
-    pDebugEntry_ = std::make_unique<DebugEntry<GameLayer>>("Scene", "GameScene", this);
-
     /// キャンバスの初期化
     this->CanvasInitialize(pArgs);
 
@@ -404,38 +401,6 @@ void GameLayer::Draw()
     }
 }
 
-void GameLayer::ImGui()
-{
-    #ifdef _DEBUG
-    ImGui::SeparatorText("Collider Debug");
-    if (ImGui::Checkbox("Enemy", &isDisplayColliderEnemy_))
-    {
-        for (auto& enemy : enemies_)
-        {
-            enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
-        }
-    }
-
-    if (ImGui::Checkbox("PlayerBullet", &isDisplayColliderPlayerBullet_))
-    {
-        for (auto& bullet : playerBullets_)
-        {
-            bullet->SetIsDrawCollisionArea(isDisplayColliderPlayerBullet_);
-        }
-    }
-
-    if (ImGui::Button("CountDown"))
-    {
-        countDown_->Start();
-    }
-
-    if (ImGui::InputFloat("FrameRate", &framerate_, 0.1f))
-    {
-        deltaTimeManager_->SetDeltaTime(1, 1.0f / framerate_);
-    }
-    #endif
-}
-
 void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
 {
     auto pCubemapSystem = std::any_cast<CubemapSystem*>(pArgs->Get("CubemapSystem"));
@@ -555,6 +520,13 @@ void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
             gaussian->SetSigma(10.0f);
             gaussian->Enable(false);
         }
+        effect = canvasOverall_->GetPostEffectExecuter().AddEffect(PostEffectClassName::Grayscale);
+        auto grayscale = static_cast<Grayscale*>(effect);
+        {
+            pOptionGrayscale_ = &grayscale->GetOption();
+            pOptionGrayscale_->power = 0.0f;
+            grayscale->Enable(true);
+        }
         pLayer_->AddCanvas(canvasOverall_.get());
     }
 }
@@ -609,24 +581,38 @@ void GameLayer::ParticlesInitialize()
 
 void GameLayer::AddPlayerBullet()
 {
+    constexpr int32_t kNumShots = 3;
+    constexpr float kSpreadAngle = 5.0f; // degrees
+    constexpr float kSpreadRad = std::numbers::pi_v<float> / (360.0f / kSpreadAngle);
+    constexpr float kBulletSpeed = 30.0f;
+
     Vector3 direction = screenToWorld_->GetWorldPoint() - player_->GetTranslation();
+    for (int32_t i = 0; i < kNumShots; ++i)
+    {
+        // -15°〜15°の範囲で散らす
+        int32_t index = i - (kNumShots / 2);
+        float angle = kSpreadRad * static_cast<float>(index);
 
-    direction.y = 0.0f;
-    direction = direction.Normalized();
-    direction.x += randomGenerator_->Generate(-0.05f, 0.05f);
-    direction.z += randomGenerator_->Generate(-0.05f, 0.05f);
-    direction = direction.Normalized();
+        Vector3 newDirection = {};
+        newDirection.x = direction.x * std::cosf(angle) - direction.z * std::sinf(angle);
+        newDirection.y = 0.0f;
+        newDirection.z = direction.x * std::sinf(angle) + direction.z * std::cosf(angle);
+        newDirection = newDirection.Normalized();
+        newDirection.x += randomGenerator_->Generate(-0.02f, 0.02f);
+        newDirection.z += randomGenerator_->Generate(-0.02f, 0.02f);
+        newDirection = newDirection.Normalized();
 
-    auto& particle = particles_[static_cast<size_t>(ParticleID::PlayerBullet)];
-    particle->emplace_back({});
+        auto& particle = particles_[static_cast<size_t>(ParticleID::PlayerBullet)];
+        particle->emplace_back({});
 
-    auto bullet = std::make_unique<PlayerBullet>(PlayerBullet::Params{ &particle->GetParticleData().back() });
-    bullet->Initialize(entityCommonParams_, false);
-    bullet->SetTranslation(player_->GetTranslation());
-    bullet->SetMoveVelocity(direction * 15.0f);
-    bullet->SetIsDrawCollisionArea(isDisplayColliderPlayerBullet_);
+        auto bullet = std::make_unique<PlayerBullet>(PlayerBullet::Params{ &particle->GetParticleData().back() });
+        bullet->Initialize(entityCommonParams_, false);
+        bullet->SetTranslation(player_->GetTranslation());
+        bullet->SetMoveVelocity(newDirection * kBulletSpeed);
+        bullet->SetIsDrawCollisionArea(isDisplayColliderPlayerBullet_);
 
-    playerBullets_.push_back(std::move(bullet));
+        playerBullets_.push_back(std::move(bullet));
+    }
 }
 
 void GameLayer::RemovePlayerBullet()
@@ -733,12 +719,13 @@ void GameLayer::PlayerSlowUpdate()
     {
         deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 60.0f);
         deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, 1.0f / 60.0f);
+        pOptionGrayscale_->power = 0.0f;
     }
     else if (player_->IsSlow())
     {
         Vector3 eyepos = gameEye_->GetTransform().translate;
         eyepos.Lerp(eyepos, Vector3(playerpos.x, kGameEyeHeightDuringSlow, playerpos.z), 0.1f);
-
+        pOptionGrayscale_->power = std::lerp(pOptionGrayscale_->power, 0.75f, 0.1f);
         gameEye_->SetTranslate(eyepos);
 
         deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 120.0f);
@@ -748,7 +735,7 @@ void GameLayer::PlayerSlowUpdate()
     {
         Vector3 eyepos = gameEye_->GetTransform().translate;
         eyepos.Lerp(eyepos, Vector3(playerpos.x, kGameEyeHeightDefault, playerpos.z), 0.1f);
-
+        pOptionGrayscale_->power = std::lerp(pOptionGrayscale_->power, 0.0f, 0.1f);
         gameEye_->SetTranslate(eyepos);
 
         deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 60.0f);

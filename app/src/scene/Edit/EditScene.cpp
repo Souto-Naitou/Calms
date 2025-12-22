@@ -54,7 +54,8 @@ void EditScene::Initialize()
     this->InitializeEnemy();
 
     /// [ デルタタイムの設定 ]
-    DeltaTimeManager::GetInstance()->SetDeltaTime(1, 1.0f / 60.0f);
+    DeltaTimeManager::GetInstance()->SetDeltaTime(static_cast<uint32_t>(DeltaTimeChannelReserved::Game), 1.0f / 60.0f);
+    DeltaTimeManager::GetInstance()->SetDeltaTime(static_cast<uint32_t>(DeltaTimeChannelReserved::Particle), 1.0f / 60.0f);
 }
 
 void EditScene::Finalize()

@@ -1,0 +1,135 @@
+{
+    "collisionFloor": {
+        "bouncePower": 5.289999961853027,
+        "elevation": 0.07000000029802322
+    },
+    "common": {
+        "alphaDeltaValue": 0.0,
+        "emitInterval": 0.019999999552965164,
+        "emitNum": 5,
+        "emitPositionFixed": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "emitterLifeTime": 0.0,
+        "particleLifeTime": 2.700000047683716,
+        "scaleDelayTime": 1.149999976158142,
+        "scaleFixed": {
+            "x": 0.4300000071525574,
+            "y": 0.5199999809265137,
+            "z": 1.0
+        },
+        "velocityFixed": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        }
+    },
+    "flags": {
+        "enableCollisionFloor": true,
+        "enableRandomEmit": false,
+        "enableRandomRotation": false,
+        "enableRandomScale": false,
+        "enableRandomVelocity": true,
+        "enableScaleTransition": true,
+        "enableSmoothNoise": true,
+        "velocityDistribution": 1
+    },
+    "name": "PlayerDamaged",
+    "physics": {
+        "frictionCoef": 0.75,
+        "gravity": {
+            "x": 0.0,
+            "y": -12.0,
+            "z": 0.0
+        },
+        "resistance": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "smoothNoisePower": 1.2999999523162842
+    },
+    "ranges": {
+        "color": {
+            "end": {
+                "w": 1.0,
+                "x": 0.32549020648002625,
+                "y": 0.7882353067398071,
+                "z": 1.0
+            },
+            "start": {
+                "w": 1.0,
+                "x": 0.4641350507736206,
+                "y": 0.7490252256393433,
+                "z": 1.0
+            }
+        },
+        "position": {
+            "end": {
+                "x": -30.0,
+                "y": -500.0,
+                "z": -12.0
+            },
+            "start": {
+                "x": 30.0,
+                "y": -500.0,
+                "z": 12.0
+            }
+        },
+        "rotationRandom": {
+            "end": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "start": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        "scale": {
+            "end": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "start": {
+                "x": 0.07000000029802322,
+                "y": 0.07000000029802322,
+                "z": 1.0
+            }
+        },
+        "scaleRandom": {
+            "end": {
+                "x": 0.25,
+                "y": 0.15000000596046448,
+                "z": 0.0
+            },
+            "start": {
+                "x": 0.5400000214576721,
+                "y": 0.4699999988079071,
+                "z": 0.0
+            }
+        },
+        "velocityRandom": {
+            "end": {
+                "x": -0.30000001192092896,
+                "y": 0.0,
+                "z": -0.30000001192092896
+            },
+            "start": {
+                "x": 0.30000001192092896,
+                "y": 0.0,
+                "z": 0.30000001192092896
+            }
+        },
+        "velocityRandomSphere": {
+            "end": 10.0,
+            "start": 10.0
+        }
+    },
+    "version": 3
+}

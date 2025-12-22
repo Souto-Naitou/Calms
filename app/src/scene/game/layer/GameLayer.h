@@ -19,6 +19,9 @@
 #include <Features/Layer/Layer.h>
 #include <Interfaces/ISceneArgs.h>
 
+// post effects
+#include <Effects/PostEffects/Grayscale/Grayscale.h>
+
 // game
 #include <drawable/object3d/Object3d.h>
 #include <drawable/particle/Particle.h>
@@ -46,6 +49,7 @@
 #include <drawable/sprite/Sprite.h>
 #include <drawable/particle/Emitter/ParticleEmitter.h>
 #include <optional>
+#include <Effects/PostEffects/Grayscale/Grayscale.h>
 
 class GameLayer : public IGameLayer
 {
@@ -54,7 +58,6 @@ public:
     void Finalize() override;
     void Update() override;
     void Draw() override;
-    void ImGui();
 
 private:
     void CanvasInitialize(ISceneArgs* pArgs);
@@ -148,9 +151,9 @@ private:
     LineSystem*         pLineSystem_        = nullptr;
     TextureManager*     pTextureManager_    = nullptr;
     Layer*              pLayer_             = nullptr;
+    GrayscaleOption*    pOptionGrayscale_   = nullptr;
 
     /// [ デバッグ ]
-    std::unique_ptr<DebugEntry<GameLayer>> pDebugEntry_ = nullptr;
     bool isDisplayColliderEnemy_        = false;
     bool isDisplayColliderPlayer_       = false;
     bool isDisplayColliderPlayerBullet_ = false;
