@@ -2,7 +2,7 @@
 
 
 
-void TitleLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
+void TitleLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 {
 }
 

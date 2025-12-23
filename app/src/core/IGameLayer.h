@@ -1,6 +1,6 @@
 #pragma once
 #include <Interfaces/ISceneArgs.h>
-#include <Features/Layer/Layer.h>
+#include <Features/Layer/OrderedCanvasLayer.h>
 
 class IGameLayer
 {
@@ -10,7 +10,7 @@ public:
     /// <summary>
     /// 初期化を行います。
     /// </summary>
-    virtual void Initialize(ISceneArgs* pArgs, Layer* pLayer) = 0;
+    virtual void Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer) = 0;
 
     /// <summary>
     /// 終了処理を行います。

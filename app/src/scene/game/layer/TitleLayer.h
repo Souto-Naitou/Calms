@@ -5,7 +5,7 @@
 class TitleLayer : public IGameLayer
 {
 public:
-    void Initialize(ISceneArgs* pArgs, Layer* pLayer) override;
+    void Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer) override;
 
     void Finalize() override;
 

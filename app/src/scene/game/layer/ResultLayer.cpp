@@ -2,7 +2,7 @@
 #include <any>
 #include <Core/DirectX12/DirectX12.h>
 
-void ResultLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
+void ResultLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 {
     Canvas::Params canvasParams{};
     canvasParams.name = "ResultCanvas";
