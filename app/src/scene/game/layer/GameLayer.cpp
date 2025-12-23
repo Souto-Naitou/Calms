@@ -16,7 +16,7 @@
 #include <mathExtension.h>
 
 
-void GameLayer::Initialize(ISceneArgs* pArgs, Layer* pLayer)
+void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 {
     /// インスタンスの取得
     pDx12_ = std::any_cast<DirectX12*>(pArgs->Get("DirectX12"));

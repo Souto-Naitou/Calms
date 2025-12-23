@@ -16,7 +16,7 @@
 #include <Features/Model/ModelManager.h>
 #include <Features/RandomGenerator/RandomGenerator.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
-#include <Features/Layer/Layer.h>
+#include <Features/Layer/OrderedCanvasLayer.h>
 #include <Interfaces/ISceneArgs.h>
 
 // post effects
@@ -54,7 +54,7 @@
 class GameLayer : public IGameLayer
 {
 public:
-    void Initialize(ISceneArgs* pArgs, Layer* pLayer) override;
+    void Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer) override;
     void Finalize() override;
     void Update() override;
     void Draw() override;
@@ -150,7 +150,7 @@ private:
     ModelManager*       pModelManager_      = nullptr;
     LineSystem*         pLineSystem_        = nullptr;
     TextureManager*     pTextureManager_    = nullptr;
-    Layer*              pLayer_             = nullptr;
+    OrderedCanvasLayer* pLayer_             = nullptr;
     GrayscaleOption*    pOptionGrayscale_   = nullptr;
 
     /// [ デバッグ ]

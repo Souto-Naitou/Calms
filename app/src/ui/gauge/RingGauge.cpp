@@ -107,6 +107,7 @@ void RingGauge::InitializeObjects()
     objectRingBackground_->Initialize();
     objectRingBackground_->SetModel(modelRingBackground_.get());
     {
+        // object3dの設定
         auto& option = objectRingBackground_->GetOption();
         option.materialData->color = params_.colorBackground.to_Vector4();
         option.lightingData->enableLighting = false;
@@ -117,6 +118,7 @@ void RingGauge::InitializeObjects()
     objectRingFill_->Initialize();
     objectRingFill_->SetModel(modelRingFill_.get());
     {
+        // object3dの設定
         auto& option = objectRingFill_->GetOption();
         option.materialData->color = params_.colorFill.to_Vector4();
         option.lightingData->enableLighting = false;
