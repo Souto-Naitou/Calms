@@ -103,7 +103,6 @@ void ScoreCalculator::InitializeSprites()
         
         // メタデータ取得
         const auto& metadata = TextureManager::GetInstance()->GetMetaData(Path::Image::kNumbers[i]);
-        const auto textureWidth = static_cast<uint32_t>(metadata.width);
         
         digitSprite = std::make_unique<Sprite>();
         digitSprite->Initialize(digitTextureHandles_.front());
