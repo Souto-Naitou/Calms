@@ -14,6 +14,7 @@
 #include <mathExtension.h>
 #include <config/ResourcePath.h>
 #include <mathExtension.h>
+#include <cmath>
 
 
 void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
@@ -26,9 +27,6 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     pModelManager_ = std::any_cast<ModelManager*>(pArgs->Get("ModelManager"));
     pLineSystem_ = std::any_cast<LineSystem*>(pArgs->Get("LineSystem"));
     pLayer_ = pLayer;
-
-    /// キャンバスの初期化
-    this->CanvasInitialize(pArgs);
 
     /// グリッドの初期化
     grid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
@@ -143,6 +141,10 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 
     titleTimer_.Start();
 
+    /// スコア計算機の初期化
+    scoreCalculator_ = std::make_unique<ScoreCalculator>();
+    scoreCalculator_->Initialize();
+
     /// ゲームオーバーアニメーションの初期化
     GameOverAnimation::Params goaParams = {};
     goaParams.pGameEye = gameEye_.get();
@@ -216,19 +218,23 @@ void GameLayer::Update()
     screenToWorld_->Update();
     spriteClear_->Update();
     spriteSpace_->Update();
+    scoreCalculator_->Update();
 
     /// プレイヤーの更新
     if (!isEnding_)
     {
-        directionalLight_.intensity = Math::Lerp(directionalLight_.intensity, kDirectionalLightTargetIntensity, 0.0125f);
+        directionalLight_.intensity = std::lerp(directionalLight_.intensity, kDirectionalLightTargetIntensity, 0.0125f);
     }
     player_->Update();
     playerUI3d_->SetPosition(player_->GetTranslation());
     playerUI3d_->Update();
+
     bool isPlayerDead = !player_->IsAlive() && !gameOverAnimation_->IsPlaying();
-    bool isClear = gameTimer_->IsEnd() && !gameClearAnimation_->IsPlaying();
     if (isPlayerDead) gameOverAnimation_->Play();
+
+    bool isClear = gameTimer_->IsEnd() && !gameClearAnimation_->IsPlaying();
     if (isClear) gameClearAnimation_->Play();
+
     if (isPlayerDead || isClear)
     {
         this->KillAllEnemies();
@@ -360,28 +366,6 @@ void GameLayer::Draw()
         }
     }
 
-    CanvasScope uiCanvasScope(canvasUI_.get());
-    if (!isEnding_) 
-    {
-        gameTimer_->Draw1F();
-        countDown_->Draw1F();
-        inputGuide_->Draw1F();
-        screenToWorld_->Draw1F();
-    }
-    else
-    {
-        spriteClear_->Draw1F();
-        spriteSpace_->Draw1F();
-    }
-
-    CanvasScope uiEffectedCanvasScope(canvasUIEffected_.get());
-    {
-        if (!isEnding_)
-        {
-            playerUI3d_->Draw1F();
-        }
-    }
-
     CanvasScope particleCanvasScope(canvasParticle_.get());
     {
         canvasUI_->Draw1F();
@@ -389,6 +373,30 @@ void GameLayer::Draw()
         {
             particle->Draw1F();
         }
+    }
+
+    CanvasScope uiEffectedCanvasScope(canvasUIEffected_.get());
+    {
+        if (!isEnding_)
+        {
+            playerUI3d_->Draw1F();
+            scoreCalculator_->Draw1F();
+        }
+    }
+
+    CanvasScope uiCanvasScope(canvasUI_.get());
+    if (!isEnding_)
+    {
+        gameTimer_->Draw1F();
+        countDown_->Draw1F();
+        inputGuide_->Draw1F();
+        screenToWorld_->Draw1F();
+        scoreCalculator_->Draw1F();
+    }
+    else
+    {
+        spriteClear_->Draw1F();
+        spriteSpace_->Draw1F();
     }
 
     CanvasScope overallCanvasScope(canvasOverall_.get());
@@ -401,36 +409,46 @@ void GameLayer::Draw()
     }
 }
 
-void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
+void GameLayer::Preload(const PreloadContext& ctx, TaskExecutor& executor)
+{
+    pLayer_ = ctx.pLayer;
+    CanvasInitialize(executor, ctx.pSceneArgs);
+}
+
+void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
 {
     auto pCubemapSystem = std::any_cast<CubemapSystem*>(pArgs->Get("CubemapSystem"));
 
     /// キャンバス共通パラメータ
-    Canvas::Params canvasParams = {};
-    canvasParams.pDx12 = pDx12_;
-    canvasParams.pCubemapSystem = pCubemapSystem;
+    Canvas::Params commonParams = {};
+    commonParams.pDx12 = std::any_cast<DirectX12*>(pArgs->Get("DirectX12"));
+    commonParams.pCubemapSystem = pCubemapSystem;
     #ifdef _DEBUG
-    canvasParams.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs->Get("ImGuiManager"));
+    commonParams.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs->Get("ImGuiManager"));
     #endif // _DEBUG
 
     /// グリッド用キャンバス
+    auto create_grid_canvas = [=]()
     {
+        Canvas::Params canvasParams = commonParams;
         canvasParams.name = "Grid_Canvas";
         canvasGrid_ = std::make_unique<Canvas>();
         canvasGrid_->Initialize(canvasParams);
         canvasGrid_->SetEnableManualDraw(true);
         pLayer_->AddCanvas(canvasGrid_.get());
-    }
+    };
 
     /// 3Dオブジェクト用キャンバス
+    auto create_3dobject_canvas = [=]()
     {
+        Canvas::Params canvasParams = commonParams;
         canvasParams.name = "3DObject_Canvas";
         canvas3dObject_ = std::make_unique<Canvas>();
         canvas3dObject_->Initialize(canvasParams);
         canvas3dObject_->SetEnableManualDraw(true);
         IPostEffect* effect = nullptr;
 
-        effect = canvas3dObject_->GetPostEffectExecuter().AddEffect(PostEffectClassName::GaussianBloom);
+        effect = canvas3dObject_->GetPostEffectExecutor().AddEffect(PostEffectClassName::GaussianBloom);
         {
             auto bloom = static_cast<GaussianBloom*>(effect);
             auto& optionBloom = bloom->GetOption();
@@ -442,7 +460,7 @@ void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
             bloom->GetSeparatedGaussianFilter()->SetSigma(27.0f);
             bloom->Enable(true);
         }
-        effect = canvas3dObject_->GetPostEffectExecuter().AddEffect(PostEffectClassName::DepthBasedOutline);
+        effect = canvas3dObject_->GetPostEffectExecutor().AddEffect(PostEffectClassName::DepthBasedOutline);
         {
             auto outline = static_cast<DepthBasedOutline*>(effect);
             auto& optionOutline = outline->GetOption();
@@ -450,15 +468,17 @@ void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
             outline->Enable(true);
         }
         pLayer_->AddCanvas(canvas3dObject_.get());
-    }
+    };
 
     /// パーティクル用キャンバス
+    auto create_particle_canvas = [=]()
     {
+        Canvas::Params canvasParams = commonParams;
         canvasParams.name = "Particle_Canvas";
         canvasParticle_ = std::make_unique<Canvas>();
         canvasParticle_->Initialize(canvasParams);
         canvasParticle_->SetEnableManualDraw(true);
-        IPostEffect* effect = canvasParticle_->GetPostEffectExecuter().AddEffect(PostEffectClassName::GaussianBloom);
+        IPostEffect* effect = canvasParticle_->GetPostEffectExecutor().AddEffect(PostEffectClassName::GaussianBloom);
         auto bloom = static_cast<GaussianBloom*>(effect);
         {
             auto& optionBloom = bloom->GetOption();
@@ -471,26 +491,30 @@ void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
         }
         bloom->Enable(true);
         pLayer_->AddCanvas(canvasParticle_.get());
-    }
+    };
 
     /// UI用キャンバス
+    auto create_ui_canvas = [=]()
     {
+        Canvas::Params canvasParams = commonParams;
         canvasParams.name = "UI_Canvas";
         canvasUI_ = std::make_unique<Canvas>();
         canvasUI_->Initialize(canvasParams);
         canvasUI_->SetEnableManualDraw(true);
         pLayer_->AddCanvas(canvasUI_.get());
-    }
+    };
 
     /// UI用キャンバス(エフェクトあり)
+    auto create_ui_effected_canvas = [=]()
     {
+        Canvas::Params canvasParams = commonParams;
         canvasParams.name = "UI_Effected_Canvas";
         canvasUIEffected_ = std::make_unique<Canvas>();
         canvasUIEffected_->Initialize(canvasParams);
         canvasUIEffected_->SetEnableManualDraw(true);
         IPostEffect* effect = nullptr;
 
-        effect = canvasUIEffected_->GetPostEffectExecuter().AddEffect(PostEffectClassName::GaussianBloom);
+        effect = canvasUIEffected_->GetPostEffectExecutor().AddEffect(PostEffectClassName::GaussianBloom);
         {
             auto bloom = static_cast<GaussianBloom*>(effect);
             auto& optionBloom = bloom->GetOption();
@@ -504,15 +528,17 @@ void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
         }
 
         pLayer_->AddCanvas(canvasUIEffected_.get());
-    }
+    };
 
     /// 全体用キャンバス
+    auto create_overall_canvas = [=]()
     {
+        Canvas::Params canvasParams = commonParams;
         canvasParams.name = "Overall_Canvas";
         canvasOverall_ = std::make_unique<Canvas>();
         canvasOverall_->Initialize(canvasParams);
         IPostEffect* effect = nullptr;
-        effect = canvasOverall_->GetPostEffectExecuter().AddEffect(PostEffectClassName::SeparatedGaussianFilter);
+        effect = canvasOverall_->GetPostEffectExecutor().AddEffect(PostEffectClassName::SeparatedGaussianFilter);
         auto gaussian = static_cast<SeparatedGaussianFilter*>(effect);
         {
             auto& optionGaussian = gaussian->GetOption();
@@ -520,7 +546,7 @@ void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
             gaussian->SetSigma(10.0f);
             gaussian->Enable(false);
         }
-        effect = canvasOverall_->GetPostEffectExecuter().AddEffect(PostEffectClassName::Grayscale);
+        effect = canvasOverall_->GetPostEffectExecutor().AddEffect(PostEffectClassName::Grayscale);
         auto grayscale = static_cast<Grayscale*>(effect);
         {
             pOptionGrayscale_ = &grayscale->GetOption();
@@ -528,7 +554,15 @@ void GameLayer::CanvasInitialize(ISceneArgs* pArgs)
             grayscale->Enable(true);
         }
         pLayer_->AddCanvas(canvasOverall_.get());
-    }
+    };
+
+    // キャンバスの生成をタスク化して実行
+    executor.AddTask(create_grid_canvas);
+    executor.AddTask(create_3dobject_canvas);
+    executor.AddTask(create_particle_canvas);
+    executor.AddTask(create_ui_canvas);
+    executor.AddTask(create_ui_effected_canvas);
+    executor.AddTask(create_overall_canvas);
 }
 
 void GameLayer::LimitPlayerPosition()
@@ -605,7 +639,9 @@ void GameLayer::AddPlayerBullet()
         auto& particle = particles_[static_cast<size_t>(ParticleID::PlayerBullet)];
         particle->emplace_back({});
 
-        auto bullet = std::make_unique<PlayerBullet>(PlayerBullet::Params{ &particle->GetParticleData().back() });
+        auto bullet = std::make_unique<PlayerBullet>(
+            PlayerBullet::Params{ &particle->GetParticleData().back() }
+        );
         bullet->Initialize(entityCommonParams_, false);
         bullet->SetTranslation(player_->GetTranslation());
         bullet->SetMoveVelocity(newDirection * kBulletSpeed);
@@ -638,6 +674,7 @@ void GameLayer::RemoveDeadEnemy()
         if (isDead)
         {
             e->Finalize();
+            scoreCalculator_->CountEnemyDeath();
         }
         return isDead;
     }

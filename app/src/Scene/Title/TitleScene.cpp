@@ -51,9 +51,9 @@ void TitleScene::Initialize()
 
     /// フィルタの初期化と登録
     {
-        auto tempBloom = pCanvasBack_->GetPostEffectExecuter().AddEffect(PostEffectClassName::GaussianBloom);
-        auto tempRandom = pCanvasBack_->GetPostEffectExecuter().AddEffect(PostEffectClassName::RandomFilter);
-        auto tempRadial = pCanvasSprite_->GetPostEffectExecuter().AddEffect(PostEffectClassName::RadialBlur);
+        auto tempBloom = pCanvasBack_->GetPostEffectExecutor().AddEffect(PostEffectClassName::GaussianBloom);
+        auto tempRandom = pCanvasBack_->GetPostEffectExecutor().AddEffect(PostEffectClassName::RandomFilter);
+        auto tempRadial = pCanvasSprite_->GetPostEffectExecutor().AddEffect(PostEffectClassName::RadialBlur);
         pRandomFilter_ = static_cast<RandomFilter*>(tempRandom);
         pGaussianBloom_ = static_cast<GaussianBloom*>(tempBloom);
         pRadialBlur_ = static_cast<RadialBlur*>(tempRadial);
@@ -74,7 +74,7 @@ void TitleScene::Initialize()
 void TitleScene::Finalize()
 {
     gameEye_.reset();
-    pCanvasBack_->GetPostEffectExecuter().RemoveEffect(pRandomFilter_);
+    pCanvasBack_->GetPostEffectExecutor().RemoveEffect(pRandomFilter_);
 
     pLayer_->RemoveCanvas(pCanvasBack_.get());
     pLayer_->RemoveCanvas(pCanvasSprite_.get());
@@ -93,7 +93,7 @@ void TitleScene::Update()
     {
         pSoundStartButton_->Play();
         pTransShutter_ = std::make_unique<TransShutter>();
-        pSceneManager_->ReserveScene("LoadScene", std::move(pTransShutter_));
+        pSceneManager_->ReserveScene("GameScene", "LoadingScreen", std::move(pTransShutter_));
         isChangingScene_ = true;
     }
 
@@ -116,10 +116,6 @@ void TitleScene::Draw()
     pSpriteTitle_->Draw1F();
     pSpritePressStart_->Draw1F();
     pOpeningAnimation_->Draw1F();
-}
-
-void TitleScene::DrawTexts()
-{
 }
 
 void TitleScene::InitializeGameEye()

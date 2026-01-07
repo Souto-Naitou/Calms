@@ -60,7 +60,3 @@ void ClearScene::Draw()
     pClear_->Draw1F();
     pSpace_->Draw1F();
 }
-
-void ClearScene::DrawTexts()
-{
-}

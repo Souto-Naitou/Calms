@@ -12,10 +12,10 @@
 /// <summary>
 /// ゲームシーン
 /// </summary>
-class GameScene : public SceneBase
+class GameScene : public ILoadableScene
 {
 public:
-    GameScene(ISceneArgs* _args) : SceneBase(_args) {};
+    GameScene(ISceneArgs* pArgs) : ILoadableScene(pArgs) {};
 
     /// <summary>
     /// 初期化
@@ -34,15 +34,15 @@ public:
 
 
     /// <summary>
-    /// 描画(テキスト描画を除く)
+    /// 描画
     /// </summary>
     void Draw() override;
 
-
     /// <summary>
-    /// テキスト描画
+    /// ロードシーンで実行する処理
     /// </summary>
-    void DrawTexts() override;
+    void PreLoad(TaskExecutor& executor) override;
+
 
     /// <summary>
     /// シーン用のデバッグウィンドウを描画します。

@@ -36,7 +36,7 @@ void Player::Initialize(const EntityCommonParams& params, bool enableDebugWindow
     movePower_ = 25.0f;
     friction_ = 0.95f;
     transform_.translate = Vector3(0, 0.5f, 0);
-    stats_.Initalize(100.0f, 0.0f, 20.0f);
+    stats_.Initialize(100.0f, 0.0f, 20.0f);
 
     // オブジェクトの初期化
     this->ObjectsInitialize();

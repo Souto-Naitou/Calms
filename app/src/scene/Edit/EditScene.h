@@ -34,9 +34,6 @@ public:
     void Draw() override;
 
 
-    void DrawTexts() override;
-
-
     void ImGui();
 
 private:

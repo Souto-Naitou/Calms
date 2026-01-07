@@ -6,6 +6,7 @@
 #include <Features/Model/Loader/IModelLoader.h>
 #include <Features/Model/ModelStorage.h>
 #include <Features/Model/ModelManager.h>
+#include <screen/factory/IntermediateScreenFactory.h>
 
 
 /// <summary>
@@ -42,6 +43,7 @@ private: /// ゲーム内オブジェクト
     std::unique_ptr<IModelLoader> pModelLoader_ = nullptr; // !< モデルローダー
     std::unique_ptr<ModelStorage> pModelStorage_ = nullptr; // !< モデルストレージ
     std::unique_ptr<ModelManager> pModelManager_ = nullptr; // !< モデルマネージャー
+    std::unique_ptr<IntermediateScreenFactory> pIntermediateScreenFactory_ = nullptr; // !< 中間スクリーンファクトリー
 
     CollisionManager* pCollisionManager_ = nullptr;
 };

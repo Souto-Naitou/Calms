@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Scene/SceneBase.h>
+#include <Features/screen/IntermediateScreenBase.h>
 #include <Core/DirectX12/TextureManager.h>
 #include <drawable/sprite/Sprite.h>
 #include <Features/Bar2d/Bar2d.h>
@@ -10,14 +10,15 @@
 #include <vector>
 #include <memory>
 #include <queue>
+#include <Interfaces/ISceneArgs.h>
 
 /// <summary>
 /// ロードシーン
 /// </summary>
-class LoadScene : public SceneBase
+class LoadingScreen : public IntermediateScreenBase
 {
 public:
-    LoadScene(ISceneArgs* pArg) : SceneBase(pArg) {};
+    LoadingScreen(ISceneArgs* args) : IntermediateScreenBase(args) {};
 
     /// <summary>
     /// 初期化
@@ -39,6 +40,11 @@ public:
     /// </summary>
     void Draw() override;
 
+    /// <summary>
+    /// Screenを終了可能かどうかを取得します。
+    /// </summary>
+    bool IsEnd() const override;
+
 
 private:
     /// <summary>
@@ -56,17 +62,15 @@ private:
     void InitializeDrawables();
     void InitializeCanvas(DirectX12*, CubemapSystem*);
 
-    Input*          pInput_             = nullptr;  // !< 入力
-    TextureManager* pTextureManager_    = nullptr;  // !< テクスチャマネージャー
-    ModelManager*   pModelManager_      = nullptr;  // !< モデルマネージャー
+    Input*              pInput_             = nullptr;  // !< 入力
+    TextureManager*     pTextureManager_    = nullptr;  // !< テクスチャマネージャー
+    ModelManager*       pModelManager_      = nullptr;  // !< モデルマネージャー
 
     const float     kSmoothFactor_ = 0.1f;
     const float     kWaitTime_ = 1.0f;
     TimeMeasurer    waitTimer_ = {};
-
+    
     std::unique_ptr<Canvas>     pCanvas_                    = nullptr; // !< ロードシーン用キャンバス
-    std::queue<std::string>     texturePathQueue_           = {};
-    std::vector<std::string>    modelPathList_              = {};
     bool                        isTexturePathAggregated_    = false;
     bool                        isChangingScene_            = false; // !< シーン遷移中かどうか
 

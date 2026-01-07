@@ -29,7 +29,7 @@ void PlayerBullet::Initialize(const EntityCommonParams& params, bool enableDebug
     /// パラメータの初期化
     friction_ = 1.0f;
     attackPower_ = 5.0f;
-    stats_.Initalize(1.0f, 5.0f, 1.0f);
+    stats_.Initialize(1.0f, 5.0f, 1.0f);
 
     // コライダーの初期化
     this->CollidersInitialize();

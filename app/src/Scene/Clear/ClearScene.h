@@ -33,11 +33,6 @@ public:
     /// </summary>
     void Draw() override;
 
-    /// <summary>
-    /// テキスト描画
-    /// </summary>
-    void DrawTexts() override;
-
 private:
     std::unique_ptr<Sprite> pClear_ = nullptr;
     std::unique_ptr<Sprite> pSpace_ = nullptr;

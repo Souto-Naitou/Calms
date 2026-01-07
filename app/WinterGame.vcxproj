@@ -167,7 +167,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\entity\player\PlayerInput.cpp" />
     <ClCompile Include="src\entity\player\PlayerMovement.cpp" />
     <ClCompile Include="src\scene\Edit\EditScene.cpp" />
-    <ClCompile Include="src\scene\GameOverTest\GameOverTestScene.cpp" />
     <ClCompile Include="src\scene\game\animation\GameClearAnimation.cpp" />
     <ClCompile Include="src\scene\game\layer\GameLayer.cpp" />
     <ClCompile Include="src\scene\game\layer\ResultLayer.cpp" />
@@ -182,6 +181,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\Entity\ScreenToWorld\ScreenToWorld.cpp" />
     <ClCompile Include="src\Entity\Status\EntityStats.cpp" />
     <ClCompile Include="src\logic\timer\InGameTimer.cpp" />
+    <ClCompile Include="src\screen\factory\IntermediateScreenFactory.cpp" />
+    <ClCompile Include="src\screen\loading\LoadingScreen.cpp" />
     <ClCompile Include="src\ui\gauge\RingGauge.cpp" />
     <ClCompile Include="src\ui\guide\InputGuide.cpp" />
     <ClCompile Include="src\logic\spawner\EnemySpawner.cpp" />
@@ -215,7 +216,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\logic\event\KillEnemyEvent.h" />
     <ClInclude Include="src\logic\event\PlayerExplosionEvent.h" />
     <ClInclude Include="src\scene\Edit\EditScene.h" />
-    <ClInclude Include="src\scene\GameOverTest\GameOverTestScene.h" />
     <ClInclude Include="src\scene\game\animation\GameClearAnimation.h" />
     <ClInclude Include="src\scene\game\layer\GameLayer.h" />
     <ClInclude Include="src\scene\game\layer\ResultLayer.h" />
@@ -229,6 +229,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\Entity\ScreenToWorld\ScreenToWorld.h" />
     <ClInclude Include="src\Entity\Status\EntityStats.h" />
     <ClInclude Include="src\logic\timer\InGameTimer.h" />
+    <ClInclude Include="src\screen\factory\IntermediateScreenFactory.h" />
+    <ClInclude Include="src\screen\loading\LoadingScreen.h" />
     <ClInclude Include="src\ui\gauge\RingGauge.h" />
     <ClInclude Include="src\ui\guide\InputGuide.h" />
     <ClInclude Include="src\logic\spawner\EnemySpawner.h" />
