@@ -12,7 +12,7 @@ public:
     /// <summary>
     /// 入力ガイドの初期化を行います。
     /// </summary>
-    void Initialize(Canvas* canvas);
+    void Initialize();
 
     /// <summary>
     /// 入力ガイドの状態を更新します。
@@ -31,7 +31,7 @@ public:
     void Finalize();
 
 private:
-    Canvas* canvas_ = nullptr;
-    std::unique_ptr<Sprite> leftclick_ = nullptr;
-    std::unique_ptr<Sprite> shift_ = nullptr;
+    std::unique_ptr<Sprite> shoot_ = nullptr;
+    std::unique_ptr<Sprite> slomo_ = nullptr;
+    std::unique_ptr<Sprite> explosion_ = nullptr;
 };

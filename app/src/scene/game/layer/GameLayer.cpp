@@ -103,7 +103,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 
     /// 入力ガイド
     inputGuide_ = std::make_unique<InputGuide>();
-    inputGuide_->Initialize(canvasUI_.get());
+    inputGuide_->Initialize();
 
     /// エリアの初期化
     lines_ = std::make_unique<Line>(4);
