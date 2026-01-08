@@ -2,44 +2,51 @@
 #include <config/ResourcePath.h>
 #include <Core/Win32/WinSystem.h>
 
-void InputGuide::Initialize(Canvas* canvas)
+void InputGuide::Initialize()
 {
-    canvas_ = canvas;
-
     const float margin = WinSystem::clientWidth / 40.0f;
+    const float padding = WinSystem::clientWidth / 60.0f;
     float cursorY = WinSystem::clientHeight - margin;
 
-    leftclick_ = std::make_unique<Sprite>();
-    leftclick_->Initialize(Path::Image::kGuideShoot);
-    leftclick_->SetName("leftclick");
-    leftclick_->SetAnchorPoint({ 0.0f, 0.5f });
-    cursorY -= leftclick_->GetSize().y / 2.0f;
-    leftclick_->SetPosition({ margin, cursorY });
+    shoot_ = std::make_unique<Sprite>();
+    shoot_->Initialize(Path::Image::kGuideShoot);
+    shoot_->SetName("guide_shoot");
+    shoot_->SetAnchorPoint({ 0.0f, 0.5f });
+    cursorY -= shoot_->GetSize().y / 2.0f + padding;
+    shoot_->SetPosition({ margin, cursorY });
 
-    cursorY -= leftclick_->GetSize().y + margin;
-    shift_ = std::make_unique<Sprite>();
-    shift_->Initialize(Path::Image::kGuideSlow);
-    shift_->SetName("shift");
-    shift_->SetAnchorPoint({ 0.0f, 0.5f });
-    shift_->SetPosition({ margin, cursorY });
+    slomo_ = std::make_unique<Sprite>();
+    slomo_->Initialize(Path::Image::kGuideSlow);
+    slomo_->SetName("guide_slomo");
+    slomo_->SetAnchorPoint({ 0.0f, 0.5f });
+    cursorY -= (shoot_->GetSize().y / 2.0f) + (slomo_->GetSize().y / 2.0f) + padding;
+    slomo_->SetPosition({ margin, cursorY });
+
+    explosion_ = std::make_unique<Sprite>();
+    explosion_->Initialize(Path::Image::kGuideExplosion);
+    explosion_->SetName("guide_explosion");
+    explosion_->SetAnchorPoint({ 0.0f, 0.5f });
+    cursorY -= (slomo_->GetSize().y / 2.0f) + (explosion_->GetSize().y / 2.0f) + padding;
+    explosion_->SetPosition({ margin, cursorY });
 }
 
 void InputGuide::Update()
 {
-    leftclick_->Update();
-    shift_->Update();
+    shoot_->Update();
+    slomo_->Update();
+    explosion_->Update();
 }
 
 void InputGuide::Draw1F()
 {
-    leftclick_->Draw1F();
-    shift_->Draw1F();
+    shoot_->Draw1F();
+    slomo_->Draw1F();
+    explosion_->Draw1F();
 }
 
 void InputGuide::Finalize()
 {
-    leftclick_->Finalize();
-    shift_->Finalize();
-    canvas_->UnregisterDrawable(leftclick_.get());
-    canvas_->UnregisterDrawable(shift_.get());
+    shoot_->Finalize();
+    slomo_->Finalize();
+    explosion_->Finalize();
 }

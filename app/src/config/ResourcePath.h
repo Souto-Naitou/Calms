@@ -38,8 +38,9 @@ namespace Path::Image
 
     /// [ ゲームシーン ]
     // ガイド画像
-    inline constexpr const char* kGuideShoot = "guide/leftclick.png";
-    inline constexpr const char* kGuideSlow = "guide/shift.png";
+    inline constexpr const char* kGuideShoot = "guide/shoot.png";
+    inline constexpr const char* kGuideSlow = "guide/slomo.png";
+    inline constexpr const char* kGuideExplosion = "guide/explosion.png";
     // レティクル
     inline constexpr const char* kReticle = "reticle.png";
     // 爆発エンティティ
