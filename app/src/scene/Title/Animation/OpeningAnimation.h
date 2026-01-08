@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Features/Animation/AnimationTimeline.h>
+#include <Features/Animation/AnimationTimeline.hpp>
 #include <drawable/sprite/Sprite.h>
 #include <DebugTools/DebugEntry/DebugEntry.h>
 #include <Features/Layer/Canvas.h>

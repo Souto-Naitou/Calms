@@ -1,4 +1,4 @@
-#include "LoadScene.h"
+#include "LoadingScreen.h"
 #include "config/ResourcePath.h"
 #include <Core/Win32/WinSystem.h>
 #include <filesystem>
@@ -10,7 +10,7 @@
 #include <Features/Layer/CanvasScope.h>
 
 
-void LoadScene::Initialize()
+void LoadingScreen::Initialize()
 {
     pInput_ = Input::GetInstance();
 
@@ -20,37 +20,31 @@ void LoadScene::Initialize()
     this->InitializeCanvas(pDx12, pCubemapSystem);
     this->InitializeDrawables();
 
-    /// シーンマネージャー経由で次のシーンのPreloadを実行する
-    /// ここで読み込みタスクが追加される
-
-    /// 
-
     waitTimer_.Start();
 }
 
-void LoadScene::Finalize()
+void LoadingScreen::Finalize()
 {
     pBar_->Finalize();
     pCanvas_->Finalize();
     pLayer_->RemoveCanvas(pCanvas_.get());
 }
 
-void LoadScene::Update()
+void LoadingScreen::Update()
 {
     if (waitTimer_.GetNow<float>() >= kWaitTime_ && !isTexturePathAggregated_)
     {
         auto& cfg = ConfigManager::GetInstance()->GetConfigData();
         this->AggregateTexturePaths(cfg.texture_paths.front());
         this->AggregateTexturePaths(cfg.model_paths.front());
-        pBar_->SetMaxValue(static_cast<float>(texturePathQueue_.size()));
+        pBar_->SetMaxValue(static_cast<float>(taskExecutor_.GetCount()));
         isTexturePathAggregated_ = true;
     }
 
     /// パスリストが残っていれば
-    if (isTexturePathAggregated_ && !texturePathQueue_.empty())
+    if (isTexturePathAggregated_ && taskExecutor_.GetCount())
     {
-        pTextureManager_->LoadTexture(texturePathQueue_.back());
-        texturePathQueue_.pop();
+        taskExecutor_.ExecuteOrdered();
         current_ += 1.0f;
     }
     
@@ -60,18 +54,12 @@ void LoadScene::Update()
 
     pBar_->SetCurrentValue(smoothValue);
 
-    if (isTexturePathAggregated_ && pBar_->GetCurrentValue() >= pBar_->GetMaxValue() - 0.1f && !isChangingScene_)
-    {
-        SceneManager::GetInstance()->ReserveScene("GameScene", std::make_unique<TransShutter>());
-        isChangingScene_ = true;
-    }
-
     pSpriteLBackground_->Update();
     pSpriteLoading_->Update();
     pBar_->Update();
 }
 
-void LoadScene::Draw()
+void LoadingScreen::Draw()
 {
     CanvasScope canvasScope(pCanvas_.get());
     pSpriteLBackground_->Draw1F();
@@ -79,7 +67,12 @@ void LoadScene::Draw()
     pBar_->Draw1F();
 }
 
-void LoadScene::AggregateTexturePaths(const std::string& directoryPath)
+bool LoadingScreen::IsEnd() const
+{
+    return pBar_->GetCurrentValue() >= pBar_->GetMaxValue() - 0.1f;
+}
+
+void LoadingScreen::AggregateTexturePaths(const std::string& directoryPath)
 {
     std::filesystem::path dirPath(directoryPath);
     if (!std::filesystem::exists(dirPath) || !std::filesystem::is_directory(dirPath))
@@ -95,12 +88,15 @@ void LoadScene::AggregateTexturePaths(const std::string& directoryPath)
 
         if (ext == ".png" || ext == ".dds" || ext == ".jpg" || ext == ".jpeg")
         {
-            texturePathQueue_.push(entry.path().string());
+            taskExecutor_.AddTask([=]()
+            {
+                pTextureManager_->LoadTexture(entry.path().string());
+            });
         }
     }
 }
 
-void LoadScene::InitializeDrawables()
+void LoadingScreen::InitializeDrawables()
 {
     /// ローディングスプライトの初期化
     pTextureManager_ = TextureManager::GetInstance();
@@ -129,10 +125,10 @@ void LoadScene::InitializeDrawables()
     pBar_->SetCurrentValue(0.0f);
 }
 
-void LoadScene::InitializeCanvas(DirectX12* pDx12, CubemapSystem* pCubemapSystem)
+void LoadingScreen::InitializeCanvas(DirectX12* pDx12, CubemapSystem* pCubemapSystem)
 {
     Canvas::Params canvasParams = {};
-    canvasParams.name = "LoadSceneCanvas";
+    canvasParams.name = "LoadingScreenCanvas";
     canvasParams.pDx12 = pDx12;
     canvasParams.pCubemapSystem = pCubemapSystem;
     #ifdef _DEBUG

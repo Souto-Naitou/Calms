@@ -1,6 +1,7 @@
 #pragma once
 #include <Interfaces/ISceneArgs.h>
 #include <Features/Layer/OrderedCanvasLayer.h>
+#include <io/loader/TaskExecutor.h>
 
 class IGameLayer
 {
@@ -26,4 +27,21 @@ public:
     /// 描画処理を行います。
     /// </summary>
     virtual void Draw() = 0;
+};
+
+struct PreloadContext
+{
+    ISceneArgs*         pSceneArgs      = nullptr;
+    OrderedCanvasLayer* pLayer          = nullptr;
+};
+
+class ILoadableGameLayer : public IGameLayer
+{
+public:
+    virtual ~ILoadableGameLayer() = default;
+
+    /// <summary>
+    /// ロードシーンで実行する処理を行います。
+    /// </summary>
+    virtual void Preload(const PreloadContext& ctx, TaskExecutor& executor) = 0;
 };

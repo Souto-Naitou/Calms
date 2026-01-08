@@ -19,6 +19,8 @@ void Calms::Initialize()
     /// シーンファクトリの設定
     pSceneFactory_ = std::make_unique<SceneFactory>();
     pSceneManager_->SetSceneFactory(pSceneFactory_.get());
+    pIntermediateScreenFactory_ = std::make_unique<IntermediateScreenFactory>();
+    pTransitionExecutor_->SetIntermediateScreenFactory(pIntermediateScreenFactory_.get());
 
     /// 当たり判定マネージャの初期化
     pCollisionManager_ = CollisionManager::GetInstance();

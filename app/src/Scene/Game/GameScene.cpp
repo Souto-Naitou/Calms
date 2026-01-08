@@ -3,7 +3,7 @@
 
 void GameScene::Initialize()
 {
-    pGameLayer_ = std::make_unique<GameLayer>();
+    if (!pGameLayer_) pGameLayer_ = std::make_unique<GameLayer>();
     pGameLayer_->Initialize(pArgs_, pLayer_);
 }
 
@@ -22,8 +22,14 @@ void GameScene::Draw()
     pGameLayer_->Draw();
 }
 
-void GameScene::DrawTexts()
+void GameScene::PreLoad(TaskExecutor& executor)
 {
+    /// #TODO TaskExecutorにタスクを追加する
+    PreloadContext ctx{};
+    ctx.pSceneArgs = pArgs_;
+    ctx.pLayer = pLayer_;
+    pGameLayer_ = std::make_unique<GameLayer>();
+    pGameLayer_->Preload(ctx, executor);
 }
 
 void GameScene::ImGui()

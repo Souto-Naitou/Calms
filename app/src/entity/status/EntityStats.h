@@ -18,7 +18,7 @@ public:
     /// <param name="health">初期HP。</param>
     /// <param name="attack">初期攻撃力。</param>
     /// <param name="speed">初期移動速度。</param>
-    void Initalize(float health, float attack, float speed);
+    void Initialize(float health, float attack, float speed);
 
     /// <summary>
     /// 継続的に変化する値やクールダウン等の更新を行います。

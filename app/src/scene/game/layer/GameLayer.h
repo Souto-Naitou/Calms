@@ -17,6 +17,7 @@
 #include <Features/RandomGenerator/RandomGenerator.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Layer/OrderedCanvasLayer.h>
+#include <Features/event/EventSubscription.h>
 #include <Interfaces/ISceneArgs.h>
 
 // post effects
@@ -33,10 +34,10 @@
 #include <entity/explosion/PlayerExplosion.h>
 #include <logic/spawner/EnemySpawner.h>
 #include <logic/timer/InGameTimer.h>
+#include <logic/event/PlayerExplosionEvent.h>
+#include <logic/score/ScoreCalculator.h>
 #include <ui/countdown/CountDown.h>
 #include <ui/guide/InputGuide.h>
-#include <Features/event/EventSubscription.h>
-#include <logic/event/PlayerExplosionEvent.h>
 #include <ui/PlayerUI3d.h>
 
 // stl
@@ -51,16 +52,17 @@
 #include <optional>
 #include <Effects/PostEffects/Grayscale/Grayscale.h>
 
-class GameLayer : public IGameLayer
+class GameLayer : public ILoadableGameLayer
 {
 public:
     void Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer) override;
     void Finalize() override;
     void Update() override;
     void Draw() override;
+    void Preload(const PreloadContext& ctx, TaskExecutor& executor) override;
 
 private:
-    void CanvasInitialize(ISceneArgs* pArgs);
+    void CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs);
     void LimitPlayerPosition();
     void ParticlesInitialize();
     void AddPlayerBullet();
@@ -115,6 +117,7 @@ private:
     std::unique_ptr<ScreenToWorld>                  screenToWorld_          = {};       // !< 座標変換
     std::array<Particle*, kParticleIDMax>           particles_              = {};       // !< パーティクル
     std::vector<std::unique_ptr<PlayerExplosion>>   playerExplosions_       = {};       // !< プレイヤー爆発エフェクト
+    std::unique_ptr<ScoreCalculator>                scoreCalculator_        = {};       // !< スコア計算機
     /// UI
     std::unique_ptr<InGameTimer>                    gameTimer_              = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                     inputGuide_             = {};       // !< 入力ガイド

@@ -5,7 +5,7 @@
 #include <typeinfo>
 #include <cassert>
 
-void EntityStats::Initalize(float health, float attack, float speed)
+void EntityStats::Initialize(float health, float attack, float speed)
 {
     health_ = health;
     maxHealth_ = health;

@@ -11,7 +11,7 @@
 #include <Core/Win32/WinSystem.h>
 #include <Effects/PostEffects/RandomFilter/RandomFilter.h>
 #include <Core/DirectX12/DirectX12.h>
-#include <Core/DirectX12/PostEffectExecuter.h>
+#include <Core/DirectX12/PostEffectExecutor.h>
 #include "./Animation/OpeningAnimation.h"
 #include <Features/Layer/Canvas.h>
 #include <Effects/PostEffects/GaussianBloom/GaussianBloom.h>
@@ -43,14 +43,9 @@ public:
     void Update() override;
 
     /// <summary>
-    /// 描画(テキスト描画を除く)
+    /// 描画
     /// </summary>
     void Draw() override;
-
-    /// <summary>
-    /// テキスト描画
-    /// </summary>
-    void DrawTexts() override;
 
 
 private:
@@ -87,7 +82,7 @@ private:
     Audio*                              pSoundStartButton_  = nullptr;      // !< スタートボタン音声
 
     /// 他クラスのインスタンス
-    PostEffectExecuter*         pPostEffectExecuter_    = nullptr;      // !< ポストエフェクト実行クラス
+    PostEffectExecutor*         pPostEffectExecutor_    = nullptr;      // !< ポストエフェクト実行クラス
     DirectX12*                  pDx12_                  = nullptr;      // !< DirectX12
     Input*                      pInput_                 = nullptr;      // !< 入力
     SceneManager*               pSceneManager_          = nullptr;      // !< シーン遷移

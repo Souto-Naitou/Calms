@@ -79,9 +79,6 @@
     <Filter Include="Entity\Player\Animation">
       <UniqueIdentifier>{a8ea2415-d455-497c-9c82-1bfa7c8494d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\GameOverTest">
-      <UniqueIdentifier>{aaf5c7be-ab11-4c36-bd95-6930d9b74c6a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Entity\Player\Component">
       <UniqueIdentifier>{c1477ffa-c207-4def-bacf-9dfc04be9155}</UniqueIdentifier>
     </Filter>
@@ -99,6 +96,12 @@
     </Filter>
     <Filter Include="UI\RingGauge">
       <UniqueIdentifier>{b7932800-956a-433d-8ea4-219e0a9ecaa3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\PlayerExplosion">
+      <UniqueIdentifier>{ed59be7d-3c00-4c05-ad08-9cc0ff3097db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Player3d">
+      <UniqueIdentifier>{9f362a64-0aa2-49aa-a999-35a3755878f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -161,9 +164,6 @@
     <ClCompile Include="src\entity\player\GameOverAnimation.cpp">
       <Filter>Entity\Player\Animation</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\GameOverTest\GameOverTestScene.cpp">
-      <Filter>Scene\GameOverTest</Filter>
-    </ClCompile>
     <ClCompile Include="src\entity\player\PlayerInput.cpp">
       <Filter>Entity\Player\Component</Filter>
     </ClCompile>
@@ -191,10 +191,20 @@
     <ClCompile Include="src\ui\gauge\RingGauge.cpp">
       <Filter>UI\RingGauge</Filter>
     </ClCompile>
-    <ClCompile Include="src\entity\player\PlayerExplosionTrigger.cpp" />
-    <ClCompile Include="src\entity\explosion\PlayerExplosion.cpp" />
-    <ClCompile Include="src\entity\player\PlayerContext.cpp" />
-    <ClCompile Include="src\ui\PlayerUI3d.cpp" />
+    <ClCompile Include="src\entity\player\PlayerContext.cpp">
+      <Filter>Entity\Player\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\player\PlayerExplosionTrigger.cpp">
+      <Filter>Entity\Player\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\explosion\PlayerExplosion.cpp">
+      <Filter>Entity\PlayerExplosion</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\PlayerUI3d.cpp">
+      <Filter>UI\Player3d</Filter>
+    </ClCompile>
+    <ClCompile Include="src\screen\factory\IntermediateScreenFactory.cpp" />
+    <ClCompile Include="src\screen\loading\LoadingScreen.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -258,9 +268,6 @@
     <ClInclude Include="src\entity\player\GameOverAnimation.h">
       <Filter>Entity\Player\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene\GameOverTest\GameOverTestScene.h">
-      <Filter>Scene\GameOverTest</Filter>
-    </ClInclude>
     <ClInclude Include="src\entity\player\PlayerInput.h">
       <Filter>Entity\Player\Component</Filter>
     </ClInclude>
@@ -288,11 +295,23 @@
     <ClInclude Include="src\ui\gauge\RingGauge.h">
       <Filter>UI\RingGauge</Filter>
     </ClInclude>
-    <ClInclude Include="src\logic\event\KillEnemyEvent.h" />
-    <ClInclude Include="src\entity\player\PlayerExplosionTrigger.h" />
-    <ClInclude Include="src\logic\event\PlayerExplosionEvent.h" />
-    <ClInclude Include="src\entity\explosion\PlayerExplosion.h" />
-    <ClInclude Include="src\ui\PlayerUI3d.h" />
+    <ClInclude Include="src\entity\player\PlayerExplosionTrigger.h">
+      <Filter>Entity\Player\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\explosion\PlayerExplosion.h">
+      <Filter>Entity\PlayerExplosion</Filter>
+    </ClInclude>
+    <ClInclude Include="src\logic\event\PlayerExplosionEvent.h">
+      <Filter>Logic\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\logic\event\KillEnemyEvent.h">
+      <Filter>Logic\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\PlayerUI3d.h">
+      <Filter>UI\Player3d</Filter>
+    </ClInclude>
+    <ClInclude Include="src\screen\factory\IntermediateScreenFactory.h" />
+    <ClInclude Include="src\screen\loading\LoadingScreen.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

@@ -31,7 +31,7 @@ void Enemy::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
     moveSpeed_              = 10.0f;
     transform_.translate    = Vector3(0, 0.5f, 0);
     attackPower_            = 10.0f;
-    stats_.Initalize(1.0f, 10.0f, 10.0f);
+    stats_.Initialize(1.0f, 10.0f, 10.0f);
 
     // オブジェクトの初期化
     this->InitializeObjects();

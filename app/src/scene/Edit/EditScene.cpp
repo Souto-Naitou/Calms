@@ -95,10 +95,6 @@ void EditScene::Draw()
     pParticleTriangle_->Draw1F();
 }
 
-void EditScene::DrawTexts()
-{
-}
-
 void EditScene::ImGui()
 {
     #ifdef _DEBUG

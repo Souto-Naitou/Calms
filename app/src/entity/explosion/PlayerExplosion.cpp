@@ -14,7 +14,7 @@ void PlayerExplosion::Initialize(const EntityCommonParams& params, bool enableDe
 
     this->InitializeCollider();
 
-    stats_.Initalize(1.0f, 5.0f, 1.0f);
+    stats_.Initialize(1.0f, 5.0f, 1.0f);
 
     /// タイマーの初期化と開始
     timeMeasurer_ = std::make_unique<TimeMeasurerByDt>();
