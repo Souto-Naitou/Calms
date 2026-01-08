@@ -52,6 +52,7 @@ void ScoreCalculator::CountEnemyDeath()
 
 void ScoreCalculator::ImGui()
 {
+#ifdef _DEBUG
     if (ImGui::DragFloat2("LeftTop", &scoreLeftTop_.x, 0.01f, 0.0f, FLT_MAX))
     {
         for (uint32_t i = 0; i < scoreDigits_.size(); ++i)
@@ -76,6 +77,7 @@ void ScoreCalculator::ImGui()
             UpdatePosition(i);
         }
     }
+#endif // _DEBUG
 }
 
 void ScoreCalculator::GetTextureHandles()
