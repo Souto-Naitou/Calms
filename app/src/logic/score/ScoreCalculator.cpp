@@ -10,38 +10,23 @@ void ScoreCalculator::Initialize()
     score_ = 0;
     enemyDeathCount_ = 0;
 
-    // デバッグエントリの作成
-    pDebugEntry_ = std::make_unique<DebugEntry<ScoreCalculator>>(
-        "ScoreCalculator", this, false
-    );
-
-    this->GetTextureHandles();
-    this->InitializeSprites();
+    this->InitializeNumericView();
 }
 
 void ScoreCalculator::Update()
 {
-    this->ApplyScoreToSprites();
-
     this->UpdateDisplayScore();
 
-    this->UpdateSprites();
+    this->UpdateNumericView();
 }
 
 void ScoreCalculator::Draw1F()
 {
-    for (const auto& digitSprite : scoreDigits_)
-    {
-        digitSprite->Draw1F();
-    }
+    pScore_->Draw1F();
 }
 
 void ScoreCalculator::Finalize()
 {
-    for (const auto& digitSprite : scoreDigits_)
-    {
-        digitSprite->Finalize();
-    }
 }
 
 void ScoreCalculator::CountEnemyDeath()
@@ -50,48 +35,16 @@ void ScoreCalculator::CountEnemyDeath()
     receiveAddScore_ += ScorePerUnit::kEnemy;
 }
 
-void ScoreCalculator::ImGui()
+void ScoreCalculator::InitializeNumericView()
 {
-#ifdef _DEBUG
-    if (ImGui::DragFloat2("LeftTop", &scoreLeftTop_.x, 0.01f, 0.0f, FLT_MAX))
-    {
-        for (uint32_t i = 0; i < scoreDigits_.size(); ++i)
-        {
-            UpdatePosition(i);
-        }
-    }
-
-    if (ImGui::DragFloat("FontWidth", &fontWidth_, 0.01f, 1.0f, FLT_MAX))
-    {
-        for (uint32_t i = 0; i < scoreDigits_.size(); ++i)
-        {
-            UpdateFontWidth(scoreDigits_[i].get());
-            UpdatePosition(i);
-        }
-    }
-
-    if (ImGui::DragFloat("LetterSpacing", &letterSpacing_, 0.01f, 0.0f, FLT_MAX))
-    {
-        for (uint32_t i = 0; i < scoreDigits_.size(); ++i)
-        {
-            UpdatePosition(i);
-        }
-    }
-#endif // _DEBUG
-}
-
-void ScoreCalculator::GetTextureHandles()
-{
+    std::array<D3D12_GPU_DESCRIPTOR_HANDLE, 10u> textureHandles{};
     // 0~9のテクスチャハンドルを取得
     for (uint32_t i = 0; i < 10u; ++i)
     {
         auto& filepath = Path::Image::kNumbers[i];
-        digitTextureHandles_[i] = TextureManager::GetInstance()->GetSrvHandleGPU(filepath);
+        textureHandles[i] = TextureManager::GetInstance()->GetSrvHandleGPU(filepath);
     }
-}
 
-void ScoreCalculator::InitializeSprites()
-{
     constexpr static uint32_t marginLeft = 32u;
     scoreLeftTop_ =
     {
@@ -99,28 +52,17 @@ void ScoreCalculator::InitializeSprites()
         static_cast<float>(WinSystem::clientHeight) / 2.0f
     };
 
-    for (uint32_t i = 0; i < scoreDigits_.size(); ++i)
-    {
-        auto& digitSprite = scoreDigits_[i];
-        
-        // メタデータ取得
-        const auto& metadata = TextureManager::GetInstance()->GetMetaData(Path::Image::kNumbers[i]);
-        
-        digitSprite = std::make_unique<Sprite>();
-        digitSprite->Initialize(digitTextureHandles_.front());
-        digitSprite->SetAnchorPoint({ 0.0f, 0.5f });
-
-        UpdateFontWidth(digitSprite.get());
-        UpdatePosition(i);
-    }
+    pScore_ = std::make_unique<NumericView>();
+    pScore_->Initialize(textureHandles);
+    pScore_->SetFontSize(kFontHeight_);
+    auto& fontLayoutProps = pScore_->GetFontLayoutProperties();
+    fontLayoutProps.leftTop = scoreLeftTop_;
 }
 
-void ScoreCalculator::UpdateSprites()
+void ScoreCalculator::UpdateNumericView()
 {
-    for (uint32_t i = 0; i < scoreDigits_.size(); ++i)
-    {
-        scoreDigits_[i]->Update();
-    }
+    pScore_->SetNumber(static_cast<uint32_t>(score_));
+    pScore_->Update();
 }
 
 void ScoreCalculator::UpdateDisplayScore()
@@ -130,31 +72,4 @@ void ScoreCalculator::UpdateDisplayScore()
     addScore = receiveAddScore_ / static_cast<float>(scoreIncrementPerFrame_);
     receiveAddScore_ -= addScore;
     score_ += addScore;
-}
-
-void ScoreCalculator::ApplyScoreToSprites()
-{
-    auto displayScore = static_cast<uint32_t>(score_);
-    for (int32_t i = static_cast<int32_t>(scoreDigits_.size()) - 1; i >= 0; --i)
-    {
-        const uint32_t digit = displayScore % 10u;
-        displayScore /= 10u;
-        scoreDigits_[i]->SetTextureHandle(digitTextureHandles_[digit]);
-    }
-}
-
-void ScoreCalculator::UpdatePosition(uint32_t index)
-{
-    Vector2 position = scoreLeftTop_;
-    position.x += static_cast<float>(index) * (fontWidth_ + letterSpacing_);
-    scoreDigits_[index]->SetPosition(position);
-}
-
-void ScoreCalculator::UpdateFontWidth(Sprite* sprite) const
-{
-    Vector2 size = sprite->GetSize();
-    float aspectRatio = size.x / size.y;
-    size.x = static_cast<float>(fontWidth_);
-    size.y = static_cast<float>(fontWidth_) / aspectRatio;
-    sprite->SetSize(size);
 }
