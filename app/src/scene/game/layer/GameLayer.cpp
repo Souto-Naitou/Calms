@@ -1,7 +1,7 @@
 #include "GameLayer.h"
 #include <Features/SceneManager/SceneManager.h>
 #include <drawable/particle/ParticleStorage.h>
-#include <Core/Win32/WinSystem.h>
+#include <Core/Window/Window.h>
 #include <Effects/PostEffects/DepthBasedOutline/DepthBasedOutline.h>
 #include <Effects/PostEffects/GaussianBloom/GaussianBloom.h>
 #include <Effects/SceneTransition/TransFadeInOut.h>
@@ -10,16 +10,18 @@
 #include <Features/event/EventListener.h>
 #include <Presets/Object3d/Grid/Preset_Grid.h>
 #include <drawable/sprite/SpriteSystem.h>
+#include <Math/ViewportUnits.hpp>
 #include <imgui.h>
 #include <mathExtension.h>
 #include <config/ResourcePath.h>
 #include <mathExtension.h>
 #include <cmath>
 
+using namespace Math::Viewport;
 
 void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 {
-    /// インスタンスの取得
+    /// [ インスタンスの取得 ]
     pDx12_ = std::any_cast<DirectX12*>(pArgs->Get("DirectX12"));
     pDeltaTimeManager_ = DeltaTimeManager::GetInstance();
     randomGenerator_ = RandomGenerator::GetInstance();
@@ -28,7 +30,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     pLineSystem_ = std::any_cast<LineSystem*>(pArgs->Get("LineSystem"));
     pLayer_ = pLayer;
 
-    /// グリッドの初期化
+    /// [ グリッドの初期化 ]
     grid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
     grid_->GetOption().lightingData->enableLighting = true;
     grid_->SetPointLight(&pointLight_);
@@ -36,140 +38,116 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     grid_->SetScale(Vector3(0.5f, 30.0f, 0.5f));
     grid_->GetOption().tilingData->tilingMultiply = Vector2(10.0f, 10.0f);
 
-    /// ゲームアイの初期化
+    /// [ ゲームアイの初期化 ]
     pGameEye_ = std::make_unique<GameEye>();
     pGameEye_->SetTranslate(Vector3(0, kGameEyeHeightDefault_, 0));
     pGameEye_->SetRotate(Vector3(1.57f, 0, 0));
     pGameEye_->SetName("main");
 
-    /// ゲームアイをセット
+    /// [ ゲームアイをセット ]
     Object3dSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     SpriteSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     LineSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     ParticleSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
 
-    /// 平行光源の初期化
+    /// [ 平行光源の初期化 ]
     directionalLight_.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
     directionalLight_.direction = Vector3(0.0f, -1.0f, -0.0f);
     directionalLight_.intensity = 1.0f;
 
-    /// ポイントライトの初期化
+    /// [ ポイントライトの初期化 ]
     pointLight_.IsEnable() = true;
     pointLight_.GetColor() = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     pointLight_.GetIntensity() = 7.5f;
     pointLight_.GetPosition() = Vector3(0.0f, 0.0f, 2.0f);
 
-    // パーティクルの初期化
+    /// [ パーティクルの初期化 ]
     this->ParticlesInitialize();
 
-    /// エンティティ共通パラメータをパック
+    /// [ エンティティ共通パラメータをパック ]
     entityCommonParams_.pDirLight = &directionalLight_;
     entityCommonParams_.pPointLight = &pointLight_;
 
-    /// プレイヤーの初期化
+    /// [ プレイヤーの初期化 ]
     Player::Params playerParams = {};
     playerParams.particle = particles_[static_cast<size_t>(ParticleID::PlayerConstant)];
     playerParams.pModelManager = pModelManager_;
     pPlayer_ = std::make_unique<Player>(playerParams);
     pPlayer_->Initialize(entityCommonParams_);
 
+    /// [ プレイヤー3DUIの初期化 ]
     pPlayerUI3d_ = std::make_unique<PlayerUI3d>();
     pPlayerUI3d_->Initialize(pPlayer_.get(), pDx12_);
 
-    /// 敵生成システムの初期化
+    /// [ 敵生成システムの初期化 ]
     enemyPopSystem_.Initialize();
     enemyPopSystem_.SetPopRange(Vector3(-30.0f, 0.5f, -30.0f), Vector3(30.0f, 0.5f, 30.0f));
-    enemyPopSystem_.SetIgnoreRange(3.0f);
+    enemyPopSystem_.SetIgnoreRange(7.0f);
 
-    /// カウントダウンの初期化
+    /// [ カウントダウンの初期化 ]
     pStartCountDown_ = std::make_unique<CountDown>();
     pStartCountDown_->Initialize();
 
-    /// デルタタイムの設定
+    /// [ デルタタイムの設定 ]
     pDeltaTimeManager_->SetDeltaTime(0, 1.0f / 60.0f);
     pDeltaTimeManager_->SetDeltaTime(1, 1.0f / 60.0f);
 
-    /// 座標変換の初期化
+    /// [ 座標変換の初期化 ]
     screenToWorld_ = std::make_unique<ScreenToWorld>();
     screenToWorld_->Initialize();
     screenToWorld_->SetGameEye(pGameEye_.get());
 
-    /// タイマー
+    /// [ タイマー ]
     timer_.Start();
 
-    /// ゲームタイマーの初期化
+    /// [ ゲームタイマーの初期化 ]
     ingameTimer_ = std::make_unique<InGameTimer>();
     ingameTimer_->Initialize(false, kGameLimitTime);
 
-    /// 入力ガイド
+    /// [ 入力ガイド ]
     inputGuide_ = std::make_unique<InputGuide>();
     inputGuide_->Initialize();
 
-    /// エリアの初期化
-    lines_ = std::make_unique<Line>(4);
-    lines_->Initialize();
-    lines_->SetColor({ 1.0f, 1.0f, 0.0f, 1.0f });
-
-    (*lines_)[0] = Vector3(-areaWidth_, 0.5f, -areaWidth_);
-    (*lines_)[1] = Vector3(areaWidth_, 0.5f, -areaWidth_);
-
-    (*lines_)[2] = Vector3(areaWidth_, 0.5f, -areaWidth_);
-    (*lines_)[3] = Vector3(areaWidth_, 0.5f, areaWidth_);
-
-    (*lines_)[4] = Vector3(areaWidth_, 0.5f, areaWidth_);
-    (*lines_)[5] = Vector3(-areaWidth_, 0.5f, areaWidth_);
-
-    (*lines_)[6] = Vector3(-areaWidth_, 0.5f, areaWidth_);
-    (*lines_)[7] = Vector3(-areaWidth_, 0.5f, -areaWidth_);
-
-    // 敵の予約
+    /// [ 敵コンテナのサイズ予約 ]
     enemies_.reserve(kMaxEnemyCount_);
 
-    spriteClear_ = std::make_unique<Sprite>();
-    pTextureManager_->LoadTexture(Path::Image::kClearText);
-    spriteClear_->Initialize(Path::Image::kClearText);
-    spriteClear_->SetAnchorPoint({ 0.5f, 0.5f });
-    spriteClear_->SetPosition({ WinSystem::clientWidth / 4.0f, WinSystem::clientHeight / 2.8f });
-    spriteClear_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
+    /// [ スプライトの初期化 ]
+    this->SpritesInitialize();
 
-    spriteSpace_ = std::make_unique<Sprite>();
-    pTextureManager_->LoadTexture(Path::Image::kSpaceText);
-    spriteSpace_->Initialize(Path::Image::kTitleStartPrompt);
-    spriteSpace_->SetAnchorPoint({ 0.5f, 0.5f });
-    spriteSpace_->SetPosition({ WinSystem::clientWidth / 4.0f, WinSystem::clientHeight / 1.6f });
-    spriteSpace_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
-
-    titleTimer_.Start();
-
-    /// スコア計算機の初期化
+    /// [ スコア計算機の初期化 ]
     scoreCalculator_ = std::make_unique<ScoreCalculator>();
     scoreCalculator_->Initialize();
 
+    /// [ BGMの初期化と再生 ]
     pBGM_ = AudioManager::GetInstance()->GetNewAudio("BGM", Path::Audio::kBgmInGame);
     pBGM_->SetVolume(0.1f);
     pBGM_->Play(true);
 
-    /// ゲームオーバーアニメーションの初期化
-    GameOverAnimation::Params goaParams = {};
-    goaParams.pGameEye = pGameEye_.get();
-    goaParams.pPlayer = pPlayer_.get();
-    goaParams.pPointLight = &pointLight_;
-    goaParams.pParticle = particles_[static_cast<size_t>(ParticleID::PlayerDeath)];
+    /// [ ゲームオーバーアニメーションの初期化 ]
     gameOverAnimation_ = std::make_unique<GameOverAnimation>();
-    gameOverAnimation_->Initialize(goaParams);
-
-    GameClearAnimation::Params gcaParams = {};
-    gcaParams.pGameEye = pGameEye_.get();
-    gcaParams.pPlayer = pPlayer_.get();
-    gcaParams.pPointLight = &pointLight_;
-    gcaParams.pParticle = particles_[static_cast<size_t>(ParticleID::PlayerDeath)];
-    gcaParams.pSpriteClear = spriteClear_.get();
-    gcaParams.pSpriteSpace = spriteSpace_.get();
-    gcaParams.pScoreCalculator = scoreCalculator_.get();
+    gameOverAnimation_->Initialize(
+        {
+            .pGameEye = pGameEye_.get(),
+            .pPlayer = pPlayer_.get(),
+            .pPointLight = &pointLight_,
+            .pParticle = particles_[static_cast<size_t>(ParticleID::PlayerDeath)]
+        }
+    );
+    /// [ ゲームクリアアニメーションの初期化 ]
     pGameClearAnimation_ = std::make_unique<GameClearAnimation>();
-    pGameClearAnimation_->Initialize(gcaParams);
+    pGameClearAnimation_->Initialize(
+        {
+            .pGameEye = pGameEye_.get(),
+            .pPlayer = pPlayer_.get(),
+            .pPointLight = &pointLight_,
+            .pParticle = particles_[static_cast<size_t>(ParticleID::PlayerDeath)],
+            .pSpriteClear = spriteClear_.get(),
+            .pSpriteSpace = spriteSpace_.get(),
+            .pScoreCalculator = scoreCalculator_.get()
+        }
+    );
 
-    /// イベント登録
+    /// [ イベント登録 ]
     playerExplosionSub_ = EventListener::GetInstance()->Subscribe<PlayerExplosionEvent>(
         std::bind(&GameLayer::AddPlayerExplosion, this, std::placeholders::_1)
     );
@@ -226,7 +204,7 @@ void GameLayer::Update()
     spriteSpace_->Update();
     scoreCalculator_->Update();
 
-    /// プレイヤーの更新
+    /// [ プレイヤーの更新 ]
     if (!isEnding_)
     {
         directionalLight_.intensity = std::lerp(directionalLight_.intensity, kDirectionalLightTargetIntensity, 0.0125f);
@@ -252,44 +230,46 @@ void GameLayer::Update()
         isEnding_ = true;
     }
 
+    /// [ ゲームオーバーアニメーション、ゲームクリアアニメーションの更新 ]
     gameOverAnimation_->Update();
     pGameClearAnimation_->Update();
 
-    /// プレイヤーの移動範囲制限
+    /// [ プレイヤーの移動範囲制限 ]
     this->LimitPlayerPosition();
 
-    /// プレイヤーのスロー更新
-    PlayerSlowUpdate();
+    /// [ プレイヤーのスロー更新 ]
+    this->PlayerSlowUpdate();
 
-    /// 敵生成システムの更新
-    CreateEnemy();
+    /// [ 敵生成システムの更新 ]
+    this->CreateEnemy();
 
     for (auto& enemy : enemies_)
     {
         enemy->Update();
     }
 
-    /// プレイヤー弾の生成
+    /// [ プレイヤー弾の生成 ]
     if (pPlayer_->IsShot())
     {
-        AddPlayerBullet();
+        this->AddPlayerBullet();
     }
 
-    /// プレイヤー弾の更新
+    /// [ プレイヤー弾の更新 ]
     for (auto& bullet : playerBullets_)
     {
         bullet->Update();
     }
 
-    /// 敵の削除
-    RemoveDeadEnemy();
+    /// [ 敵の削除 ]
+    this->RemoveDeadEnemy();
 
-    /// プレイヤー弾の削除
-    RemovePlayerBullet();
+    /// [ プレイヤー弾の削除 ]
+    this->RemovePlayerBullet();
 
-    /// カウントダウンの更新
+    /// [ カウントダウンの更新 ]
     pStartCountDown_->Update();
 
+    /// [ ゲーム開始時のフラッシュ演出 ]
     if (pStartCountDown_->GetState() == CountDown::State::Start && !isGameStartFlashed_)
     {
         directionalLight_.intensity = kTargetDirectionalLightFlashIntensity_;
@@ -303,7 +283,7 @@ void GameLayer::Update()
         ingameTimer_->SetDisplay(true);
     }
 
-    /// ポイントライトの更新
+    /// [ ポイントライトの更新 ]
     {
         auto& position = pointLight_.GetPosition();
         position = pPlayer_->GetTranslation();
@@ -311,7 +291,7 @@ void GameLayer::Update()
     }
 
 
-    /// タイマーの更新
+    /// [ タイマーの更新 ]
     if (timer_.GetNow<float>() > countDownOffset_ && !pStartCountDown_->IsStart())
     {
         pStartCountDown_->Start();
@@ -319,33 +299,31 @@ void GameLayer::Update()
         timer_.Start();
     }
 
-    /// ゲームタイマーの更新
+    /// [ ゲームタイマーの更新 ]
     ingameTimer_->Update();
+
+    /// [ ゲームクリア後 / ゲームオーバー後のシーン遷移 ]
     if (pGameClearAnimation_->IsFinished() && !isChangingScene_ && Input::GetInstance()->TriggerKey(DIK_SPACE))
     {
         SceneManager::GetInstance()->ReserveScene("TitleScene", std::make_unique<TransShutter>());
         isChangingScene_ = true;
     }
-
-    /// ゲームオーバー後のシーン繊維
     if (gameOverAnimation_->IsFinished() && !isChangingScene_)
     {
         SceneManager::GetInstance()->ReserveScene("TitleScene", std::make_unique<TransFadeInOut>());
         isChangingScene_ = true;
     }
 
+    /// [ BGMのフェードアウト ]
     if (isChangingScene_)
     {
         pBGM_->SetVolume(pBGM_->GetVolume() * 0.95f);
     }
 
-    /// インプットガイドの更新
+    /// [ インプットガイドの更新 ]
     inputGuide_->Update();
 
     UpdatePlayerExplosion();
-
-    /// ラインの更新
-    lines_->Update();
 }
 
 void GameLayer::Draw()
@@ -438,7 +416,7 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
 {
     auto pCubemapSystem = std::any_cast<CubemapSystem*>(pArgs->Get("CubemapSystem"));
 
-    /// キャンバス共通パラメータ
+    /// [ キャンバス共通パラメータ ]
     Canvas::Params commonParams = {};
     commonParams.pDx12 = std::any_cast<DirectX12*>(pArgs->Get("DirectX12"));
     commonParams.pCubemapSystem = pCubemapSystem;
@@ -446,7 +424,7 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
     commonParams.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs->Get("ImGuiManager"));
     #endif // _DEBUG
 
-    /// グリッド用キャンバス
+    /// [ グリッド用キャンバス ]
     auto create_grid_canvas = [=]()
     {
         Canvas::Params canvasParams = commonParams;
@@ -457,7 +435,7 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
         pLayer_->AddCanvas(canvasGrid_.get());
     };
 
-    /// 3Dオブジェクト用キャンバス
+    /// [ 3Dオブジェクト用キャンバス ]
     auto create_3dobject_canvas = [=]()
     {
         Canvas::Params canvasParams = commonParams;
@@ -489,7 +467,7 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
         pLayer_->AddCanvas(canvas3dObject_.get());
     };
 
-    /// パーティクル用キャンバス
+    /// [ パーティクル用キャンバス ]
     auto create_particle_canvas = [=]()
     {
         Canvas::Params canvasParams = commonParams;
@@ -512,7 +490,7 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
         pLayer_->AddCanvas(canvasParticle_.get());
     };
 
-    /// UI用キャンバス
+    /// [ UI用キャンバス ]
     auto create_ui_canvas = [=]()
     {
         Canvas::Params canvasParams = commonParams;
@@ -523,7 +501,7 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
         pLayer_->AddCanvas(canvasUI_.get());
     };
 
-    /// UI用キャンバス(エフェクトあり)
+    /// [ UI用キャンバス(エフェクトあり) ]
     auto create_ui_effected_canvas = [=]()
     {
         Canvas::Params canvasParams = commonParams;
@@ -549,7 +527,7 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
         pLayer_->AddCanvas(canvasUIEffected_.get());
     };
 
-    /// 全体用キャンバス
+    /// [ 全体用キャンバス ]
     auto create_overall_canvas = [=]()
     {
         Canvas::Params canvasParams = commonParams;
@@ -630,6 +608,24 @@ void GameLayer::ParticlesInitialize()
         particle->Initialize(model);
         particle->reserve(1000);
     }
+}
+
+void GameLayer::SpritesInitialize()
+{
+    spriteClear_ = std::make_unique<Sprite>();
+    pTextureManager_->LoadTexture(Path::Image::kClearText);
+    spriteClear_->Initialize(Path::Image::kClearText);
+    spriteClear_->SetAnchorPoint({ 0.5f, 0.5f });
+    spriteClear_->SetPosition({ 25.0_vw, 35.7_vh });
+    spriteClear_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
+
+
+    spriteSpace_ = std::make_unique<Sprite>();
+    pTextureManager_->LoadTexture(Path::Image::kSpaceText);
+    spriteSpace_->Initialize(Path::Image::kTitleStartPrompt);
+    spriteSpace_->SetAnchorPoint({ 0.5f, 0.5f });
+    spriteSpace_->SetPosition({ 25.0_vw, 62.5_vh });
+    spriteSpace_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
 }
 
 void GameLayer::AddPlayerBullet()
@@ -794,8 +790,8 @@ void GameLayer::PlayerSlowUpdate()
 
         /// [ グレースケールエフェクトの強さを変える (0<) ]
         pOptionGrayscale_->power = std::lerp(
-            pOptionGrayscale_->power, 
-            kGrayscalePowerDuringSlow, 
+            pOptionGrayscale_->power,
+            kGrayscalePowerDuringSlow,
             kGrayscaleBlendRateDuringSlow);
 
         /// [ ゲームの進行速度を遅くする ]

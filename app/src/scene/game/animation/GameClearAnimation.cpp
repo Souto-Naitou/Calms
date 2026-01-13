@@ -3,7 +3,7 @@
 #include <Math/Easing.h>
 #include <config/ResourcePath.h>
 #include <Core/DirectX12/TextureManager.h>
-#include <Core/Win32/WinSystem.h>
+#include <Core/Window/Window.h>
 #include <cmath>
 #include <Color.h>
 
@@ -30,7 +30,7 @@ void GameClearAnimation::Initialize(Params params)
     pScore_->SetFontSize(56.0f);
     pScore_->SetColor(RGBA(0xc5a44600).to_Vector4());
     auto& layoutProp = pScore_->GetFontLayoutProperties();
-    layoutProp.leftTop = { static_cast<float>(WinSystem::clientWidth) / 4.0f, static_cast<float>(WinSystem::clientHeight) / 2.0f };
+    layoutProp.leftTop = { static_cast<float>(Window::clientWidth) / 4.0f, static_cast<float>(Window::clientHeight) / 2.0f };
     layoutProp.anchorPoint = { 0.5f, 0.5f };
     layoutProp.letterSpacing = 32.0f;
 }

@@ -2,7 +2,7 @@
 #include <Config/ResourcePath.h>
 #include <format>
 #include <Core/DirectX12/TextureManager.h>
-#include <Core/Win32/WinSystem.h>
+#include <Math/ViewportUnits.hpp>
 
 void ScoreCalculator::Initialize()
 {
@@ -49,7 +49,7 @@ void ScoreCalculator::InitializeNumericView()
     scoreLeftTop_ =
     {
         static_cast<float>(marginLeft),
-        static_cast<float>(WinSystem::clientHeight) / 2.0f
+        50.0_vh
     };
 
     pScore_ = std::make_unique<NumericView>();

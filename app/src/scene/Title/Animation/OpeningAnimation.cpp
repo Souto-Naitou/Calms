@@ -1,5 +1,5 @@
 #include "OpeningAnimation.h"
-#include <Core/Win32/WinSystem.h>
+#include <Core/Window/Window.h>
 #include <Vector2.h>
 
 
@@ -16,8 +16,8 @@ void OpeningAnimation::Initialize()
 {
     const Vector2 clientSize = 
     { 
-        static_cast<float>(WinSystem::clientWidth), 
-        static_cast<float>(WinSystem::clientHeight) 
+        static_cast<float>(Window::clientWidth), 
+        static_cast<float>(Window::clientHeight) 
     };
 
     // Spriteの初期化

@@ -1,6 +1,6 @@
 #include "LoadingScreen.h"
 #include "config/ResourcePath.h"
-#include <Core/Win32/WinSystem.h>
+#include <Core/Window/Window.h>
 #include <filesystem>
 #include <Core/ConfigManager/ConfigManager.h>
 #include <cctype>
@@ -104,24 +104,24 @@ void LoadingScreen::InitializeDrawables()
     pSpriteLoading_->Initialize(Path::Image::kLoading);
     pSpriteLoading_->SetName("Loading");
     pSpriteLoading_->SetAnchorPoint({ 1.0f, 0.5f });
-    pSpriteLoading_->SetPosition({ WinSystem::clientWidth - WinSystem::clientWidth / 12.8f, WinSystem::clientHeight - 80.0f });
+    pSpriteLoading_->SetPosition({ Window::clientWidth - Window::clientWidth / 12.8f, Window::clientHeight - 80.0f });
     pSpriteLoading_->SetColor({ 0.2f, 0.2f, 0.2f, 1.0f });
-    pSpriteLoading_->SetSizeWithFactor(WinSystem::clientWidth / 1600.0f);
+    pSpriteLoading_->SetSizeWithFactor(Window::clientWidth / 1600.0f);
 
     /// ローディング背景スプライトの初期化
     pSpriteLBackground_ = std::make_unique<Sprite>();
     pSpriteLBackground_->Initialize("white1x1.png");
     pSpriteLBackground_->SetName("LoadingBackground");
     pSpriteLBackground_->SetColor({ 0.8f, 0.8f, 0.8f, 1.0f });
-    pSpriteLBackground_->SetSize({ WinSystem::clientWidth, WinSystem::clientHeight });
+    pSpriteLBackground_->SetSize({ Window::clientWidth, Window::clientHeight });
 
     /// ローディングバーの初期化
     Bar2dInitParams barParams = {};
-    barParams.barSize = { WinSystem::clientWidth / 2.0f, WinSystem::clientHeight / 30.0f };
+    barParams.barSize = { Window::clientWidth / 2.0f, Window::clientHeight / 30.0f };
     pBar_ = std::make_unique<Bar2d>();
     pBar_->Initialize(barParams);
     pBar_->SetAnchorPoint({ 1.0f, 0.5f });
-    pBar_->SetPosition({ WinSystem::clientWidth - WinSystem::clientWidth / 2.5f, WinSystem::clientHeight - 80.0f });
+    pBar_->SetPosition({ Window::clientWidth - Window::clientWidth / 2.5f, Window::clientHeight - 80.0f });
     pBar_->SetCurrentValue(0.0f);
 }
 

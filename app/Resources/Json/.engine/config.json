@@ -1,7 +1,7 @@
 {
     "settings": {
         "common": {
-            "window_title": "LE3B_20_ナイトウ_ソウト",
+            "window_title": "Calms",
             "start_scene" : "TitleScene",
             "screen_width": 1600,
             "screen_height": 900

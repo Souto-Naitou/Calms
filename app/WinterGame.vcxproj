@@ -172,8 +172,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\scene\game\layer\ResultLayer.cpp" />
     <ClCompile Include="src\scene\game\layer\TitleLayer.cpp" />
     <ClCompile Include="src\scene\game\layer\TitleLayer.h" />
-    <ClCompile Include="src\scene\Load\LoadScene.cpp" />
-    <ClCompile Include="src\scene\Title\Animation\OpeningAnimation.cpp" />
     <ClCompile Include="src\Entity\EntityBase.cpp" />
     <ClCompile Include="src\Entity\Enemy\Enemy.cpp" />
     <ClCompile Include="src\Entity\PlayerBullet\PlayerBullet.cpp" />
@@ -181,6 +179,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\Entity\ScreenToWorld\ScreenToWorld.cpp" />
     <ClCompile Include="src\Entity\Status\EntityStats.cpp" />
     <ClCompile Include="src\logic\timer\InGameTimer.cpp" />
+    <ClCompile Include="src\scene\Title\Animation\OpeningAnimation.cpp" />
+    <ClCompile Include="src\scene\Title\TitleScene.cpp" />
     <ClCompile Include="src\screen\factory\IntermediateScreenFactory.cpp" />
     <ClCompile Include="src\screen\loading\LoadingScreen.cpp" />
     <ClCompile Include="src\ui\gauge\RingGauge.cpp" />
@@ -194,7 +194,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\scene\Clear\ClearScene.cpp" />
     <ClCompile Include="src\scene\Factory\SceneFactory.cpp" />
     <ClCompile Include="src\scene\game\GameScene.cpp" />
-    <ClCompile Include="src\scene\Title\TitleScene.cpp" />
     <ClCompile Include="src\logic\score\ScoreCalculator.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -220,8 +219,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\scene\game\animation\GameClearAnimation.h" />
     <ClInclude Include="src\scene\game\layer\GameLayer.h" />
     <ClInclude Include="src\scene\game\layer\ResultLayer.h" />
-    <ClInclude Include="src\scene\Load\LoadScene.h" />
-    <ClInclude Include="src\scene\Title\Animation\OpeningAnimation.h" />
     <ClInclude Include="src\config\ResourcePath.h" />
     <ClInclude Include="src\Entity\EntityBase.h" />
     <ClInclude Include="src\Entity\Enemy\Enemy.h" />
@@ -230,6 +227,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\Entity\ScreenToWorld\ScreenToWorld.h" />
     <ClInclude Include="src\Entity\Status\EntityStats.h" />
     <ClInclude Include="src\logic\timer\InGameTimer.h" />
+    <ClInclude Include="src\scene\Title\Animation\OpeningAnimation.h" />
+    <ClInclude Include="src\scene\Title\TitleScene.h" />
     <ClInclude Include="src\screen\factory\IntermediateScreenFactory.h" />
     <ClInclude Include="src\screen\loading\LoadingScreen.h" />
     <ClInclude Include="src\ui\gauge\RingGauge.h" />
@@ -238,7 +237,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\scene\Clear\ClearScene.h" />
     <ClInclude Include="src\scene\Factory\SceneFactory.h" />
     <ClInclude Include="src\scene\game\GameScene.h" />
-    <ClInclude Include="src\scene\Title\TitleScene.h" />
     <ClInclude Include="src\logic\score\ScoreCalculator.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\ui\CountDown\CountDown.h" />

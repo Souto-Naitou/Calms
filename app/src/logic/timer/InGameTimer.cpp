@@ -1,5 +1,5 @@
 #include "InGameTimer.h"
-#include <Core/Win32/WinSystem.h>
+#include <Core/Window/Window.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <config/ResourcePath.h>
 
@@ -51,16 +51,16 @@ void InGameTimer::SpriteUpdate()
     auto& spriteOnesPlace = onesPlaceNums_[indexOnesPlace_];
 
     // Y座標（固定）
-    const float kSpritePositionY = static_cast<float>(WinSystem::clientHeight / 4);
+    const float kSpritePositionY = static_cast<float>(Window::clientHeight / 4);
 
     spriteTensPlace->SetPosition({
-        WinSystem::clientWidth / 2 - spriteTensPlace->GetSize().x / 3.0f,
+        Window::clientWidth / 2 - spriteTensPlace->GetSize().x / 3.0f,
         kSpritePositionY
         }
     );
 
     spriteOnesPlace->SetPosition({
-        WinSystem::clientWidth / 2 + spriteOnesPlace->GetSize().x / 3.0f,
+        Window::clientWidth / 2 + spriteOnesPlace->GetSize().x / 3.0f,
         kSpritePositionY
         }
     );
