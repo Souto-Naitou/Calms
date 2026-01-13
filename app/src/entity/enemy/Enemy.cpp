@@ -240,6 +240,15 @@ void Enemy::OnCollisionTrigger(const Collider* other)
         {
             isAlive_ = false;
             audioDeath_->Play();
+            
+            if (isPlayerBullet)
+            {
+                EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Normal, 0.2f });
+            }
+            else if (isPlayerExplosion)
+            {
+                EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Normal,  });
+            }
         }
 
         /// ヒットパーティクルの再生
@@ -255,15 +264,6 @@ void Enemy::OnCollisionTrigger(const Collider* other)
         accelerationRefl_ = dir * bulletReflectionPower_;
 
         (*ppGameEye_)->Shake(0.1f);
-    }
-
-    if (isPlayerBullet)
-    {
-        EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Normal, 0.2f });
-    }
-    else if (isPlayerExplosion)
-    {
-        EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Normal,  });
     }
 }
 
