@@ -24,7 +24,6 @@ void GameScene::Draw()
 
 void GameScene::PreLoad(TaskExecutor& executor)
 {
-    /// #TODO TaskExecutorにタスクを追加する
     PreloadContext ctx{};
     ctx.pSceneArgs = pArgs_;
     ctx.pLayer = pLayer_;

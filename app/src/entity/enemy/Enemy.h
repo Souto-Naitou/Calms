@@ -12,6 +12,7 @@
 #include <drawable/particle/Emitter/ParticleEmitter.h>
 #include <Features/Audio/AudioManager.h>
 #include <drawable/particle/Particle.h>
+#include "./EnemyTypes.h"
 
 /// <summary>
 /// 敵クラス
@@ -111,11 +112,10 @@ private:
     /// <param name="_other">衝突相手のコライダー。</param>
     void OnCollisionTrigger(const Collider* _other);
 
+private:
+    static constexpr EnemyTypes enemyType = EnemyTypes::Normal;
+
     Params          params_                     = {};
-
-    std::unique_ptr<Object3d>           objectSelfBody_     = {};
-    std::unique_ptr<TimeMeasurer>       timeMeasurer_       = {};
-
     float           lifeTimeLimit_              = 3.0f;
     Vector3         accelerationRefl_           = {};
     Vector3         moveVelocity_               = {};
@@ -126,6 +126,9 @@ private:
     float           moveSpeed_                  = 0.0f;
     float           reflectionPower_            = 15.0f;
     float           bulletReflectionPower_      = 40.0f;
+
+    std::unique_ptr<Object3d>           objectSelfBody_     = {};
+    std::unique_ptr<TimeMeasurer>       timeMeasurer_       = {};
 
     // Collision
     std::unique_ptr<Collider>   collider_            = nullptr;
@@ -138,7 +141,6 @@ private:
     std::unique_ptr<ParticleEmitter>    pParticleDeathShort_             = nullptr;
     std::unique_ptr<ParticleEmitter>    pParticleDeathSplatter_     = nullptr;
     std::unique_ptr<IModel>             pModelSelfBody_             = nullptr;
-
 
 private: /// 他クラスの所有物
     CollisionManager*   collisionManager_   = nullptr;

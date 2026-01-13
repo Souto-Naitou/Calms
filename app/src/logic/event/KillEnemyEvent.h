@@ -1,6 +1,8 @@
 #pragma once
+#include <entity/enemy/EnemyTypes.h>
 
 struct KillEnemyEvent
 {
-    int enemyID = 0;
+    EnemyTypes enemyType = EnemyTypes::Normal;
+    float scoreMultiplier = 1.0f;
 };

@@ -40,6 +40,12 @@ public:
     /// </summary>
     void CountEnemyDeath();
 
+    /// <summary>
+    /// スコアを取得します。
+    /// </summary>
+    /// <returns>現在のスコア値。</returns>
+    float GetScore() const { return score_; }
+
 private:
     void InitializeNumericView();
     void UpdateNumericView();

@@ -57,6 +57,7 @@ void ScoreCalculator::InitializeNumericView()
     pScore_->SetFontSize(kFontHeight_);
     auto& fontLayoutProps = pScore_->GetFontLayoutProperties();
     fontLayoutProps.leftTop = scoreLeftTop_;
+    fontLayoutProps.anchorPoint = { 0.0f, 0.5f };
 }
 
 void ScoreCalculator::UpdateNumericView()

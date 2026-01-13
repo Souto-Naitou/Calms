@@ -207,6 +207,9 @@ void EditScene::InitializeNumeric()
 
     pNumeric_ = std::make_unique<NumericView>();
     pNumeric_->Initialize(textureHandles);
+    auto& layoutProps = pNumeric_->GetFontLayoutProperties();
+    layoutProps.leftTop = Vector2(10.0f, 10.0f);
+    layoutProps.anchorPoint = { 0.0f, 0.5f };
 }
 
 void EditScene::EnemyUpdate()
