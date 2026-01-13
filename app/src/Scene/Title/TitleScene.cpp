@@ -64,6 +64,10 @@ void TitleScene::Initialize()
     pSoundStartButton_ = AudioManager::GetInstance()->GetNewAudio("Effect", Path::Audio::kSeStartButton);
     pSoundStartButton_->SetVolume(0.1f);
 
+    pSoundBGM_ = AudioManager::GetInstance()->GetNewAudio("BGM", Path::Audio::kBgmTitle);
+    pSoundBGM_->SetVolume(0.075f);
+    pSoundBGM_->Play(true);
+
     // オープニングアニメーションの初期化と再生
     // - 実時間をもとに再生されるためPlay関数のあとに時間のかかる処理(I/O など)を入れないこと
     pOpeningAnimation_ = std::make_unique<OpeningAnimation>();
@@ -73,6 +77,7 @@ void TitleScene::Initialize()
 
 void TitleScene::Finalize()
 {
+    pSoundBGM_->Stop();
     gameEye_.reset();
     pCanvasBack_->GetPostEffectExecutor().RemoveEffect(pRandomFilter_);
 
@@ -95,6 +100,11 @@ void TitleScene::Update()
         pTransShutter_ = std::make_unique<TransShutter>();
         pSceneManager_->ReserveScene("GameScene", "LoadingScreen", std::move(pTransShutter_));
         isChangingScene_ = true;
+    }
+
+    if (isChangingScene_)
+    {
+        pSoundBGM_->SetVolume(pSoundBGM_->GetVolume() * 0.95f);
     }
 
     this->UpdateTitleAnimation();

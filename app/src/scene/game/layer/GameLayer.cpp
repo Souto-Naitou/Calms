@@ -21,7 +21,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 {
     /// インスタンスの取得
     pDx12_ = std::any_cast<DirectX12*>(pArgs->Get("DirectX12"));
-    deltaTimeManager_ = DeltaTimeManager::GetInstance();
+    pDeltaTimeManager_ = DeltaTimeManager::GetInstance();
     randomGenerator_ = RandomGenerator::GetInstance();
     pTextureManager_ = TextureManager::GetInstance();
     pModelManager_ = std::any_cast<ModelManager*>(pArgs->Get("ModelManager"));
@@ -37,16 +37,16 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     grid_->GetOption().tilingData->tilingMultiply = Vector2(10.0f, 10.0f);
 
     /// ゲームアイの初期化
-    gameEye_ = std::make_unique<GameEye>();
-    gameEye_->SetTranslate(Vector3(0, kGameEyeHeightDefault, 0));
-    gameEye_->SetRotate(Vector3(1.57f, 0, 0));
-    gameEye_->SetName("main");
+    pGameEye_ = std::make_unique<GameEye>();
+    pGameEye_->SetTranslate(Vector3(0, kGameEyeHeightDefault_, 0));
+    pGameEye_->SetRotate(Vector3(1.57f, 0, 0));
+    pGameEye_->SetName("main");
 
     /// ゲームアイをセット
-    Object3dSystem::GetInstance()->SetGlobalEye(gameEye_.get());
-    SpriteSystem::GetInstance()->SetGlobalEye(gameEye_.get());
-    LineSystem::GetInstance()->SetGlobalEye(gameEye_.get());
-    ParticleSystem::GetInstance()->SetGlobalEye(gameEye_.get());
+    Object3dSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
+    SpriteSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
+    LineSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
+    ParticleSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
 
     /// 平行光源の初期化
     directionalLight_.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
@@ -70,11 +70,11 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     Player::Params playerParams = {};
     playerParams.particle = particles_[static_cast<size_t>(ParticleID::PlayerConstant)];
     playerParams.pModelManager = pModelManager_;
-    player_ = std::make_unique<Player>(playerParams);
-    player_->Initialize(entityCommonParams_);
+    pPlayer_ = std::make_unique<Player>(playerParams);
+    pPlayer_->Initialize(entityCommonParams_);
 
-    playerUI3d_ = std::make_unique<PlayerUI3d>();
-    playerUI3d_->Initialize(player_.get(), pDx12_);
+    pPlayerUI3d_ = std::make_unique<PlayerUI3d>();
+    pPlayerUI3d_->Initialize(pPlayer_.get(), pDx12_);
 
     /// 敵生成システムの初期化
     enemyPopSystem_.Initialize();
@@ -82,24 +82,24 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     enemyPopSystem_.SetIgnoreRange(3.0f);
 
     /// カウントダウンの初期化
-    countDown_ = std::make_unique<CountDown>();
-    countDown_->Initialize();
+    pStartCountDown_ = std::make_unique<CountDown>();
+    pStartCountDown_->Initialize();
 
     /// デルタタイムの設定
-    deltaTimeManager_->SetDeltaTime(0, 1.0f / 60.0f);
-    deltaTimeManager_->SetDeltaTime(1, 1.0f / 60.0f);
+    pDeltaTimeManager_->SetDeltaTime(0, 1.0f / 60.0f);
+    pDeltaTimeManager_->SetDeltaTime(1, 1.0f / 60.0f);
 
     /// 座標変換の初期化
     screenToWorld_ = std::make_unique<ScreenToWorld>();
     screenToWorld_->Initialize();
-    screenToWorld_->SetGameEye(gameEye_.get());
+    screenToWorld_->SetGameEye(pGameEye_.get());
 
     /// タイマー
     timer_.Start();
 
     /// ゲームタイマーの初期化
-    gameTimer_ = std::make_unique<InGameTimer>();
-    gameTimer_->Initialize(false, kGameLimitTime);
+    ingameTimer_ = std::make_unique<InGameTimer>();
+    ingameTimer_->Initialize(false, kGameLimitTime);
 
     /// 入力ガイド
     inputGuide_ = std::make_unique<InputGuide>();
@@ -145,24 +145,29 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     scoreCalculator_ = std::make_unique<ScoreCalculator>();
     scoreCalculator_->Initialize();
 
+    pBGM_ = AudioManager::GetInstance()->GetNewAudio("BGM", Path::Audio::kBgmInGame);
+    pBGM_->SetVolume(0.1f);
+    pBGM_->Play(true);
+
     /// ゲームオーバーアニメーションの初期化
     GameOverAnimation::Params goaParams = {};
-    goaParams.pGameEye = gameEye_.get();
-    goaParams.pPlayer = player_.get();
+    goaParams.pGameEye = pGameEye_.get();
+    goaParams.pPlayer = pPlayer_.get();
     goaParams.pPointLight = &pointLight_;
     goaParams.pParticle = particles_[static_cast<size_t>(ParticleID::PlayerDeath)];
     gameOverAnimation_ = std::make_unique<GameOverAnimation>();
     gameOverAnimation_->Initialize(goaParams);
 
     GameClearAnimation::Params gcaParams = {};
-    gcaParams.pGameEye = gameEye_.get();
-    gcaParams.pPlayer = player_.get();
+    gcaParams.pGameEye = pGameEye_.get();
+    gcaParams.pPlayer = pPlayer_.get();
     gcaParams.pPointLight = &pointLight_;
     gcaParams.pParticle = particles_[static_cast<size_t>(ParticleID::PlayerDeath)];
     gcaParams.pSpriteClear = spriteClear_.get();
     gcaParams.pSpriteSpace = spriteSpace_.get();
-    gameClearAnimation_ = std::make_unique<GameClearAnimation>();
-    gameClearAnimation_->Initialize(gcaParams);
+    gcaParams.pScoreCalculator = scoreCalculator_.get();
+    pGameClearAnimation_ = std::make_unique<GameClearAnimation>();
+    pGameClearAnimation_->Initialize(gcaParams);
 
     /// イベント登録
     playerExplosionSub_ = EventListener::GetInstance()->Subscribe<PlayerExplosionEvent>(
@@ -178,7 +183,7 @@ void GameLayer::Finalize()
     }
 
     grid_->Finalize();
-    player_->Finalize();
+    pPlayer_->Finalize();
 
     for (auto& bullet : playerBullets_)
     {
@@ -187,11 +192,12 @@ void GameLayer::Finalize()
     }
 
     CollisionManager::GetInstance()->ClearCollider();
-    playerUI3d_->Finalize();
+    pBGM_->Stop();
+    pPlayerUI3d_->Finalize();
     enemyPopSystem_.Finalize();
-    countDown_->Finalize();
+    pStartCountDown_->Finalize();
     screenToWorld_->Finalize();
-    gameTimer_->Finalize();
+    ingameTimer_->Finalize();
     inputGuide_->Finalize();
     lines_->Finalize();
     ParticleStorage::GetInstance()->ReleaseAllParticle();
@@ -213,7 +219,7 @@ void GameLayer::Update()
 {
     static constexpr float kDirectionalLightTargetIntensity = 0.25f;
 
-    gameEye_->Update();
+    pGameEye_->Update();
     grid_->Update();
     screenToWorld_->Update();
     spriteClear_->Update();
@@ -225,29 +231,29 @@ void GameLayer::Update()
     {
         directionalLight_.intensity = std::lerp(directionalLight_.intensity, kDirectionalLightTargetIntensity, 0.0125f);
     }
-    player_->Update();
-    playerUI3d_->SetPosition(player_->GetTranslation());
-    playerUI3d_->Update();
+    pPlayer_->Update();
+    pPlayerUI3d_->SetPosition(pPlayer_->GetTranslation());
+    pPlayerUI3d_->Update();
 
-    bool isPlayerDead = !player_->IsAlive() && !gameOverAnimation_->IsPlaying();
+    bool isPlayerDead = !pPlayer_->IsAlive() && !gameOverAnimation_->IsPlaying();
     if (isPlayerDead) gameOverAnimation_->Play();
 
-    bool isClear = gameTimer_->IsEnd() && !gameClearAnimation_->IsPlaying();
-    if (isClear) gameClearAnimation_->Play();
+    bool isClear = ingameTimer_->IsEnd() && !pGameClearAnimation_->IsPlaying();
+    if (isClear) pGameClearAnimation_->Play();
 
     if (isPlayerDead || isClear)
     {
         this->KillAllEnemies();
-        player_->DisableInput();
-        player_->DisableMovement();
+        pPlayer_->DisableInput();
+        pPlayer_->DisableMovement();
         enemyPopSystem_.StopPop();
-        gameTimer_->Reset();
-        gameTimer_->SetDisplay(false);
+        ingameTimer_->Reset();
+        ingameTimer_->SetDisplay(false);
         isEnding_ = true;
     }
 
     gameOverAnimation_->Update();
-    gameClearAnimation_->Update();
+    pGameClearAnimation_->Update();
 
     /// プレイヤーの移動範囲制限
     this->LimitPlayerPosition();
@@ -264,7 +270,7 @@ void GameLayer::Update()
     }
 
     /// プレイヤー弾の生成
-    if (player_->IsShot())
+    if (pPlayer_->IsShot())
     {
         AddPlayerBullet();
     }
@@ -282,33 +288,40 @@ void GameLayer::Update()
     RemovePlayerBullet();
 
     /// カウントダウンの更新
-    countDown_->Update();
-    if (countDown_->IsEnd() && !enemyPopSystem_.IsEnablePop() && !gameTimer_->GetNowTime() && !isEnding_)
+    pStartCountDown_->Update();
+
+    if (pStartCountDown_->GetState() == CountDown::State::Start && !isGameStartFlashed_)
+    {
+        directionalLight_.intensity = kTargetDirectionalLightFlashIntensity_;
+        isGameStartFlashed_ = true;
+    }
+
+    if (pStartCountDown_->IsEnd() && !enemyPopSystem_.IsEnablePop() && !ingameTimer_->GetNowTime() && !isEnding_)
     {
         enemyPopSystem_.StartPop();
-        gameTimer_->Start();
-        gameTimer_->SetDisplay(true);
+        ingameTimer_->Start();
+        ingameTimer_->SetDisplay(true);
     }
 
     /// ポイントライトの更新
     {
         auto& position = pointLight_.GetPosition();
-        position = player_->GetTranslation();
+        position = pPlayer_->GetTranslation();
         position.y = 5.0f;
     }
 
 
     /// タイマーの更新
-    if (timer_.GetNow<float>() > countDownOffset_ && !countDown_->IsStart())
+    if (timer_.GetNow<float>() > countDownOffset_ && !pStartCountDown_->IsStart())
     {
-        countDown_->Start();
+        pStartCountDown_->Start();
         timer_.Reset();
         timer_.Start();
     }
 
     /// ゲームタイマーの更新
-    gameTimer_->Update();
-    if (gameClearAnimation_->IsFinished() && !isChangingScene_ && Input::GetInstance()->TriggerKey(DIK_SPACE))
+    ingameTimer_->Update();
+    if (pGameClearAnimation_->IsFinished() && !isChangingScene_ && Input::GetInstance()->TriggerKey(DIK_SPACE))
     {
         SceneManager::GetInstance()->ReserveScene("TitleScene", std::make_unique<TransShutter>());
         isChangingScene_ = true;
@@ -319,6 +332,11 @@ void GameLayer::Update()
     {
         SceneManager::GetInstance()->ReserveScene("TitleScene", std::make_unique<TransFadeInOut>());
         isChangingScene_ = true;
+    }
+
+    if (isChangingScene_)
+    {
+        pBGM_->SetVolume(pBGM_->GetVolume() * 0.95f);
     }
 
     /// インプットガイドの更新
@@ -339,7 +357,7 @@ void GameLayer::Draw()
 
     CanvasScope obj3dCanvasScope(canvas3dObject_.get());
     {
-        player_->Draw1F();
+        pPlayer_->Draw1F();
         for (auto& enemy : enemies_)
         {
             enemy->Draw1F();
@@ -350,7 +368,7 @@ void GameLayer::Draw()
         }
 
         pLineSystem_->PresentDraw();
-        player_->DrawLine();
+        pPlayer_->DrawLine();
         for (auto& enemy : enemies_)
         {
             enemy->DrawLine();
@@ -379,16 +397,17 @@ void GameLayer::Draw()
     {
         if (!isEnding_)
         {
-            playerUI3d_->Draw1F();
+            pPlayerUI3d_->Draw1F();
             scoreCalculator_->Draw1F();
         }
+        pGameClearAnimation_->Draw1F();
     }
 
     CanvasScope uiCanvasScope(canvasUI_.get());
     if (!isEnding_)
     {
-        gameTimer_->Draw1F();
-        countDown_->Draw1F();
+        ingameTimer_->Draw1F();
+        pStartCountDown_->Draw1F();
         inputGuide_->Draw1F();
         screenToWorld_->Draw1F();
         scoreCalculator_->Draw1F();
@@ -569,10 +588,10 @@ void GameLayer::LimitPlayerPosition()
 {
     /// [ プレイヤーの移動範囲制限 ]
     Vector3 playerpos = {};
-    playerpos.x = Math::clamp(player_->GetTranslation().x, -areaWidth_ + 0.5f, areaWidth_ - 0.5f);
-    playerpos.y = player_->GetTranslation().y;
-    playerpos.z = Math::clamp(player_->GetTranslation().z, -areaWidth_ + 0.5f, areaWidth_ - 0.5f);
-    player_->SetTranslation(playerpos);
+    playerpos.x = Math::clamp(pPlayer_->GetTranslation().x, -areaWidth_ + 0.5f, areaWidth_ - 0.5f);
+    playerpos.y = pPlayer_->GetTranslation().y;
+    playerpos.z = Math::clamp(pPlayer_->GetTranslation().z, -areaWidth_ + 0.5f, areaWidth_ - 0.5f);
+    pPlayer_->SetTranslation(playerpos);
 }
 
 void GameLayer::ParticlesInitialize()
@@ -620,7 +639,7 @@ void GameLayer::AddPlayerBullet()
     constexpr float kSpreadRad = std::numbers::pi_v<float> / (360.0f / kSpreadAngle);
     constexpr float kBulletSpeed = 30.0f;
 
-    Vector3 direction = screenToWorld_->GetWorldPoint() - player_->GetTranslation();
+    Vector3 direction = screenToWorld_->GetWorldPoint() - pPlayer_->GetTranslation();
     for (int32_t i = 0; i < kNumShots; ++i)
     {
         // -15°〜15°の範囲で散らす
@@ -643,7 +662,7 @@ void GameLayer::AddPlayerBullet()
             PlayerBullet::Params{ &particle->GetParticleData().back() }
         );
         bullet->Initialize(entityCommonParams_, false);
-        bullet->SetTranslation(player_->GetTranslation());
+        bullet->SetTranslation(pPlayer_->GetTranslation());
         bullet->SetMoveVelocity(newDirection * kBulletSpeed);
         bullet->SetIsDrawCollisionArea(isDisplayColliderPlayerBullet_);
 
@@ -698,7 +717,7 @@ void GameLayer::AddPlayerExplosion(const PlayerExplosionEvent&)
     explosionParams.pDx12 = pDx12_;
     auto explosion = std::make_unique<PlayerExplosion>(explosionParams);
     explosion->Initialize(entityCommonParams_, false);
-    explosion->SetTranslation(player_->GetTranslation());
+    explosion->SetTranslation(pPlayer_->GetTranslation());
     playerExplosions_.emplace_back(std::move(explosion));
 }
 
@@ -706,7 +725,7 @@ void GameLayer::UpdatePlayerExplosion()
 {
     for (auto& explosion : playerExplosions_)
     {
-        explosion->SetTranslation(player_->GetTranslation());
+        explosion->SetTranslation(pPlayer_->GetTranslation());
         explosion->Update();
     }
 
@@ -723,7 +742,7 @@ void GameLayer::UpdatePlayerExplosion()
 
 void GameLayer::CreateEnemy()
 {
-    enemyPopSystem_.SetIgnorePosition(player_->GetTranslation());
+    enemyPopSystem_.SetIgnorePosition(pPlayer_->GetTranslation());
     enemyPopSystem_.Update();
     while (enemyPopSystem_.IsExistPopRequest())
     {
@@ -742,7 +761,7 @@ void GameLayer::CreateEnemy()
         auto enemy = std::make_unique<Enemy>(enemyParams);
         enemy->Initialize(entityCommonParams_, false);
         enemy->SetTranslation(popPoint);
-        enemy->SetLocationProvider(player_.get());
+        enemy->SetLocationProvider(pPlayer_.get());
         enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
         enemies_.emplace_back(std::move(enemy));
     }
@@ -751,31 +770,44 @@ void GameLayer::CreateEnemy()
 
 void GameLayer::PlayerSlowUpdate()
 {
-    Vector3 playerpos = player_->GetTranslation();
-    if (gameClearAnimation_->IsPlaying())
+    constexpr float kGameEyeFollowRateDuringSlow = 0.1f;
+    constexpr float kGlayscalePowerDuringSlow = 0.75f;
+    constexpr float kGlayscaleBlendRateDuringSlow = 0.1f;
+    constexpr float kDeltaTimeDefault = 1.0f / 60.0f;
+
+
+    Vector3 playerPos = pPlayer_->GetTranslation();
+    Vector3 eyePos = pGameEye_->GetTransform().translate;
+    if (pGameClearAnimation_->IsPlaying())
     {
-        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 60.0f);
-        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, 1.0f / 60.0f);
+        pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, kDeltaTimeDefault);
+        pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, kDeltaTimeDefault);
         pOptionGrayscale_->power = 0.0f;
     }
-    else if (player_->IsSlow())
+    else if (pPlayer_->IsSlow())
     {
-        Vector3 eyepos = gameEye_->GetTransform().translate;
-        eyepos.Lerp(eyepos, Vector3(playerpos.x, kGameEyeHeightDuringSlow, playerpos.z), 0.1f);
-        pOptionGrayscale_->power = std::lerp(pOptionGrayscale_->power, 0.75f, 0.1f);
-        gameEye_->SetTranslate(eyepos);
+        /// [ カメラをプレイヤーに近づける ]
+        auto eyeTarget = Vector3(playerPos.x, kGameEyeHeightDuringSlow_, playerPos.z);
+        eyePos.Lerp(eyePos, eyeTarget, kGameEyeFollowRateDuringSlow);
+        pGameEye_->SetTranslate(eyePos);
 
-        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 120.0f);
-        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, 1.0f / 180.0f);
+        /// [ グレースケールエフェクトの強さを変える (0<) ]
+        pOptionGrayscale_->power = std::lerp(
+            pOptionGrayscale_->power, 
+            kGlayscalePowerDuringSlow, 
+            kGlayscaleBlendRateDuringSlow);
+
+        /// [ ゲームの進行速度を遅くする ]
+        pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 120.0f);
+        pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, 1.0f / 180.0f);
     }
     else
     {
-        Vector3 eyepos = gameEye_->GetTransform().translate;
-        eyepos.Lerp(eyepos, Vector3(playerpos.x, kGameEyeHeightDefault, playerpos.z), 0.1f);
-        pOptionGrayscale_->power = std::lerp(pOptionGrayscale_->power, 0.0f, 0.1f);
-        gameEye_->SetTranslate(eyepos);
+        eyePos.Lerp(eyePos, Vector3(playerPos.x, kGameEyeHeightDefault_, playerPos.z), kGameEyeFollowRateDuringSlow);
+        pOptionGrayscale_->power = std::lerp(pOptionGrayscale_->power, 0.0f, kGlayscaleBlendRateDuringSlow);
+        pGameEye_->SetTranslate(eyePos);
 
-        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 60.0f);
-        deltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, 1.0f / 60.0f);
+        pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, kDeltaTimeDefault);
+        pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, kDeltaTimeDefault);
     }
 }

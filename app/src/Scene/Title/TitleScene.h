@@ -80,6 +80,7 @@ private:
     GaussianBloom*                      pGaussianBloom_     = nullptr;      // !< ガウスぼかし
     RadialBlur*                         pRadialBlur_        = nullptr;      // !< 放射状ブラー
     Audio*                              pSoundStartButton_  = nullptr;      // !< スタートボタン音声
+    Audio*                              pSoundBGM_          = nullptr;      // !< BGM音声
 
     /// 他クラスのインスタンス
     PostEffectExecutor*         pPostEffectExecutor_    = nullptr;      // !< ポストエフェクト実行クラス
