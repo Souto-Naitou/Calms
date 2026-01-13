@@ -3,5 +3,4 @@
 class Slomo
 {
 public:
-    void 
 };
