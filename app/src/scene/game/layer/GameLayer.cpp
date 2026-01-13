@@ -772,8 +772,8 @@ void GameLayer::PlayerSlowUpdate()
 {
     constexpr float kGameEyeFollowRateDuringSlow = 0.1f;
     constexpr float kGameEyeFollowRateNormal = 0.1f;
-    constexpr float kGlayscalePowerDuringSlow = 0.75f;
-    constexpr float kGlayscaleBlendRateDuringSlow = 0.1f;
+    constexpr float kGrayscalePowerDuringSlow = 0.75f;
+    constexpr float kGrayscaleBlendRateDuringSlow = 0.1f;
     constexpr float kDeltaTimeDefault = 1.0f / 60.0f;
 
 
@@ -795,8 +795,8 @@ void GameLayer::PlayerSlowUpdate()
         /// [ グレースケールエフェクトの強さを変える (0<) ]
         pOptionGrayscale_->power = std::lerp(
             pOptionGrayscale_->power, 
-            kGlayscalePowerDuringSlow, 
-            kGlayscaleBlendRateDuringSlow);
+            kGrayscalePowerDuringSlow, 
+            kGrayscaleBlendRateDuringSlow);
 
         /// [ ゲームの進行速度を遅くする ]
         pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 120.0f);
@@ -804,8 +804,8 @@ void GameLayer::PlayerSlowUpdate()
     }
     else
     {
-        eyePos.Lerp(eyePos, Vector3(playerPos.x, kGameEyeHeightDefault_, playerPos.z), kGameEyeFollowRateNormal);
-        pOptionGrayscale_->power = std::lerp(pOptionGrayscale_->power, 0.0f, kGlayscaleBlendRateDuringSlow);
+        eyePos.Lerp(eyePos, Vector3(playerPos.x, kGameEyeHeightDefault_, playerPos.z), kGameEyeFollowRateDuringSlow);
+        pOptionGrayscale_->power = std::lerp(pOptionGrayscale_->power, 0.0f, kGrayscaleBlendRateDuringSlow);
         pGameEye_->SetTranslate(eyePos);
 
         pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, kDeltaTimeDefault);
