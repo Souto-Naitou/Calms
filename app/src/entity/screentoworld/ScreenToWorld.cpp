@@ -1,6 +1,6 @@
 #include "ScreenToWorld.h"
 
-#include <Core/Win32/WinSystem.h>
+#include <Core/Window/Window.h>
 #include <config/ResourcePath.h>
 
 void ScreenToWorld::Initialize()
@@ -29,8 +29,8 @@ void ScreenToWorld::Update()
     Matrix4x4 viewportMatrix = Matrix4x4::ViewportMatrix(
         0,
         0,
-        static_cast<float>(WinSystem::clientWidth),
-        static_cast<float>(WinSystem::clientHeight),
+        static_cast<float>(Window::clientWidth),
+        static_cast<float>(Window::clientHeight),
         0.0f,
         1.0f
     );

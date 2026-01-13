@@ -103,6 +103,12 @@
     <Filter Include="UI\Player3d">
       <UniqueIdentifier>{9f362a64-0aa2-49aa-a999-35a3755878f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Screen">
+      <UniqueIdentifier>{d6626474-7f0b-4d49-a712-f932ec9d61c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Screen\Factory">
+      <UniqueIdentifier>{d326010e-e7f1-4f53-adcf-015f4cd08131}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\Calms.cpp">
@@ -111,9 +117,6 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\scene\Factory\SceneFactory.cpp">
       <Filter>Scene\Factory</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scene\Title\TitleScene.cpp">
-      <Filter>Scene\Title</Filter>
     </ClCompile>
     <ClCompile Include="src\scene\game\GameScene.cpp">
       <Filter>Scene\Game</Filter>
@@ -152,14 +155,8 @@
     <ClCompile Include="src\Entity\Status\EntityStats.cpp">
       <Filter>Entity\Stats</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\Title\Animation\OpeningAnimation.cpp">
-      <Filter>Scene\Title\Animation</Filter>
-    </ClCompile>
     <ClCompile Include="src\logic\spawner\EnemySpawner.cpp">
       <Filter>Logic\Spawner</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scene\Load\LoadScene.cpp">
-      <Filter>Scene\Load</Filter>
     </ClCompile>
     <ClCompile Include="src\entity\player\GameOverAnimation.cpp">
       <Filter>Entity\Player\Animation</Filter>
@@ -203,8 +200,18 @@
     <ClCompile Include="src\ui\PlayerUI3d.cpp">
       <Filter>UI\Player3d</Filter>
     </ClCompile>
-    <ClCompile Include="src\screen\factory\IntermediateScreenFactory.cpp" />
-    <ClCompile Include="src\screen\loading\LoadingScreen.cpp" />
+    <ClCompile Include="src\screen\loading\LoadingScreen.cpp">
+      <Filter>Screen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\Title\Animation\OpeningAnimation.cpp">
+      <Filter>Scene\Title\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\screen\factory\IntermediateScreenFactory.cpp">
+      <Filter>Screen\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\Title\TitleScene.cpp">
+      <Filter>Scene\Title</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -212,9 +219,6 @@
     </ClInclude>
     <ClInclude Include="src\scene\Factory\SceneFactory.h">
       <Filter>Scene\Factory</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\Title\TitleScene.h">
-      <Filter>Scene\Title</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\game\GameScene.h">
       <Filter>Scene\Game</Filter>
@@ -253,17 +257,11 @@
     <ClInclude Include="src\Entity\Status\EntityStats.h">
       <Filter>Entity\Stats</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene\Title\Animation\OpeningAnimation.h">
-      <Filter>Scene\Title\Animation</Filter>
-    </ClInclude>
     <ClInclude Include="src\config\ResourcePath.h">
       <Filter>Config</Filter>
     </ClInclude>
     <ClInclude Include="src\logic\spawner\EnemySpawner.h">
       <Filter>Logic\Spawner</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\Load\LoadScene.h">
-      <Filter>Scene\Load</Filter>
     </ClInclude>
     <ClInclude Include="src\entity\player\GameOverAnimation.h">
       <Filter>Entity\Player\Animation</Filter>
@@ -310,9 +308,21 @@
     <ClInclude Include="src\ui\PlayerUI3d.h">
       <Filter>UI\Player3d</Filter>
     </ClInclude>
-    <ClInclude Include="src\screen\factory\IntermediateScreenFactory.h" />
-    <ClInclude Include="src\screen\loading\LoadingScreen.h" />
-    <ClInclude Include="src\entity\enemy\EnemyTypes.h" />
+    <ClInclude Include="src\screen\loading\LoadingScreen.h">
+      <Filter>Screen</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\EnemyTypes.h">
+      <Filter>Entity\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\Title\Animation\OpeningAnimation.h">
+      <Filter>Scene\Title\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\screen\factory\IntermediateScreenFactory.h">
+      <Filter>Screen\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\Title\TitleScene.h">
+      <Filter>Scene\Title</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

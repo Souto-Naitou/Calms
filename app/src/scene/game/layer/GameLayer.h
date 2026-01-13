@@ -65,6 +65,7 @@ private:
     void CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs);
     void LimitPlayerPosition();
     void ParticlesInitialize();
+    void SpritesInitialize();
     void AddPlayerBullet();
     void RemovePlayerBullet();
     void RemoveDeadEnemy();
@@ -144,7 +145,6 @@ private:
     std::unique_ptr<Line>                           lines_                  = nullptr;  // !< エリア用ライン
     float                                           areaWidth_              = 25.0f;    // !< エリアの幅
     const uint32_t                                  kMaxEnemyCount_         = 120;      // !< 最大敵数
-    TimeMeasurer                                    titleTimer_             = {};       // !< タイトル表示用タイマー
     Audio*                                          pBGM_                   = nullptr;  // !< BGMポインタ
 
     std::optional<EventSubscription>                playerExplosionSub_     = std::nullopt;

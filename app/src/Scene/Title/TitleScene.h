@@ -8,7 +8,7 @@
 #include <memory>
 #include <Features/Cubemap/Skybox.h>
 #include <Features/Cubemap/CubemapSystem.h>
-#include <Core/Win32/WinSystem.h>
+#include <Core/Window/Window.h>
 #include <Effects/PostEffects/RandomFilter/RandomFilter.h>
 #include <Core/DirectX12/DirectX12.h>
 #include <Core/DirectX12/PostEffectExecutor.h>
@@ -75,7 +75,7 @@ private:
     std::unique_ptr<Skybox>             pSkybox_            = nullptr;      // !< スカイボックス
     std::unique_ptr<OpeningAnimation>   pOpeningAnimation_  = nullptr;      // !< オープニングアニメーション
     float                               opacityStartPrompt_ = 0.0f;         // !< スタートプロンプトの不透明度
-    const float                         kPosYTitle_         = WinSystem::clientHeight / 2.0f - 50.0f ; // !< タイトルのY座標
+    const float                         kPosYTitle_         = Window::clientHeight / 2.0f - 50.0f ; // !< タイトルのY座標
     RandomFilter*                       pRandomFilter_      = nullptr;      // !< ランダムフィルタ
     GaussianBloom*                      pGaussianBloom_     = nullptr;      // !< ガウスぼかし
     RadialBlur*                         pRadialBlur_        = nullptr;      // !< 放射状ブラー

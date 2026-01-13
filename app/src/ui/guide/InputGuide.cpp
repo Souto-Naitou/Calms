@@ -1,12 +1,12 @@
 #include "InputGuide.h"
 #include <config/ResourcePath.h>
-#include <Core/Win32/WinSystem.h>
+#include <Core/Window/Window.h>
 
 void InputGuide::Initialize()
 {
-    const float margin = WinSystem::clientWidth / 40.0f;
-    const float padding = WinSystem::clientWidth / 60.0f;
-    float cursorY = WinSystem::clientHeight - margin;
+    const float margin = Window::clientWidth / 40.0f;
+    const float padding = Window::clientWidth / 60.0f;
+    float cursorY = Window::clientHeight - margin;
 
     shoot_ = std::make_unique<Sprite>();
     shoot_->Initialize(Path::Image::kGuideShoot);

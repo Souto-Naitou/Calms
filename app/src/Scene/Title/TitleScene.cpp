@@ -10,6 +10,7 @@
 #include <cmath>
 #include <Features/Audio/AudioManager.h>
 #include <Features/Layer/CanvasScope.h>
+#include <Math/ViewportUnits.hpp>
 
 void TitleScene::Initialize()
 {
@@ -150,15 +151,16 @@ void TitleScene::InitializeSprites()
     pSpriteTitle_->Initialize(Path::Image::kTitle);
     pSpriteTitle_->SetName("Title");
     pSpriteTitle_->SetAnchorPoint({ 0.5f, 0.5f });
-    pSpriteTitle_->SetPosition({ WinSystem::clientWidth / 2.0f, WinSystem::clientHeight / 2.0f - 50.0f });
+
+    pSpriteTitle_->SetPosition({ 50.0_vw, 50.0_vh - 50.0f});
 
     /// フレームスクリーンの初期化
     pSpriteFrameScreen_ = std::make_unique<Sprite>();
     pSpriteFrameScreen_->Initialize(Path::Image::kFrameScreen);
     pSpriteFrameScreen_->SetName("FrameScreen");
     pSpriteFrameScreen_->SetAnchorPoint({ 0.5f, 0.5f });
-    pSpriteFrameScreen_->SetPosition({ WinSystem::clientWidth / 2.0f, WinSystem::clientHeight / 2.0f });
-    pSpriteFrameScreen_->SetSize({ static_cast<float>(WinSystem::clientWidth), static_cast<float>(WinSystem::clientHeight) });
+    pSpriteFrameScreen_->SetPosition({ 50.0_vw, 50.0_vh });
+    pSpriteFrameScreen_->SetSize({ 100.0_vw, 100.0_vh });
     pSpriteFrameScreen_->SetColor(RGBA(0x101010ff).to_Vector4());
 
     /// 開始プロンプトの初期化
@@ -166,7 +168,7 @@ void TitleScene::InitializeSprites()
     pSpritePressStart_->Initialize(Path::Image::kTitleStartPrompt);
     pSpritePressStart_->SetName("PressStart");
     pSpritePressStart_->SetAnchorPoint({ 0.5f, 0.5f });
-    pSpritePressStart_->SetPosition({ WinSystem::clientWidth / 2.0f, WinSystem::clientHeight / 2.0f + 200.0f });
+    pSpritePressStart_->SetPosition({ 50.0_vw, 50.0_vh + 200.0f });
     pSpritePressStart_->SetSizeWithFactor(1.05f);
 }
 

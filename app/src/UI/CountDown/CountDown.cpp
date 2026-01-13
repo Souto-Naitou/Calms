@@ -1,14 +1,14 @@
 #include "CountDown.h"
 
 #include <MathExtension/mathExtension.h>
-#include <Core/Win32/WinSystem.h>
+#include <Core/Window/Window.h>
 #include <config/ResourcePath.h>
 #include <string>
 #include <Math/Easing.h>
 
 void CountDown::Initialize()
 {
-    Vector2 clientSize = { static_cast<float>(WinSystem::clientWidth), static_cast<float>(WinSystem::clientHeight) };
+    Vector2 clientSize = { static_cast<float>(Window::clientWidth), static_cast<float>(Window::clientHeight) };
 
     /// 数字 1 - 3 (256 x 256)
     for (int i = 0; i < 3; i++)

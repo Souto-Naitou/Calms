@@ -8,7 +8,6 @@
 
 #include <cassert>
 #include <format>
-#include <scene/Load/LoadScene.h>
 #include <DebugTools/Logger/Logger.h>
 #include <cstdlib>
 
@@ -18,7 +17,6 @@ SceneFactory::SceneFactory()
 {
     // シーンの登録
     sceneCreators_["TitleScene"] = [](ISceneArgs* args) { return std::make_unique<TitleScene>(args); };
-    sceneCreators_["LoadScene"]         = [](ISceneArgs* args) { return std::make_unique<LoadScene>(args); };
     sceneCreators_["ClearScene"]        = [](ISceneArgs* args) { return std::make_unique<ClearScene>(args); };
     sceneCreators_["EditScene"]         = [](ISceneArgs* args) { return std::make_unique<EditScene>(args); };
 

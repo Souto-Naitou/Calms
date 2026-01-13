@@ -50,7 +50,7 @@ public:
     /// <summary>
     /// ImGui のデバッグウィンドウを描画します。
     /// </summary>
-    void ImGui();
+    void    ImGui();
 
     /// <summary>
     /// 生成範囲や除外範囲の可視化描画を行います。
