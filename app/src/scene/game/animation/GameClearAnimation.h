@@ -7,6 +7,7 @@
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Lighting/PointLight/PointLight.h>
 #include <drawable/sprite/Sprite.h>
+#include <logic/score/ScoreCalculator.h>
 
 class GameClearAnimation
 {
@@ -19,6 +20,7 @@ public:
         Particle* pParticle = nullptr;
         Sprite* pSpriteClear = nullptr;
         Sprite* pSpriteSpace = nullptr;
+        ScoreCalculator* pScoreCalculator = nullptr;
     };
 
     enum class State
@@ -38,6 +40,7 @@ public:
         Vector3 cameraPosition = {};
         Vector3 cameraRotate = {};
         float pointLightIntensity = 0.0f;
+        float score = 0.0f;
     };
 
     GameClearAnimation() = default;
@@ -45,6 +48,7 @@ public:
     void Initialize(Params params);
     void Finalize() {};
     void Update();
+    void Draw1F();
     void Play();
     void Reset();
     bool IsPlaying() const { return timer_.GetIsStart(); }
@@ -71,6 +75,7 @@ private:
     TimeMeasurer timer_ = {};
 
     std::unique_ptr<ParticleEmitter> pEmitter_ = nullptr;
+    std::unique_ptr<NumericView> pScore_ = nullptr;
     Params initParams_ = {};
     float numSpriteColor_ = 0.0f;
 

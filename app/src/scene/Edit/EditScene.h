@@ -15,6 +15,7 @@
 #include <Common/structs.h>
 #include <Features/Primitive/RingModel.h>
 #include <ui/gauge/RingGauge.h>
+#include <drawable/font/NumericView.h>
 
 class EditScene : public SceneBase
 {
@@ -41,6 +42,7 @@ private:
     void InitializeParticle();
     void InitializeEnemy();
     void InitializeObject3d();
+    void InitializeNumeric();
 
     void EnemyUpdate();
     void KillEnemy();
@@ -51,11 +53,13 @@ private:
     std::unique_ptr<TimeMeasurer>           pTime_              = nullptr;
     std::unique_ptr<Canvas>                 pCanvasGrid_        = nullptr;
     std::unique_ptr<Canvas>                 pCanvasParticle_    = nullptr;
+    std::unique_ptr<Canvas>                 pCanvasUI_          = nullptr;
     std::unique_ptr<Object3d>               pGrid_              = nullptr;
     std::unique_ptr<RingGauge>              pRing_              = nullptr;
     std::unique_ptr<GameEye>                pGameEye_           = nullptr;
     std::unique_ptr<ParticleEmitter>        pParticleEmitter_   = nullptr;
     std::unique_ptr<Enemy>                  pEnemy_             = nullptr;
+    std::unique_ptr<NumericView>            pNumeric_           = nullptr;
     DirectionalLight                        directionalLight_   = {};
 
     bool                                    isKillEnemy_        = false;

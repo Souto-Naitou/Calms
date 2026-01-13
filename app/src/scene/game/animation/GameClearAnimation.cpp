@@ -1,6 +1,11 @@
 #include "GameClearAnimation.h"
 #include <mathExtension.h>
 #include <Math/Easing.h>
+#include <config/ResourcePath.h>
+#include <Core/DirectX12/TextureManager.h>
+#include <Core/Win32/WinSystem.h>
+#include <cmath>
+#include <Color.h>
 
 
 void GameClearAnimation::Initialize(Params params)
@@ -13,12 +18,30 @@ void GameClearAnimation::Initialize(Params params)
     pEmitter_->Initialize(emitterParams);
     pEmitter_->SetEnableBillboard(true);
     pEmitter_->EnableManualMode();
+
+    std::array<D3D12_GPU_DESCRIPTOR_HANDLE, 10> textureHandles = {};
+    for (uint32_t i = 0; i < 10; ++i)
+    {
+        std::string texturePath = Path::Image::kNumbers[i];
+        textureHandles[i] = TextureManager::GetInstance()->GetSrvHandleGPU(texturePath);
+    }
+    pScore_ = std::make_unique<NumericView>();
+    pScore_->Initialize(textureHandles);
+    pScore_->SetFontSize(56.0f);
+    pScore_->SetColor(RGBA(0xc5a44600).to_Vector4());
+    auto& layoutProp = pScore_->GetFontLayoutProperties();
+    layoutProp.leftTop = { static_cast<float>(WinSystem::clientWidth) / 4.0f, static_cast<float>(WinSystem::clientHeight) / 2.0f };
+    layoutProp.anchorPoint = { 0.5f, 0.5f };
+    layoutProp.letterSpacing = 32.0f;
 }
 
 void GameClearAnimation::Update()
 {
     pEmitter_->SetPosition(initParams_.pPlayer->GetObject3d()->GetTranslate());
     pEmitter_->Update();
+
+    pScore_->SetNumber(static_cast<uint32_t>(original_.score));
+    pScore_->Update();
 
     if (!timer_.GetIsStart())
     {
@@ -38,6 +61,11 @@ void GameClearAnimation::Update()
     }
 }
 
+void GameClearAnimation::Draw1F()
+{
+    pScore_->Draw1F();
+}
+
 void GameClearAnimation::Play()
 {
     timer_.Reset();
@@ -47,6 +75,7 @@ void GameClearAnimation::Play()
     original_.pointLightIntensity = initParams_.pPointLight->GetIntensity();
     original_.playerPosition = initParams_.pPlayer->GetObject3d()->GetTranslate();
     original_.cameraRotate = initParams_.pGameEye->GetTransform().rotate;
+    original_.score = initParams_.pScoreCalculator->GetScore();
     pEmitter_->Emit();
     pEmitter_->Emit();
 }
@@ -131,4 +160,7 @@ void GameClearAnimation::SpriteClearUpdate()
     float easedT = Math::Easing::EaseInOutCubic(t);
     initParams_.pSpriteClear->SetColor(Vector4(1.0f, 1.0f, 1.0f, easedT));
     initParams_.pSpriteSpace->SetColor(Vector4(1.0f, 1.0f, 1.0f, easedT));
+
+    Vector4 scoreColor = pScore_->GetColor();
+    pScore_->SetColor(Vector4(scoreColor.xyz(), easedT));
 }

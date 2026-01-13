@@ -223,20 +223,23 @@ void Enemy::OnCollision(const Collider* _other)
     }
 }
 
-void Enemy::OnCollisionTrigger(const Collider* _other)
+void Enemy::OnCollisionTrigger(const Collider* other)
 {
-    bool isCollide = _other->GetColliderID() == "playerBullet";
-    isCollide |= _other->GetColliderID() == "PlayerExplosion";
+    bool isCollide = other->GetColliderID() == "playerBullet";
+    isCollide |= other->GetColliderID() == "PlayerExplosion";
+
+    bool isPlayerBullet = other->GetColliderID() == "playerBullet";
+    bool isPlayerExplosion = other->GetColliderID() == "PlayerExplosion";
+
     if (isCollide)
     {
-        const EntityBase* otherOwner = _other->GetOwner<EntityBase>();
+        const EntityBase* otherOwner = other->GetOwner<EntityBase>();
         stats_.OnCollision(otherOwner->GetStats());
         
         if (stats_.GetHp() <= 0) 
         {
             isAlive_ = false;
             audioDeath_->Play();
-            EventListener::GetInstance()->Publish(KillEnemyEvent());
         }
 
         /// ヒットパーティクルの再生
@@ -252,6 +255,15 @@ void Enemy::OnCollisionTrigger(const Collider* _other)
         accelerationRefl_ = dir * bulletReflectionPower_;
 
         (*ppGameEye_)->Shake(0.1f);
+    }
+
+    if (isPlayerBullet)
+    {
+        EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Normal, 0.2f });
+    }
+    else if (isPlayerExplosion)
+    {
+        EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Normal,  });
     }
 }
 

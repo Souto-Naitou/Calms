@@ -13,6 +13,13 @@
 class CountDown
 {
 public:
+    enum class State
+    {
+        CountDown,
+        Start,
+        End
+    };
+
     /// <summary>
     /// カウントダウン用リソースの初期化を行います。
     /// </summary>
@@ -39,14 +46,10 @@ public:
     void Start();
     bool IsStart() const { return !isInit_; }
     bool IsEnd() const { return isEnd_; }
+    State GetState() const { return currentState_; }
 
 private:
-    enum class State
-    {
-        CountDown,
-        Start,
-        End
-    } currentState_ = State::CountDown;
+
 
     /// <summary>
     /// 数字カウントダウンの更新を行います。
@@ -60,7 +63,6 @@ private:
 
     TimeMeasurer timer_ = {};
     TimeMeasurer startTimer_ = {};
-
     std::array<std::unique_ptr<Sprite>, 3> numbers_;
     std::unique_ptr<Sprite> start_ = nullptr;
 
@@ -68,6 +70,7 @@ private:
     AnimationTimeline<float> animSize_ = {};
     AnimationTimeline<float> animStart_ = {};
 
+    State currentState_ = State::CountDown;
     int currentNumber_ = 2;
 
     bool isDrawStart_ = false;

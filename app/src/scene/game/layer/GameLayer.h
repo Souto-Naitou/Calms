@@ -92,12 +92,13 @@ private:
         Size
     };
 
-    static constexpr inline size_t kParticleIDMax = static_cast<size_t>(ParticleID::Size);
-    static constexpr inline float  kGameEyeHeightDefault = 65.0f;
-    static constexpr inline float  kGameEyeHeightDuringSlow = 30.0f;
+    static constexpr inline size_t kMaxParticleIDs_ = static_cast<size_t>(ParticleID::Size);
+    static constexpr inline float  kGameEyeHeightDefault_ = 65.0f;
+    static constexpr inline float  kGameEyeHeightDuringSlow_ = 30.0f;
+    static constexpr inline float  kTargetDirectionalLightFlashIntensity_ = 12.0f;
 
 #ifdef _DEBUG
-    static constexpr inline uint32_t kGameLimitTime = 3600u;
+    static constexpr inline uint32_t kGameLimitTime = 10u;
 #else
     static constexpr inline uint32_t kGameLimitTime = 60u;
 #endif // _DEBUG
@@ -110,45 +111,47 @@ private:
     std::unique_ptr<Canvas>                         canvasUIEffected_       = {};       // !< ラインキャンバス
 
     std::unique_ptr<Object3d>                       grid_                   = {};       // !< グリッド
-    std::unique_ptr<GameEye>                        gameEye_                = {};       // !< ゲームアイ
-    std::unique_ptr<Player>                         player_                 = {};       // !< プレイヤー
+    std::unique_ptr<GameEye>                        pGameEye_               = {};       // !< ゲームアイ
+    std::unique_ptr<Player>                         pPlayer_                = {};       // !< プレイヤー
     std::vector<std::unique_ptr<Enemy>>             enemies_                = {};       // !< 敵s
     std::list<std::unique_ptr<PlayerBullet>>        playerBullets_          = {};       // !< プレイヤー弾s
     std::unique_ptr<ScreenToWorld>                  screenToWorld_          = {};       // !< 座標変換
-    std::array<Particle*, kParticleIDMax>           particles_              = {};       // !< パーティクル
+    std::array<Particle*, kMaxParticleIDs_>         particles_              = {};       // !< パーティクル
     std::vector<std::unique_ptr<PlayerExplosion>>   playerExplosions_       = {};       // !< プレイヤー爆発エフェクト
     std::unique_ptr<ScoreCalculator>                scoreCalculator_        = {};       // !< スコア計算機
     /// UI
-    std::unique_ptr<InGameTimer>                    gameTimer_              = {};       // !< ゲームタイマー
+    std::unique_ptr<InGameTimer>                    ingameTimer_            = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                     inputGuide_             = {};       // !< 入力ガイド
     std::unique_ptr<Sprite>                         spriteClear_            = {};       // !< クリアスプライト
     std::unique_ptr<Sprite>                         spriteSpace_            = {};       // !< クリアスプライト
-    std::unique_ptr<PlayerUI3d>                     playerUI3d_             = {};       // !< プレイヤー3DUI
+    std::unique_ptr<PlayerUI3d>                     pPlayerUI3d_            = {};       // !< プレイヤー3DUI
 
     std::unique_ptr<GameOverAnimation>              gameOverAnimation_      = {};       // !< ゲームオーバーアニメーション
-    std::unique_ptr<GameClearAnimation>             gameClearAnimation_     = {};       // !< ゲームクリアアニメーション
+    std::unique_ptr<GameClearAnimation>             pGameClearAnimation_    = {};       // !< ゲームクリアアニメーション
 
     EntityCommonParams                              entityCommonParams_     = {};       // !< エンティティ共通パラメータ
 
     EnemySpawner                                    enemyPopSystem_         = {};       // !< 敵生成システム
     DirectionalLight                                directionalLight_       = {};       // !< ディレクショナルライト
     PointLight                                      pointLight_             = {};       // !< ポイントライト
-    std::unique_ptr<CountDown>                      countDown_              = {};       // !< カウントダウン
+    std::unique_ptr<CountDown>                      pStartCountDown_        = {};       // !< カウントダウン
     TimeMeasurer                                    timer_                  = {};       // !< タイマー
     double                                          countDownOffset_        = 2.0;      // !< カウントダウンのオフセット
 
+    bool                                            isGameStartFlashed_     = false;    // !< ゲーム開始フラッシュ完了フラグ
     bool                                            isEnding_               = false;    // !< ゲーム終了フラグ
     bool                                            isChangingScene_        = false;    // !< シーン遷移中かどうか
     std::unique_ptr<Line>                           lines_                  = nullptr;  // !< エリア用ライン
     float                                           areaWidth_              = 25.0f;    // !< エリアの幅
     const uint32_t                                  kMaxEnemyCount_         = 120;      // !< 最大敵数
     TimeMeasurer                                    titleTimer_             = {};       // !< タイトル表示用タイマー
+    Audio*                                          pBGM_                   = nullptr;  // !< BGMポインタ
 
     std::optional<EventSubscription>                playerExplosionSub_     = std::nullopt;
 
     // Pointers
     DirectX12*          pDx12_              = nullptr;
-    DeltaTimeManager*   deltaTimeManager_   = nullptr;
+    DeltaTimeManager*   pDeltaTimeManager_   = nullptr;
     RandomGenerator*    randomGenerator_    = nullptr;
     ModelManager*       pModelManager_      = nullptr;
     LineSystem*         pLineSystem_        = nullptr;

@@ -312,6 +312,7 @@
     </ClInclude>
     <ClInclude Include="src\screen\factory\IntermediateScreenFactory.h" />
     <ClInclude Include="src\screen\loading\LoadingScreen.h" />
+    <ClInclude Include="src\entity\enemy\EnemyTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">
