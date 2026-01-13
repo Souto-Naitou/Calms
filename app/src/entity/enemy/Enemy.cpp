@@ -247,7 +247,7 @@ void Enemy::OnCollisionTrigger(const Collider* other)
             }
             else if (isPlayerExplosion)
             {
-                EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Normal,  });
+                EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Normal, 1.0f });
             }
         }
 
