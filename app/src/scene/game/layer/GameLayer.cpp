@@ -771,6 +771,7 @@ void GameLayer::CreateEnemy()
 void GameLayer::PlayerSlowUpdate()
 {
     constexpr float kGameEyeFollowRateDuringSlow = 0.1f;
+    constexpr float kGameEyeFollowRateNormal = 0.1f;
     constexpr float kGlayscalePowerDuringSlow = 0.75f;
     constexpr float kGlayscaleBlendRateDuringSlow = 0.1f;
     constexpr float kDeltaTimeDefault = 1.0f / 60.0f;
@@ -803,7 +804,7 @@ void GameLayer::PlayerSlowUpdate()
     }
     else
     {
-        eyePos.Lerp(eyePos, Vector3(playerPos.x, kGameEyeHeightDefault_, playerPos.z), kGameEyeFollowRateDuringSlow);
+        eyePos.Lerp(eyePos, Vector3(playerPos.x, kGameEyeHeightDefault_, playerPos.z), kGameEyeFollowRateNormal);
         pOptionGrayscale_->power = std::lerp(pOptionGrayscale_->power, 0.0f, kGlayscaleBlendRateDuringSlow);
         pGameEye_->SetTranslate(eyePos);
 
