@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Interfaces/ISceneFactory.h>
-#include <Scene/SceneBase.h>
+#include <scene/SceneBase.h>
 
 #include <memory>
 #include <functional>

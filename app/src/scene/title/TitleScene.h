@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Scene/SceneBase.h>
+#include <scene/SceneBase.h>
 #include <Features/GameEye/GameEye.h>
 #include <Features/Input/Input.h>
 #include <Features/SceneManager/SceneManager.h>

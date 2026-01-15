@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Scene/SceneBase.h>
+#include <scene/SceneBase.h>
 #include <drawable/sprite/Sprite.h>
 #include <memory>
 #include <Features/Layer/Canvas.h>

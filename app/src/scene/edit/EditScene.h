@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Scene/SceneBase.h>
+#include <scene/SceneBase.h>
 #include <drawable/particle/Particle.h>
 #include <Features/Layer/Canvas.h>
 #include <drawable/object3d/Object3d.h>
