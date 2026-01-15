@@ -55,12 +55,6 @@
     <Filter Include="Logic\Spawner">
       <UniqueIdentifier>{89fb3282-62b2-4b28-b305-8a05d0f0d420}</UniqueIdentifier>
     </Filter>
-    <Filter Include="IO">
-      <UniqueIdentifier>{c1a9b9e5-3ea2-40dc-b89a-2325cb5a4534}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="IO\Net">
-      <UniqueIdentifier>{ea193379-2d59-4248-a97b-42bd27ab419f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scene\Title\Animation">
       <UniqueIdentifier>{2182c022-4ac2-4066-968a-4208cb6a71e6}</UniqueIdentifier>
     </Filter>
