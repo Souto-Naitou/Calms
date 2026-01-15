@@ -8,7 +8,7 @@
 #include <map>
 
 /// <summary>
-/// 繧ｷ繝ｼ繝ｳ繝輔ぃ繧ｯ繝医Μ繝ｼ繧ｯ繝ｩ繧ｹ
+/// シーンファクトリークラス
 /// </summary>
 class SceneFactory : public ISceneFactory
 {
@@ -16,10 +16,10 @@ public:
     SceneFactory();
 
     /// <summary>
-    /// 繧ｷ繝ｼ繝ｳ逕滓・
+    /// シーン生成
     /// </summary>
-    /// <param name="_sceneName">繧ｷ繝ｼ繝ｳ蜷・/param>
-    /// <returns>逕滓・縺励◆繧ｷ繝ｼ繝ｳ</returns>
+    /// <param name="_sceneName">シーン名</param>
+    /// <returns>生成したシーン</returns>
     std::unique_ptr<SceneBase> Create(const std::string& sceneName, ISceneArgs* pArgs) override;
 
 

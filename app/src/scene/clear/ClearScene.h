@@ -6,7 +6,7 @@
 #include <Features/Layer/Canvas.h>
 
 /// <summary>
-/// 繧ｯ繝ｪ繧｢繧ｷ繝ｼ繝ｳ
+/// クリアシーン
 /// </summary>
 class ClearScene : public SceneBase
 {
@@ -14,20 +14,22 @@ public:
     ClearScene(ISceneArgs* _pArgs) : SceneBase(_pArgs) {};
 
     /// <summary>
-    /// 蛻晄悄蛹・    /// </summary>
+    /// 初期化
+    /// </summary>
     void Initialize() override;
 
     /// <summary>
-    /// 邨ゆｺ・    /// </summary>
+    /// 終了
+    /// </summary>
     void Finalize() override;
 
     /// <summary>
-    /// 譖ｴ譁ｰ
+    /// 更新
     /// </summary>
     void Update() override;
 
     /// <summary>
-    /// 謠冗判
+    /// 描画
     /// </summary>
     void Draw() override;
 

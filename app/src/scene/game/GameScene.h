@@ -10,7 +10,7 @@
 #include "layer/GameLayer.h"
 
 /// <summary>
-/// 繧ｲ繝ｼ繝繧ｷ繝ｼ繝ｳ
+/// ゲームシーン
 /// </summary>
 class GameScene : public ILoadableScene
 {
@@ -18,31 +18,35 @@ public:
     GameScene(ISceneArgs* pArgs) : ILoadableScene(pArgs) {};
 
     /// <summary>
-    /// 蛻晄悄蛹・    /// </summary>
+    /// 初期化
+    /// </summary>
     void Initialize() override;
 
     /// <summary>
-    /// 邨ゆｺ・    /// </summary>
+    /// 終了
+    /// </summary>
     void Finalize() override;
 
     /// <summary>
-    /// 譖ｴ譁ｰ
+    /// 更新
     /// </summary>
     void Update() override;
 
 
     /// <summary>
-    /// 謠冗判
+    /// 描画
     /// </summary>
     void Draw() override;
 
     /// <summary>
-    /// 繝ｭ繝ｼ繝峨す繝ｼ繝ｳ縺ｧ螳溯｡後☆繧句・逅・    /// </summary>
+    /// ロードシーンで実行する処理
+    /// </summary>
     void PreLoad(TaskExecutor& executor) override;
 
 
     /// <summary>
-    /// 繧ｷ繝ｼ繝ｳ逕ｨ縺ｮ繝・ヰ繝・げ繧ｦ繧｣繝ｳ繝峨え繧呈緒逕ｻ縺励∪縺吶・    /// </summary>
+    /// シーン用のデバッグウィンドウを描画します。
+    /// </summary>
     void ImGui();
 
 private:

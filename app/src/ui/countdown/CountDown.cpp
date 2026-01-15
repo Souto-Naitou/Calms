@@ -10,7 +10,7 @@ void CountDown::Initialize()
 {
     Vector2 clientSize = { static_cast<float>(Window::clientWidth), static_cast<float>(Window::clientHeight) };
 
-    /// 謨ｰ蟄・1 - 3 (256 x 256)
+    /// 数字 1 - 3 (256 x 256)
     for (int i = 0; i < 3; i++)
     {
         numbers_[i] = std::make_unique<Sprite>();
@@ -95,7 +95,8 @@ void CountDown::Start()
 
 void CountDown::UpdateCountDown()
 {
-    // 謨ｰ蟄励ｒ螟峨∴繧・    if (timer_.GetNow<float>() > changeInterval_)
+    // 数字を変える
+    if (timer_.GetNow<float>() > changeInterval_)
     {
         --currentNumber_;
         timer_.Reset();
@@ -104,7 +105,8 @@ void CountDown::UpdateCountDown()
         animOpacity_.Start();
     }
 
-    // 繧ｹ繧ｿ繝ｼ繝郁｡ｨ遉ｺ縺ｫ螟峨∴繧・    if (currentNumber_ < 0)
+    // スタート表示に変える
+    if (currentNumber_ < 0)
     {
         currentState_ = State::Start;
         isDrawStart_ = true;
@@ -121,7 +123,7 @@ void CountDown::UpdateCountDown()
 
 void CountDown::UpdateStart()
 {
-    // 騾乗・蠎ｦ繧貞､画峩
+    // 透明度を変更
     start_->SetColor({ 1.0f, 1.0f, 1.0f, animStart_.Update() });
     start_->Update();
 }

@@ -14,12 +14,14 @@
 
 void TitleScene::Initialize()
 {
-    /// 繧､繝ｳ繧ｹ繧ｿ繝ｳ繧ｹ縺ｮ蜿門ｾ・    pInput_ = Input::GetInstance();
+    /// インスタンスの取得
+    pInput_ = Input::GetInstance();
     pSceneManager_ = SceneManager::GetInstance();
     pCubemapSystem_ = std::any_cast<CubemapSystem*>(pArgs_->Get("CubemapSystem"));
     pDx12_ = std::any_cast<DirectX12*>(pArgs_->Get("DirectX12"));
 
-    /// Canvas縺ｮ蛻晄悄蛹・    {
+    /// Canvasの初期化
+    {
         Canvas::Params params = {};
         params.name = "TitleCanvas";
         params.pDx12 = pDx12_;
@@ -39,13 +41,16 @@ void TitleScene::Initialize()
         pLayer_->AddCanvas(pCanvasSprite_.get());
     }
 
-    // 繧ｲ繝ｼ繝繧｢繧､縺ｮ蛻晄悄蛹・    this->InitializeGameEye();
+    // ゲームアイの初期化
+    this->InitializeGameEye();
 
-    // 繧ｹ繧ｫ繧､繝懊ャ繧ｯ繧ｹ縺ｮ蛻晄悄蛹・    this->InitializeSkybox();
+    // スカイボックスの初期化
+    this->InitializeSkybox();
 
-    // 繧ｹ繝励Λ繧､繝医・蛻晄悄蛹・    this->InitializeSprites();
+    // スプライトの初期化
+    this->InitializeSprites();
 
-    /// 繝輔ぅ繝ｫ繧ｿ縺ｮ蛻晄悄蛹悶→逋ｻ骭ｲ
+    /// フィルタの初期化と登録
     {
         auto tempBloom = pCanvasBack_->GetPostEffectExecutor().AddEffect(PostEffectClassName::GaussianBloom);
         auto tempRandom = pCanvasBack_->GetPostEffectExecutor().AddEffect(PostEffectClassName::RandomFilter);
@@ -64,8 +69,8 @@ void TitleScene::Initialize()
     pSoundBGM_->SetVolume(0.075f);
     pSoundBGM_->Play(true);
 
-    // 繧ｪ繝ｼ繝励ル繝ｳ繧ｰ繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ縺ｮ蛻晄悄蛹悶→蜀咲函
-    // - 螳滓凾髢薙ｒ繧ゅ→縺ｫ蜀咲函縺輔ｌ繧九◆繧￣lay髢｢謨ｰ縺ｮ縺ゅ→縺ｫ譎る俣縺ｮ縺九°繧句・逅・I/O 縺ｪ縺ｩ)繧貞・繧後↑縺・％縺ｨ
+    // オープニングアニメーションの初期化と再生
+    // - 実時間をもとに再生されるためPlay関数のあとに時間のかかる処理(I/O など)を入れないこと
     pOpeningAnimation_ = std::make_unique<OpeningAnimation>();
     pOpeningAnimation_->Initialize();
     pOpeningAnimation_->Play();
@@ -126,12 +131,13 @@ void TitleScene::Draw()
 
 void TitleScene::InitializeGameEye()
 {
-    /// 繧ｲ繝ｼ繝繧｢繧､縺ｮ蛻晄悄蛹・    gameEye_ = std::make_unique<GameEye>();
+    /// ゲームアイの初期化
+    gameEye_ = std::make_unique<GameEye>();
     gameEye_->SetName("main");
     gameEye_->SetTranslate(Vector3(0, 15.0f, -30.0f));
     gameEye_->SetRotate(Vector3(-1.2f, 0, 0));
 
-    /// 繧ｲ繝ｼ繝繧｢繧､繧偵そ繝・ヨ
+    /// ゲームアイをセット
     Object3dSystem::GetInstance()->SetGlobalEye(gameEye_.get());
     SpriteSystem::GetInstance()->SetGlobalEye(gameEye_.get());
     LineSystem::GetInstance()->SetGlobalEye(gameEye_.get());
@@ -140,14 +146,16 @@ void TitleScene::InitializeGameEye()
 
 void TitleScene::InitializeSprites()
 {
-    /// 繧ｿ繧､繝医Ν繝・く繧ｹ繝医・蛻晄悄蛹・    pSpriteTitle_ = std::make_unique<Sprite>();
+    /// タイトルテキストの初期化
+    pSpriteTitle_ = std::make_unique<Sprite>();
     pSpriteTitle_->Initialize(Path::Image::kTitle);
     pSpriteTitle_->SetName("Title");
     pSpriteTitle_->SetAnchorPoint({ 0.5f, 0.5f });
 
     pSpriteTitle_->SetPosition({ 50.0_vw, 50.0_vh - 50.0f});
 
-    /// 繝輔Ξ繝ｼ繝繧ｹ繧ｯ繝ｪ繝ｼ繝ｳ縺ｮ蛻晄悄蛹・    pSpriteFrameScreen_ = std::make_unique<Sprite>();
+    /// フレームスクリーンの初期化
+    pSpriteFrameScreen_ = std::make_unique<Sprite>();
     pSpriteFrameScreen_->Initialize(Path::Image::kFrameScreen);
     pSpriteFrameScreen_->SetName("FrameScreen");
     pSpriteFrameScreen_->SetAnchorPoint({ 0.5f, 0.5f });
@@ -155,7 +163,8 @@ void TitleScene::InitializeSprites()
     pSpriteFrameScreen_->SetSize({ 100.0_vw, 100.0_vh });
     pSpriteFrameScreen_->SetColor(RGBA(0x101010ff).to_Vector4());
 
-    /// 髢句ｧ九・繝ｭ繝ｳ繝励ヨ縺ｮ蛻晄悄蛹・    pSpritePressStart_ = std::make_unique<Sprite>();
+    /// 開始プロンプトの初期化
+    pSpritePressStart_ = std::make_unique<Sprite>();
     pSpritePressStart_->Initialize(Path::Image::kTitleStartPrompt);
     pSpritePressStart_->SetName("PressStart");
     pSpritePressStart_->SetAnchorPoint({ 0.5f, 0.5f });
@@ -199,7 +208,8 @@ void TitleScene::UpdateTitleAnimation()
 
 void TitleScene::UpdateStartPromptAnimation()
 {
-    // FIX: 蛻･繧ｯ繝ｩ繧ｹ繧堤ｫ九※縺ｦUI繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳ繧堤ｮ｡逅・☆繧・    static float t = 0.0f;
+    // FIX: 別クラスを立ててUIアニメーションを管理する
+    static float t = 0.0f;
     opacityStartPrompt_ = (std::sinf(t) + 1.5f) / 3.0f;
     t += 0.04f;
     pSpritePressStart_->SetColor(Vector4(1.0f, 1.0f, 1.0f, opacityStartPrompt_));

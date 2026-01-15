@@ -8,7 +8,7 @@
 
 
 /// <summary>
-/// 繧ｲ繝ｼ繝髢句ｧ句燕縺ｮ繧ｫ繧ｦ繝ｳ繝医ム繧ｦ繝ｳ繧貞・逕溘☆繧九け繝ｩ繧ｹ
+/// ゲーム開始前のカウントダウンを再生するクラス
 /// </summary>
 class CountDown
 {
@@ -21,23 +21,28 @@ public:
     };
 
     /// <summary>
-    /// 繧ｫ繧ｦ繝ｳ繝医ム繧ｦ繝ｳ逕ｨ繝ｪ繧ｽ繝ｼ繧ｹ縺ｮ蛻晄悄蛹悶ｒ陦後＞縺ｾ縺吶・    /// </summary>
+    /// カウントダウン用リソースの初期化を行います。
+    /// </summary>
     void Initialize();
 
     /// <summary>
-    /// 蠕悟ｧ区忰繧定｡後＞縺ｾ縺吶・    /// </summary>
+    /// 後始末を行います。
+    /// </summary>
     void Finalize();
 
     /// <summary>
-    /// 繧ｫ繧ｦ繝ｳ繝医ム繧ｦ繝ｳ縺ｮ迥ｶ諷区峩譁ｰ繧定｡後＞縺ｾ縺吶・    /// </summary>
+    /// カウントダウンの状態更新を行います。
+    /// </summary>
     void Update();
 
     /// <summary>
-    /// 2D 繧ｹ繝励Λ繧､繝医・謠冗判繧定｡後＞縺ｾ縺吶・    /// </summary>
+    /// 2D スプライトの描画を行います。
+    /// </summary>
     void Draw1F();
 
     /// <summary>
-    /// 繧ｫ繧ｦ繝ｳ繝医ム繧ｦ繝ｳ繧帝幕蟋九＠縺ｾ縺吶・    /// </summary>
+    /// カウントダウンを開始します。
+    /// </summary>
     void Start();
     bool IsStart() const { return !isInit_; }
     bool IsEnd() const { return isEnd_; }
@@ -47,11 +52,13 @@ private:
 
 
     /// <summary>
-    /// 謨ｰ蟄励き繧ｦ繝ｳ繝医ム繧ｦ繝ｳ縺ｮ譖ｴ譁ｰ繧定｡後＞縺ｾ縺吶・    /// </summary>
+    /// 数字カウントダウンの更新を行います。
+    /// </summary>
     void UpdateCountDown();
 
     /// <summary>
-    /// START 陦ｨ遉ｺ繝輔ぉ繝ｼ繧ｺ縺ｮ譖ｴ譁ｰ繧定｡後＞縺ｾ縺吶・    /// </summary>
+    /// START 表示フェーズの更新を行います。
+    /// </summary>
     void UpdateStart();
 
     TimeMeasurer timer_ = {};
