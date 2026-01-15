@@ -3,7 +3,7 @@
 .va/
 *.user
 *.lnk
-Bin/
+[Bb]in/
 
 #user defines
-Log/
+[Ll]og/
