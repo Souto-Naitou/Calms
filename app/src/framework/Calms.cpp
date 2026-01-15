@@ -2,7 +2,7 @@
 
 #include <Common/define.h>
 #include <Features/SceneManager/SceneManager.h>
-#include <Scene/Factory/SceneFactory.h>
+#include <scene/factory/SceneFactory.h>
 #include <Features/Model/Helper/ModelHelper.h>
 
 #pragma comment(lib, "Ws2_32.lib")

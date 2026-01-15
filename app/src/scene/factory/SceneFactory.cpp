@@ -1,9 +1,9 @@
 #include "SceneFactory.h"
 
-#include <Scene/Title/TitleScene.h>
-#include <Scene/Game/GameScene.h>
-#include <Scene/Clear/ClearScene.h>
-#include <scene/Edit/EditScene.h>
+#include <scene/title/TitleScene.h>
+#include <scene/game/GameScene.h>
+#include <scene/clear/ClearScene.h>
+#include <scene/edit/EditScene.h>
 #include <Utility/ConvertString/ConvertString.h>
 
 #include <cassert>

@@ -1,7 +1,7 @@
 #pragma once
 
 // engine
-#include <Scene/SceneBase.h>
+#include <scene/SceneBase.h>
 #include <Core/DirectX12/TextureManager.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <Features/RandomGenerator/RandomGenerator.h>
