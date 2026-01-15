@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/IGameLayer.h>
+#include <core/ISceneLayer.h>
 
 // engine
 #include <Core/DirectX12/TextureManager.h>
@@ -52,6 +52,9 @@
 #include <optional>
 #include <Effects/PostEffects/Grayscale/Grayscale.h>
 
+/// <summary>
+/// ゲーム層 (他にポーズメニュー層やリザルト層などを実装予定)
+/// </summary>
 class GameLayer : public ILoadableGameLayer
 {
 public:

@@ -275,7 +275,7 @@
     <ClInclude Include="src\scene\game\layer\ResultLayer.h">
       <Filter>Scene\Game\layer</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\IGameLayer.h">
+    <ClInclude Include="src\core\ISceneLayer.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\Edit\EditScene.h">

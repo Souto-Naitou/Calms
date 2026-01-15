@@ -1,10 +1,10 @@
 #pragma once
 
 #include <Features/Layer/Canvas.h>
-#include <core/IGameLayer.h>
+#include <core/ISceneLayer.h>
 #include <memory>
 
-class ResultLayer : public IGameLayer
+class ResultLayer : public ISceneLayer
 {
 public:
     void Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer) override;

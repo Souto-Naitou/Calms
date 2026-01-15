@@ -2,11 +2,9 @@
 
 int _stdcall WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
-    NimaFramework* pWinterGame = new Calms();
+    auto pWinterGame = std::make_unique<Calms>();
 
     pWinterGame->Run();
-
-    delete pWinterGame;
 
     return 0;
 }

@@ -205,7 +205,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\ui\PlayerUI3d.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\core\IGameLayer.h" />
+    <ClInclude Include="src\core\ISceneLayer.h" />
     <ClInclude Include="src\entity\enemy\EnemyTypes.h" />
     <ClInclude Include="src\entity\explosion\PlayerExplosion.h" />
     <ClInclude Include="src\entity\player\GameOverAnimation.h" />
