@@ -45,7 +45,8 @@ public:
     virtual ~ILoadableGameLayer() = default;
 
     /// <summary>
-    /// ロードスクリーンで実行する処理を行います。
+    /// ロードスクリーンで実行する処理を登録します。
+    /// - SceneManager::ScenePreloadを経由して、SceneTransitionExecutorで呼び出します。
     /// </summary>
     virtual void Preload(const PreloadContext& ctx, TaskExecutor& executor) = 0;
 };

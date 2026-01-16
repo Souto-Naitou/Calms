@@ -204,11 +204,13 @@ void GameLayer::Update()
     spriteSpace_->Update();
     scoreCalculator_->Update();
 
-    /// [ プレイヤーの更新 ]
+    /// [ ディレクショナルライトを毎フレーム目標値に近づける ]
     if (!isEnding_)
     {
         directionalLight_.intensity = std::lerp(directionalLight_.intensity, kDirectionalLightTargetIntensity, 0.0125f);
     }
+
+    /// [ プレイヤーの更新 ]
     pPlayer_->Update();
     pPlayerUI3d_->SetPosition(pPlayer_->GetTranslation());
     pPlayerUI3d_->Update();
@@ -289,7 +291,6 @@ void GameLayer::Update()
         position = pPlayer_->GetTranslation();
         position.y = 5.0f;
     }
-
 
     /// [ タイマーの更新 ]
     if (timer_.GetNow<float>() > countDownOffset_ && !pStartCountDown_->IsStart())
