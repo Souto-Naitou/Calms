@@ -17,6 +17,7 @@
 #include <mathExtension.h>
 #include <cmath>
 #include <Effects/PostEffects/ScanLine/Scanline.h>
+#include <Effects/PostEffects/Mosaic/Mosaic.h>
 
 using namespace Math::Viewport;
 
@@ -519,8 +520,16 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
             optionGaussian.kernelSize = 21;
             optionBloom.bloomIntensity = 1.0f;
             bloom->GetSeparatedGaussianFilter()->SetSigma(27.0f);
+            bloom->Enable(true);
         }
-        bloom->Enable(true);
+        effect = canvasParticle_->GetPostEffectExecutor().AddEffect(PostEffectClassName::Mosaic);
+        auto mosaic = static_cast<Mosaic*>(effect);
+        {
+            auto& optionMosaic = mosaic->GetOption();
+            optionMosaic.power = 400.0f;
+            mosaic->Enable(true);
+        }
+
         pLayer_->AddCanvas(canvasParticle_.get());
     };
 
