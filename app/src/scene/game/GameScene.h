@@ -39,7 +39,7 @@ public:
     void Draw() override;
 
     /// <summary>
-    /// ロードスクリーンで実行する処理
+    /// ロードシーンで実行する処理
     /// </summary>
     void PreLoad(TaskExecutor& executor) override;
 
@@ -50,11 +50,7 @@ public:
     void ImGui();
 
 private:
-    // ゲーム層
     std::unique_ptr<GameLayer> pGameLayer_ = nullptr;
-    // ポーズメニュー層
-    // リザルト層
-    // ゲームモードセレクト層
 
 private:
     DeltaTimeManager* deltaTimeManager_ = nullptr;

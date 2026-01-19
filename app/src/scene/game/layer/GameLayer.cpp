@@ -16,6 +16,7 @@
 #include <config/ResourcePath.h>
 #include <mathExtension.h>
 #include <cmath>
+#include <Effects/PostEffects/ScanLine/Scanline.h>
 
 using namespace Math::Viewport;
 
@@ -179,12 +180,14 @@ void GameLayer::Finalize()
     inputGuide_->Finalize();
     lines_->Finalize();
     ParticleStorage::GetInstance()->ReleaseAllParticle();
+    canvasBackground_->Finalize();
     canvasGrid_->Finalize();
     canvas3dObject_->Finalize();
     canvasParticle_->Finalize();
     canvasUI_->Finalize();
     canvasUIEffected_->Finalize();
     canvasOverall_->Finalize();
+    pLayer_->RemoveCanvas(canvasBackground_.get());
     pLayer_->RemoveCanvas(canvasGrid_.get());
     pLayer_->RemoveCanvas(canvas3dObject_.get());
     pLayer_->RemoveCanvas(canvasParticle_.get());
@@ -329,6 +332,10 @@ void GameLayer::Update()
 
 void GameLayer::Draw()
 {
+    CanvasScope backgroundCanvasScope(canvasBackground_.get());
+    {
+    }
+
     CanvasScope gridCanvasScope(canvasGrid_.get());
     {
         grid_->Draw1F();
@@ -399,6 +406,7 @@ void GameLayer::Draw()
 
     CanvasScope overallCanvasScope(canvasOverall_.get());
     {
+        canvasBackground_->Draw1F();
         canvasGrid_->Draw1F();
         canvas3dObject_->Draw1F();
         canvasParticle_->Draw1F();
@@ -424,6 +432,31 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
     #ifdef _DEBUG
     commonParams.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs->Get("ImGuiManager"));
     #endif // _DEBUG
+
+    /// [ 背景用キャンバス ]
+    auto create_background_canvas = [=]()
+    {
+        Canvas::Params canvasParams = commonParams;
+        canvasParams.name = "Background_Canvas";
+        canvasBackground_ = std::make_unique<Canvas>();
+        canvasBackground_->Initialize(canvasParams);
+        canvasBackground_->SetEnableManualDraw(true);
+
+        IPostEffect* effect = nullptr;
+        effect = canvasBackground_->GetPostEffectExecutor().AddEffect(PostEffectClassName::Scanline);
+        {
+            auto scanline = static_cast<Scanline*>(effect);
+            auto& option = scanline->GetOption();
+            option.opacity = 1.0f;
+            option.division = 70.0f;
+            option.speed = 5.0f;
+            option.color0 = Vector4(0.055f, 0.055f, 0.055f, 1.000f);
+            option.color1 = Vector4(0.063f, 0.063f, 0.063f, 1.000f);
+            option.isOverall = 1.0f;
+            scanline->Enable(true);
+        }
+        pLayer_->AddCanvas(canvasBackground_.get());
+    };
 
     /// [ グリッド用キャンバス ]
     auto create_grid_canvas = [=]()
@@ -555,6 +588,7 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
     };
 
     // キャンバスの生成をタスク化して実行
+    executor.AddTask(create_background_canvas);
     executor.AddTask(create_grid_canvas);
     executor.AddTask(create_3dobject_canvas);
     executor.AddTask(create_particle_canvas);
@@ -620,9 +654,8 @@ void GameLayer::SpritesInitialize()
     spriteClear_->SetPosition({ 25.0_vw, 35.7_vh });
     spriteClear_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
 
-
     spriteSpace_ = std::make_unique<Sprite>();
-    pTextureManager_->LoadTexture(Path::Image::kSpaceText);
+    pTextureManager_->LoadTexture(Path::Image::kTitleStartPrompt);
     spriteSpace_->Initialize(Path::Image::kTitleStartPrompt);
     spriteSpace_->SetAnchorPoint({ 0.5f, 0.5f });
     spriteSpace_->SetPosition({ 25.0_vw, 62.5_vh });
