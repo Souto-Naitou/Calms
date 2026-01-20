@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/IGameLayer.h>
+#include <core/ISceneLayer.h>
 
 // engine
 #include <Core/DirectX12/TextureManager.h>
@@ -52,6 +52,9 @@
 #include <optional>
 #include <Effects/PostEffects/Grayscale/Grayscale.h>
 
+/// <summary>
+/// ゲーム層 (他にポーズメニュー層やリザルト層などを実装予定)
+/// </summary>
 class GameLayer : public ILoadableGameLayer
 {
 public:
@@ -99,11 +102,12 @@ private:
     static constexpr inline float  kTargetDirectionalLightFlashIntensity_ = 12.0f;
 
 #ifdef _DEBUG
-    static constexpr inline uint32_t kGameLimitTime = 10u;
+    static constexpr inline uint32_t kGameLimitTime = 3200u;
 #else
     static constexpr inline uint32_t kGameLimitTime = 60u;
 #endif // _DEBUG
 
+    std::unique_ptr<Canvas>                         canvasBackground_       = {};       // !< 背景キャンバス
     std::unique_ptr<Canvas>                         canvasUI_               = {};       // !< UIキャンバス
     std::unique_ptr<Canvas>                         canvasGrid_             = {};       // !< Gridキャンバス
     std::unique_ptr<Canvas>                         canvas3dObject_         = {};       // !< MainCharactorキャンバス

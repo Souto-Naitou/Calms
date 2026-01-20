@@ -231,6 +231,7 @@ void Enemy::OnCollisionTrigger(const Collider* other)
     bool isPlayerBullet = other->GetColliderID() == "playerBullet";
     bool isPlayerExplosion = other->GetColliderID() == "PlayerExplosion";
 
+    /// 衝突している場合
     if (isCollide)
     {
         const EntityBase* otherOwner = other->GetOwner<EntityBase>();
@@ -241,6 +242,7 @@ void Enemy::OnCollisionTrigger(const Collider* other)
             isAlive_ = false;
             audioDeath_->Play();
             
+            /// あたっている相手に応じてスコアイベントを発行
             if (isPlayerBullet)
             {
                 EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Normal, 0.2f });
@@ -253,16 +255,16 @@ void Enemy::OnCollisionTrigger(const Collider* other)
 
         /// ヒットパーティクルの再生
         Vector3 hitPos = otherOwner->GetTranslation();
-
         if (hitPos.x == 0 && hitPos.y == 0 && hitPos.z == 0)
         {
             assert(0);
         }
 
+        /// 反発を速度に適用
         Vector3 dir = transform_.translate - hitPos;
-
         accelerationRefl_ = dir * bulletReflectionPower_;
 
+        /// 画面揺れ
         (*ppGameEye_)->Shake(0.1f);
     }
 }

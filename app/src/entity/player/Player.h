@@ -129,8 +129,8 @@ private:
     static constexpr float kGameEyeShakePowerWhenDamage = 0.3f;
 
     // 初期化パラメータ
-    Params                          params_;
-    uint32_t                        flags_      = static_cast<uint32_t>(Flags::None);
+    Params      params_;
+    uint32_t    flags_      = static_cast<uint32_t>(Flags::None);
 
     std::unique_ptr<PlayerInput>            pInput_             = nullptr;
     std::unique_ptr<PlayerContext>          pContext_           = nullptr;
@@ -141,9 +141,9 @@ private:
     std::unique_ptr<IModel>                 pModelSelfBody_     = nullptr;
     std::unique_ptr<Object3d>               object_             = {};
 
-    float movePower_ = 0.0f;
+    float movePower_    = 0.0f;
     float shotInterval_ = 0.05f;
-    bool  isShot_ = false;
+    bool  isShot_       = false;
 
     /// コライダー
     std::unique_ptr<Collider> collider_ = nullptr;

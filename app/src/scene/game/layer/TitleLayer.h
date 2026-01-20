@@ -1,8 +1,8 @@
 #pragma once
 
-#include <core/IGameLayer.h>
+#include <core/ISceneLayer.h>
 
-class TitleLayer : public IGameLayer
+class TitleLayer : public ISceneLayer
 {
 public:
     void Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer) override;

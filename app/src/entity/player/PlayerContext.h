@@ -1,5 +1,8 @@
 #pragma once
 
+/// <summary>
+/// プレイヤーの基本情報や現在の状態を管理するコンテキストクラス
+/// </summary>
 class PlayerContext
 {
 public:

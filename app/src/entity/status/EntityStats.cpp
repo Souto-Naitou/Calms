@@ -32,17 +32,15 @@ void EntityStats::ImGui(const std::string& name) const
     #endif
 }
 
-void EntityStats::OnCollision(const IEntityStats* status)
+void EntityStats::OnCollision(const IEntityStats* other)
 {
-    ///=================
-    ///==== Calc =======
-    ///=================
-    assert(status != nullptr);
-    EntityStats* casted = nullptr;
+    /// [ 型チェック ]
+    assert(other != nullptr);
+    const EntityStats* casted = nullptr;
 
     try
     {
-        casted = static_cast<EntityStats*>(const_cast<IEntityStats*>(status));
+        casted = static_cast<const EntityStats*>(other);
     }
     catch (const std::bad_cast& e)
     {
@@ -51,16 +49,14 @@ void EntityStats::OnCollision(const IEntityStats* status)
         return;
     }
 
-    // ダメージ
+    /// [ ダメージ計算 ]
     float damage = casted->attack_;
     if (damage < 0.0f)
     {
         damage = 0.0f;
     }
 
-    ///=================
-    ///==== Apply ======
-    ///=================
+    /// [ 適用 ]
 
     // ダメージ
     health_ -= damage;

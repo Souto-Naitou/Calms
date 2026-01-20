@@ -2,6 +2,9 @@
 #include <Features/Input/Input.h>
 #include <Vector3.h>
 
+/// <summary>
+/// プレイヤー入力管理クラス
+/// </summary>
 class PlayerInput
 {
 public:

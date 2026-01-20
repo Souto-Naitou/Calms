@@ -8,6 +8,7 @@
 #include <Effects/SceneTransition/TransShutter.h>
 #include <Features/SceneManager/SceneManager.h>
 #include <Features/Layer/CanvasScope.h>
+#include <Effects/PostEffects/ScanLine/Scanline.h>
 
 
 void LoadingScreen::Initialize()
@@ -136,5 +137,18 @@ void LoadingScreen::InitializeCanvas(DirectX12* pDx12, CubemapSystem* pCubemapSy
     #endif // _DEBUG
     pCanvas_ = std::make_unique<Canvas>();
     pCanvas_->Initialize(canvasParams);
+    IPostEffect* effect = nullptr;
+    effect = pCanvas_->GetPostEffectExecutor().AddEffect(PostEffectClassName::Scanline);
+    {
+        auto scanline = static_cast<Scanline*>(effect);
+        auto& option = scanline->GetOption();
+        option.opacity = 0.03f;
+        option.division = 70.0f;
+        option.speed = 5.0f;
+        option.color0 = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        option.color1 = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+        option.isOverall = 1.0f;
+        scanline->Enable(true);
+    }
     pLayer_->AddCanvas(pCanvas_.get());
 }

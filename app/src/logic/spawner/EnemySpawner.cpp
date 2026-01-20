@@ -51,11 +51,6 @@ void EnemySpawner::Update()
 
     if (timerPop_.GetNow<float>() > popInterval_)
     {
-        //for (uint32_t i = 0; i < popCount_; i++)
-        //{
-        //    PopRandom();
-        //}
-
         popDelayCount_ = popCount_;
         timerPopDelay_.Start();
 
