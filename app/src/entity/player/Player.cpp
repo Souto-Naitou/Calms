@@ -105,12 +105,7 @@ void Player::Draw1F()
 {
     // オブジェクトの描画
     object_->Draw1F();
-}
-
-void Player::DrawLine()
-{
-    // パーティクルエミッターの描画
-    emitterConstant_->Draw();
+    emitterConstant_->Draw1F();
 }
 
 void Player::ObjectsInitialize()

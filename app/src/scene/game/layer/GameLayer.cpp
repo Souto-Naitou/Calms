@@ -32,6 +32,9 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     pLineSystem_ = std::any_cast<LineSystem*>(pArgs->Get("LineSystem"));
     pLayer_ = pLayer;
 
+    /// [ デバッグエントリの初期化 ]
+    pDebugEntry_ = std::make_unique<DebugEntry<GameLayer>>("Scene", "GameLayer", this);
+
     /// [ グリッドの初期化 ]
     grid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
     grid_->GetOption().lightingData->enableLighting = true;
@@ -354,16 +357,11 @@ void GameLayer::Draw()
             bullet->Draw1F();
         }
 
-        pLineSystem_->PresentDraw();
-        pPlayer_->DrawLine();
-        for (auto& enemy : enemies_)
-        {
-            enemy->DrawLine();
-        }
         for (auto& bullet : playerBullets_)
         {
             bullet->DrawLine();
         }
+
         enemyPopSystem_.DrawArea();
         for (auto& explosion : playerExplosions_)
         {
@@ -420,6 +418,22 @@ void GameLayer::Preload(const PreloadContext& ctx, TaskExecutor& executor)
 {
     pLayer_ = ctx.pLayer;
     CanvasInitialize(executor, ctx.pSceneArgs);
+}
+
+void GameLayer::ImGui()
+{
+    #ifdef _DEBUG
+
+    ImGui::SeparatorText("Collider Visualization");
+    if (ImGui::Checkbox("Enemy", &isDisplayColliderEnemy_))
+    {
+        for (auto& enemy : enemies_)
+        {
+            enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
+        }
+    }
+
+    #endif // _DEBUG
 }
 
 void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)

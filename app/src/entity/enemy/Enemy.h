@@ -54,11 +54,6 @@ public:
     void Draw1F() override;
 
     /// <summary>
-    /// 敵のライン等の補助描画を行います。
-    /// </summary>
-    void DrawLine();
-
-    /// <summary>
     /// ImGuiを用いたデバッグUIの描画を行います。
     /// </summary>
     void ImGui() override;
@@ -131,9 +126,9 @@ private:
     std::unique_ptr<TimeMeasurer>       timeMeasurer_       = {};
 
     // Collision
-    std::unique_ptr<Collider>   collider_            = nullptr;
-    OBB                         obb_                 = {};
-    bool                        isDrawCollisionArea_ = false;
+    std::unique_ptr<Collider>   collider_               = nullptr;
+    Sphere                      sphere_                 = {};
+    bool                        isDrawCollisionArea_    = false;
 
     Audio* audioDeath_  = nullptr;
 

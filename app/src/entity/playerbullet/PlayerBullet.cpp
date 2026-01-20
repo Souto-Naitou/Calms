@@ -63,8 +63,8 @@ void PlayerBullet::Update()
     this->ObjectsUpdate();
 
     // OBBの更新
-    sphere_.center = transform_.translate;
-    sphere_.radius = 0.3f;
+    sphere_.SetCenter(transform_.translate);
+    sphere_.SetRadius(0.3f);
 
     collider_->SetShapeData(&sphere_);
 }
@@ -105,6 +105,8 @@ void PlayerBullet::ObjectsInitialize()
     data->transform.scale = { 0.1f, 0.1f, 0.1f };
     data->scaleRange = Range<Vector3>({ 0.1f, 0.1f, 0.1f }, { 0.1f, 0.1f, 0.1f });
     data->deleteCondition = ParticleDeleteCondition::ZeroAlpha;
+
+    sphere_.Initialize();
 }
 
 void PlayerBullet::ObjectsUpdate()

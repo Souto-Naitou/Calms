@@ -39,8 +39,8 @@ void Enemy::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
     // コライダーの初期化
     this->InitializeCollider();
 
-    // OBBの初期化
-    obb_.Initialize();
+    // Sphereの初期化
+    sphere_.Initialize();
 
     // コライダーの登録
     collisionManager_->RegisterCollider(collider_.get());
@@ -103,10 +103,6 @@ void Enemy::Update()
 void Enemy::Draw1F()
 {
     if (objectSelfBody_) objectSelfBody_->Draw1F();
-}
-
-void Enemy::DrawLine()
-{
     if (isDrawCollisionArea_) collider_->DrawArea();
 }
 
@@ -137,8 +133,8 @@ void Enemy::InitializeCollider()
     collider_->SetColliderID("enemy");
     collider_->SetAttribute(collisionManager_->GetNewAttribute("enemy"));
     collider_->SetOwner(this);
-    collider_->SetShape(Shape::OBB);
-    collider_->SetShapeData(&obb_);
+    collider_->SetShape(Shape::Sphere);
+    collider_->SetShapeData(&sphere_);
     collider_->SetRadius(2);
     collider_->SetMask(collisionManager_->GetNewMask("enemyDummy"));
     collider_->SetOnCollisionTrigger(std::bind(&Enemy::OnCollisionTrigger, this, std::placeholders::_1));
@@ -196,11 +192,11 @@ void Enemy::UpdateTransform()
 void Enemy::UpdateCollider()
 {
     /// コライダーの更新
-    obb_.SetCenter(transform_.translate);
-    obb_.SetOrientations(objectSelfBody_->GetRotateMatrix());
-    obb_.SetSize(Vector3(0.5f, 0.5f, 0.5f));
+    sphere_.SetCenter(transform_.translate);
+    sphere_.SetRadius(0.75f);
+    sphere_.Update();
 
-    collider_->SetShapeData(&obb_);
+    collider_->SetShapeData(&sphere_);
 }
 
 void Enemy::UpdateObjects()

@@ -108,10 +108,10 @@ void EnemySpawner::DrawArea()
     }
 
     linesArea_->Update();
-    linesArea_->Draw();
+    linesArea_->Draw1F();
 
     linesIgnoreCircle_->Update();
-    linesIgnoreCircle_->Draw();
+    linesIgnoreCircle_->Draw1F();
 }
 
 
