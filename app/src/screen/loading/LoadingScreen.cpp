@@ -28,6 +28,8 @@ void LoadingScreen::Finalize()
 {
     pBar_->Finalize();
     pCanvas_->Finalize();
+    pCanvasScanline_->Finalize();
+    pLayer_->RemoveCanvas(pCanvasScanline_.get());
     pLayer_->RemoveCanvas(pCanvas_.get());
 }
 
@@ -62,8 +64,10 @@ void LoadingScreen::Update()
 
 void LoadingScreen::Draw()
 {
-    CanvasScope canvasScope(pCanvas_.get());
+    CanvasScope canvasScopeScanline(pCanvasScanline_.get());
     pSpriteLBackground_->Draw1F();
+
+    CanvasScope canvasScope(pCanvas_.get());
     pSpriteLoading_->Draw1F();
     pBar_->Draw1F();
 }
@@ -129,16 +133,18 @@ void LoadingScreen::InitializeDrawables()
 void LoadingScreen::InitializeCanvas(DirectX12* pDx12, CubemapSystem* pCubemapSystem)
 {
     Canvas::Params canvasParams = {};
-    canvasParams.name = "LoadingScreenCanvas";
+    canvasParams.name = "LoadingScreenBackgroundCanvas";
     canvasParams.pDx12 = pDx12;
     canvasParams.pCubemapSystem = pCubemapSystem;
     #ifdef _DEBUG
     canvasParams.pImGuiManager = std::any_cast<ImGuiManager*>(pArgs_->Get("ImGuiManager"));
     #endif // _DEBUG
-    pCanvas_ = std::make_unique<Canvas>();
-    pCanvas_->Initialize(canvasParams);
+
+    /// [ スキャンラインエフェクト用キャンバス ]
+    pCanvasScanline_ = std::make_unique<Canvas>();
+    pCanvasScanline_->Initialize(canvasParams);
     IPostEffect* effect = nullptr;
-    effect = pCanvas_->GetPostEffectExecutor().AddEffect(PostEffectClassName::Scanline);
+    effect = pCanvasScanline_->GetPostEffectExecutor().AddEffect(PostEffectClassName::Scanline);
     {
         auto scanline = static_cast<Scanline*>(effect);
         auto& option = scanline->GetOption();
@@ -150,5 +156,11 @@ void LoadingScreen::InitializeCanvas(DirectX12* pDx12, CubemapSystem* pCubemapSy
         option.isOverall = 1.0f;
         scanline->Enable(true);
     }
+    pLayer_->AddCanvas(pCanvasScanline_.get());
+
+    /// [ ローディング画面用キャンバス ]
+    canvasParams.name = "LoadingScreenCanvas";
+    pCanvas_ = std::make_unique<Canvas>();
+    pCanvas_->Initialize(canvasParams);
     pLayer_->AddCanvas(pCanvas_.get());
 }
