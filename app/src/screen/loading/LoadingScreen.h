@@ -70,6 +70,7 @@ private:
     const float     kWaitTime_ = 1.0f;
     TimeMeasurer    waitTimer_ = {};
     
+    std::unique_ptr<Canvas>     pCanvasScanline_            = nullptr; // !< 背景キャンバス
     std::unique_ptr<Canvas>     pCanvas_                    = nullptr; // !< ロードシーン用キャンバス
     bool                        isTexturePathAggregated_    = false;
     bool                        isChangingScene_            = false; // !< シーン遷移中かどうか

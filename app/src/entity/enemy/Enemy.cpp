@@ -39,8 +39,7 @@ void Enemy::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
     // コライダーの初期化
     this->InitializeCollider();
 
-    // OBBの初期化
-    obb_.Initialize();
+    sphereLine_.Initialize();
 
     // コライダーの登録
     collisionManager_->RegisterCollider(collider_.get());
@@ -103,11 +102,7 @@ void Enemy::Update()
 void Enemy::Draw1F()
 {
     if (objectSelfBody_) objectSelfBody_->Draw1F();
-}
-
-void Enemy::DrawLine()
-{
-    if (isDrawCollisionArea_) collider_->DrawArea();
+    if (isDrawCollisionArea_) sphereLine_.Draw1F();
 }
 
 void Enemy::InitializeObjects()
@@ -137,13 +132,12 @@ void Enemy::InitializeCollider()
     collider_->SetColliderID("enemy");
     collider_->SetAttribute(collisionManager_->GetNewAttribute("enemy"));
     collider_->SetOwner(this);
-    collider_->SetShape(Shape::OBB);
-    collider_->SetShapeData(&obb_);
-    collider_->SetRadius(2);
+    collider_->SetShape(Shape::Sphere);
+    collider_->SetShapeData(&sphere_);
     collider_->SetMask(collisionManager_->GetNewMask("enemyDummy"));
     collider_->SetOnCollisionTrigger(std::bind(&Enemy::OnCollisionTrigger, this, std::placeholders::_1));
     collider_->SetOnCollision(std::bind(&Enemy::OnCollision, this, std::placeholders::_1));
-    collider_->SetEnableLighter(true);
+    collider_->SetEnableLighter(false);
 }
 
 void Enemy::InitializeParticleEmitters()
@@ -196,11 +190,12 @@ void Enemy::UpdateTransform()
 void Enemy::UpdateCollider()
 {
     /// コライダーの更新
-    obb_.SetCenter(transform_.translate);
-    obb_.SetOrientations(objectSelfBody_->GetRotateMatrix());
-    obb_.SetSize(Vector3(0.5f, 0.5f, 0.5f));
+    sphere_.center_ = transform_.translate;
+    sphere_.radius_ = 0.75f;
+    sphereLine_.SetTransform({ Vector3(1,1,1), Vector3(0,0,0), transform_.translate });
+    sphereLine_.Update();
 
-    collider_->SetShapeData(&obb_);
+    collider_->SetShapeData(&sphere_);
 }
 
 void Enemy::UpdateObjects()

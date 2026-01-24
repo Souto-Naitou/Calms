@@ -11,8 +11,8 @@
 #include <Features/GameEye/GameEye.h>
 #include <Features/Layer/Canvas.h>
 #include <Features/Lighting/PointLight/PointLight.h>
-#include <Features/Line/Line.h>
-#include <Features/Line/LineSystem.h>
+#include <drawable/line/Line.h>
+#include <drawable/line/LineSystem.h>
 #include <Features/Model/ModelManager.h>
 #include <Features/RandomGenerator/RandomGenerator.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
@@ -63,6 +63,7 @@ public:
     void Update() override;
     void Draw() override;
     void Preload(const PreloadContext& ctx, TaskExecutor& executor) override;
+    void ImGui();
 
 private:
     void CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs);
@@ -106,7 +107,7 @@ private:
 #else
     static constexpr inline uint32_t kGameLimitTime = 60u;
 #endif // _DEBUG
-
+    std::unique_ptr<DebugEntry<GameLayer>>          pDebugEntry_            = nullptr;  // !< デバッグエントリ
     std::unique_ptr<Canvas>                         canvasBackground_       = {};       // !< 背景キャンバス
     std::unique_ptr<Canvas>                         canvasUI_               = {};       // !< UIキャンバス
     std::unique_ptr<Canvas>                         canvasGrid_             = {};       // !< Gridキャンバス

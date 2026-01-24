@@ -2,8 +2,6 @@
 
 #include <Entity/EntityBase.h>
 #include <drawable/object3d/Object3d.h>
-#include <Vector3.h>
-#include <memory>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Collision/Collider/Collider.h>
 #include <Features/Collision/Manager/CollisionManager.h>
@@ -12,7 +10,11 @@
 #include <drawable/particle/Emitter/ParticleEmitter.h>
 #include <Features/Audio/AudioManager.h>
 #include <drawable/particle/Particle.h>
+#include <Features/Primitive/SphereLine.h>
+#include <Features/Primitive/Sphere.h>
 #include "./EnemyTypes.h"
+#include <Vector3.h>
+#include <memory>
 
 /// <summary>
 /// 敵クラス
@@ -52,11 +54,6 @@ public:
     /// 敵の描画処理を行います。
     /// </summary>
     void Draw1F() override;
-
-    /// <summary>
-    /// 敵のライン等の補助描画を行います。
-    /// </summary>
-    void DrawLine();
 
     /// <summary>
     /// ImGuiを用いたデバッグUIの描画を行います。
@@ -131,9 +128,10 @@ private:
     std::unique_ptr<TimeMeasurer>       timeMeasurer_       = {};
 
     // Collision
-    std::unique_ptr<Collider>   collider_            = nullptr;
-    OBB                         obb_                 = {};
-    bool                        isDrawCollisionArea_ = false;
+    std::unique_ptr<Collider>   collider_               = nullptr;
+    Sphere                      sphere_                 = {};
+    SphereLine                  sphereLine_             = {};
+    bool                        isDrawCollisionArea_    = false;
 
     Audio* audioDeath_  = nullptr;
 

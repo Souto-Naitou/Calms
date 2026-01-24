@@ -123,7 +123,7 @@ void PlayerExplosion::UpdateOpacity()
 void PlayerExplosion::UpdateCollider()
 {
     const float radius = modelRing_->GetRadii().end;
-    sphere_.center = transform_.translate;
-    sphere_.radius = radius;
+    sphere_.center_ = transform_.translate;
+    sphere_.radius_ = radius;
     collider_->SetShapeData(&sphere_);
 }

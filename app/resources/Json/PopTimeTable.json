@@ -6,20 +6,20 @@
                 "beginTime" : 0.000,
                 "endTime" : 15.000,
                 "enemyType" : "Normal",
-                "enemyCount" : 5,
-                "interval" : 2.000
+                "enemyCount" : 3,
+                "interval" : 3.000
             },
             {
                 "name" : "Wave2",
                 "beginTime" : 15.000,
-                "endTime" : 30.000,
+                "endTime" : 25.000,
                 "enemyType" : "Normal",
-                "enemyCount" : 10,
-                "interval" : 2.000
+                "enemyCount" : 8,
+                "interval" : 3.000
             },
             {
                 "name" : "Wave3",
-                "beginTime" : 30.000,
+                "beginTime" : 25.000,
                 "endTime" : 40.000,
                 "enemyType" : "Normal",
                 "enemyCount" : 1,
@@ -38,7 +38,7 @@
                 "beginTime" : 50.000,
                 "endTime" : 60.000,
                 "enemyType" : "Normal",
-                "enemyCount" : 10,
+                "enemyCount" : 12,
                 "interval" : 2.000
             }
         ]
