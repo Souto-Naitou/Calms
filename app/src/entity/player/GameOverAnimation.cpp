@@ -102,5 +102,5 @@ void GameOverAnimation::LightIntensityUpdate()
 
     float t = timer_.GetNow<float>() / stateDurations_.at(State::SmallScaling);
     float easedT = Math::Easing::EaseInOutQuad(t);
-    initParams_.pPointLight->GetIntensity() = Math::Lerp(original_.pointLightIntensity, 0.0f, easedT);
+    initParams_.pPointLight->GetIntensity() = std::lerp(original_.pointLightIntensity, 0.0f, easedT);
 }

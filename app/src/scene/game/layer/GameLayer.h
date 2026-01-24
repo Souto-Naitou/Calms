@@ -13,6 +13,10 @@
 #include <Features/Lighting/PointLight/PointLight.h>
 #include <drawable/line/Line.h>
 #include <drawable/line/LineSystem.h>
+#include <drawable/object3d/Object3d.h>
+#include <drawable/particle/Particle.h>
+#include <drawable/particle/Emitter/ParticleEmitter.h>
+#include <drawable/sprite/Sprite.h>
 #include <Features/Model/ModelManager.h>
 #include <Features/RandomGenerator/RandomGenerator.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
@@ -20,12 +24,10 @@
 #include <Features/event/EventSubscription.h>
 #include <Interfaces/ISceneArgs.h>
 
-// post effects
+// PostEffects
 #include <Effects/PostEffects/Grayscale/Grayscale.h>
 
-// game
-#include <drawable/object3d/Object3d.h>
-#include <drawable/particle/Particle.h>
+// Game
 #include <entity/enemy/Enemy.h>
 #include <entity/player/GameOverAnimation.h>
 #include <entity/player/Player.h>
@@ -39,18 +41,18 @@
 #include <ui/countdown/CountDown.h>
 #include <ui/guide/InputGuide.h>
 #include <ui/PlayerUI3d.h>
+#include <scene/game/animation/GameClearAnimation.h>
 
-// stl
+// STL
 #include <cstdint>
 #include <list>
 #include <array>
 #include <vector>
 #include <memory>
-#include <scene/game/animation/GameClearAnimation.h>
-#include <drawable/sprite/Sprite.h>
-#include <drawable/particle/Emitter/ParticleEmitter.h>
 #include <optional>
-#include <Effects/PostEffects/Grayscale/Grayscale.h>
+#include <entity/generator/PlayerBulletGenerator.h>
+#include <logic/slomo/SlomoLogic.h>
+#include <presentation/slomo/SlomoEffectController.h>
 
 /// <summary>
 /// ゲーム層 (他にポーズメニュー層やリザルト層などを実装予定)
@@ -86,6 +88,9 @@ private:
     /// </summary>
     void PlayerSlowUpdate();
 
+    /// <summary>
+    /// パーティクルの種類を識別するための列挙型
+    /// </summary>
     enum class ParticleID
     {
         PlayerConstant,
@@ -134,10 +139,13 @@ private:
 
     std::unique_ptr<GameOverAnimation>              gameOverAnimation_      = {};       // !< ゲームオーバーアニメーション
     std::unique_ptr<GameClearAnimation>             pGameClearAnimation_    = {};       // !< ゲームクリアアニメーション
+    std::unique_ptr<SlomoLogic>                     pSlomoLogic_            = {};       // !< スロー移動ロジック
+    std::unique_ptr<SlomoEffectController>          pSlomoEffect_           = {};       // !< スロー移動ロジック
 
     EntityCommonParams                              entityCommonParams_     = {};       // !< エンティティ共通パラメータ
 
     EnemySpawner                                    enemyPopSystem_         = {};       // !< 敵生成システム
+    PlayerBulletGenerator                           playerBulletGenerator_  = {};       // !< プレイヤー弾生成システム
     DirectionalLight                                directionalLight_       = {};       // !< ディレクショナルライト
     PointLight                                      pointLight_             = {};       // !< ポイントライト
     std::unique_ptr<CountDown>                      pStartCountDown_        = {};       // !< カウントダウン
@@ -156,7 +164,7 @@ private:
 
     // Pointers
     DirectX12*          pDx12_              = nullptr;
-    DeltaTimeManager*   pDeltaTimeManager_   = nullptr;
+    DeltaTimeManager*   pDeltaTimeManager_  = nullptr;
     RandomGenerator*    randomGenerator_    = nullptr;
     ModelManager*       pModelManager_      = nullptr;
     LineSystem*         pLineSystem_        = nullptr;

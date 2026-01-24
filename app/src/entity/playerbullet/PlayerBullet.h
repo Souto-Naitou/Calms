@@ -20,6 +20,7 @@ class PlayerBullet : public EntityBase
 public:
     struct Params
     {
+        // 表示に使用するモデル (パーティクルを使用するため)
         ParticleData* particleData = nullptr;
     };
 

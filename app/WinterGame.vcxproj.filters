@@ -206,6 +206,9 @@
     <ClCompile Include="src\scene\Title\TitleScene.cpp">
       <Filter>Scene\Title</Filter>
     </ClCompile>
+    <ClCompile Include="src\entity\generator\PlayerBulletGenerator.cpp" />
+    <ClCompile Include="src\logic\slomo\SlomoLogic.cpp" />
+    <ClCompile Include="src\presentation\slomo\SlomoEffectController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -317,6 +320,9 @@
     <ClInclude Include="src\scene\Title\TitleScene.h">
       <Filter>Scene\Title</Filter>
     </ClInclude>
+    <ClInclude Include="src\entity\generator\PlayerBulletGenerator.h" />
+    <ClInclude Include="src\logic\slomo\SlomoLogic.h" />
+    <ClInclude Include="src\presentation\slomo\SlomoEffectController.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">
