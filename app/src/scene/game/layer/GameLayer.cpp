@@ -357,11 +357,6 @@ void GameLayer::Draw()
             bullet->Draw1F();
         }
 
-        for (auto& bullet : playerBullets_)
-        {
-            bullet->DrawLine();
-        }
-
         enemyPopSystem_.DrawArea();
         for (auto& explosion : playerExplosions_)
         {

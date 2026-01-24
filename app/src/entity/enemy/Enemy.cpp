@@ -39,8 +39,7 @@ void Enemy::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
     // コライダーの初期化
     this->InitializeCollider();
 
-    // Sphereの初期化
-    sphere_.Initialize();
+    sphereLine_.Initialize();
 
     // コライダーの登録
     collisionManager_->RegisterCollider(collider_.get());
@@ -103,7 +102,7 @@ void Enemy::Update()
 void Enemy::Draw1F()
 {
     if (objectSelfBody_) objectSelfBody_->Draw1F();
-    if (isDrawCollisionArea_) collider_->DrawArea();
+    if (isDrawCollisionArea_) sphereLine_.Draw1F();
 }
 
 void Enemy::InitializeObjects()
@@ -135,11 +134,10 @@ void Enemy::InitializeCollider()
     collider_->SetOwner(this);
     collider_->SetShape(Shape::Sphere);
     collider_->SetShapeData(&sphere_);
-    collider_->SetRadius(2);
     collider_->SetMask(collisionManager_->GetNewMask("enemyDummy"));
     collider_->SetOnCollisionTrigger(std::bind(&Enemy::OnCollisionTrigger, this, std::placeholders::_1));
     collider_->SetOnCollision(std::bind(&Enemy::OnCollision, this, std::placeholders::_1));
-    collider_->SetEnableLighter(true);
+    collider_->SetEnableLighter(false);
 }
 
 void Enemy::InitializeParticleEmitters()
@@ -192,9 +190,10 @@ void Enemy::UpdateTransform()
 void Enemy::UpdateCollider()
 {
     /// コライダーの更新
-    sphere_.SetCenter(transform_.translate);
-    sphere_.SetRadius(0.75f);
-    sphere_.Update();
+    sphere_.center_ = transform_.translate;
+    sphere_.radius_ = 0.75f;
+    sphereLine_.SetTransform({ Vector3(1,1,1), Vector3(0,0,0), transform_.translate });
+    sphereLine_.Update();
 
     collider_->SetShapeData(&sphere_);
 }

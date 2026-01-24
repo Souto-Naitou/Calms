@@ -11,8 +11,8 @@
 #include <Features/GameEye/GameEye.h>
 #include <Features/Layer/Canvas.h>
 #include <Features/Lighting/PointLight/PointLight.h>
-#include <Features/Line/Line.h>
-#include <Features/Line/LineSystem.h>
+#include <drawable/line/Line.h>
+#include <drawable/line/LineSystem.h>
 #include <Features/Model/ModelManager.h>
 #include <Features/RandomGenerator/RandomGenerator.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>

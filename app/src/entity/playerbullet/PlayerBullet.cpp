@@ -63,8 +63,8 @@ void PlayerBullet::Update()
     this->ObjectsUpdate();
 
     // OBBの更新
-    sphere_.SetCenter(transform_.translate);
-    sphere_.SetRadius(0.3f);
+    sphere_.center_ = transform_.translate;
+    sphere_.radius_ = 0.3f;
 
     collider_->SetShapeData(&sphere_);
 }
@@ -72,11 +72,6 @@ void PlayerBullet::Update()
 
 void PlayerBullet::Draw1F()
 {
-}
-
-void PlayerBullet::DrawLine()
-{
-    if (isDrawCollisionArea_) collider_->DrawArea();
 }
 
 void PlayerBullet::OnCollisionTrigger(const Collider* _other)
@@ -105,8 +100,6 @@ void PlayerBullet::ObjectsInitialize()
     data->transform.scale = { 0.1f, 0.1f, 0.1f };
     data->scaleRange = Range<Vector3>({ 0.1f, 0.1f, 0.1f }, { 0.1f, 0.1f, 0.1f });
     data->deleteCondition = ParticleDeleteCondition::ZeroAlpha;
-
-    sphere_.Initialize();
 }
 
 void PlayerBullet::ObjectsUpdate()
@@ -124,10 +117,9 @@ void PlayerBullet::CollidersInitialize()
     collider_->SetAttribute(collisionManager_->GetNewAttribute("playerBullet"));
     collider_->SetOwner(this);
     collider_->SetShape(Shape::Sphere);
-    collider_->SetRadius(1);
     collider_->SetMask(collisionManager_->GetNewMask("playerBullet", "player"));
     collider_->SetOnCollisionTrigger(std::bind(&PlayerBullet::OnCollisionTrigger, this, std::placeholders::_1));
-    collider_->SetEnableLighter(true);
+    collider_->SetEnableLighter(false);
 
     collisionManager_->RegisterCollider(collider_.get());
 }

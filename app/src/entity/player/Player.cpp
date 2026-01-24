@@ -132,11 +132,10 @@ void Player::ColliderInitialize()
     collider_->SetAttribute(collisionManager_->GetNewAttribute("player"));
     collider_->SetOwner(this);
     collider_->SetShape(Shape::OBB);
-    collider_->SetRadius(2u);
     collider_->SetMask(collisionManager_->GetNewMask("player"));
     collider_->SetOnCollision(std::bind(&Player::OnCollision, this, std::placeholders::_1));
     collider_->SetOnCollisionTrigger(std::bind(&Player::OnCollisionTrigger, this, std::placeholders::_1));
-    collider_->SetEnableLighter(true);
+    collider_->SetEnableLighter(false);
     // コライダーの登録
     collisionManager_->RegisterCollider(collider_.get());
 }

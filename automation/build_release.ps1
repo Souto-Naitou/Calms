@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param (
-    [string]$Configuration = "Release"
+    [string]$Configuration = "Release",
+    [switch]$Rebuild = $false
 )
 
 Set-Variable -Name "SolutionRoot" -Value (Resolve-Path $PSScriptRoot\..).Path -Option Constant
@@ -12,7 +13,11 @@ if (-Not (Test-Path $MSBuildPath)) {
 }
 
 Write-Host "Building solution in $Configuration mode..." -BackgroundColor DarkGreen -ForegroundColor White
-& $MSBuildPath "$SolutionRoot\Calms.sln" /p:Configuration=$Configuration /t:Rebuild
+if ($Rebuild) {
+    & $MSBuildPath "$SolutionRoot\Calms.sln" /t:Rebuild /p:Configuration=$Configuration
+} else {
+    & $MSBuildPath "$SolutionRoot\Calms.sln" /t:Build /p:Configuration=$Configuration
+}
 
 if ($LASTEXITCODE -ne 0) {
     Write-Error "Build failed with exit code $LASTEXITCODE"
