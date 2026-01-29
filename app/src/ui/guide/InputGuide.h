@@ -34,4 +34,5 @@ private:
     std::unique_ptr<Sprite> shoot_ = nullptr;
     std::unique_ptr<Sprite> slomo_ = nullptr;
     std::unique_ptr<Sprite> explosion_ = nullptr;
+    std::unique_ptr<Sprite> pause_ = nullptr;
 };

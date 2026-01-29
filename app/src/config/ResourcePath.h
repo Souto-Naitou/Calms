@@ -37,14 +37,29 @@ namespace Path::Image
     inline constexpr const char* kLoading = "load/NOWLOADING.png";
 
     /// [ ゲームシーン ]
-    // ガイド画像
-    inline constexpr const char* kGuideShoot = "guide/shoot.png";
-    inline constexpr const char* kGuideSlow = "guide/slomo.png";
-    inline constexpr const char* kGuideExplosion = "guide/explosion.png";
-    // レティクル
-    inline constexpr const char* kReticle = "reticle.png";
-    // 爆発エンティティ
-    inline constexpr const char* kExplosionRing = "game/player_explosion.png";
+    namespace InGame
+    {
+        // ガイド画像
+        inline constexpr const char* kGuideShoot = "guide/shoot.png";
+        inline constexpr const char* kGuideSlow = "guide/slomo.png";
+        inline constexpr const char* kGuideExplosion = "guide/explosion.png";
+        inline constexpr const char* kGuidePause = "guide/pause.png";
+        // レティクル
+        inline constexpr const char* kReticle = "reticle.png";
+        // 爆発エンティティ
+        inline constexpr const char* kExplosionRing = "game/player_explosion.png";
+    }
+
+
+    /// [ ポーズメニュー ]
+    namespace PauseMenu
+    {
+        inline constexpr const char* kBg = "game/pause/bg.png";
+        inline constexpr const char* kPaused = "game/pause/paused.png";
+        inline constexpr const char* kButtonResume = "game/pause/button_resume.png";
+        inline constexpr const char* kButtonRestart = "game/pause/button_retry.png";
+        inline constexpr const char* kButtonBackToTitle = "game/pause/button_back_to_title.png";
+    }
 }
 
 namespace Path::Audio
@@ -60,6 +75,12 @@ namespace Path::Audio
     inline constexpr const char* kSePlayerSlowOn = "se_player_slow_on.wav";
     inline constexpr const char* kSePlayerSlowOff = "se_player_slow_off.wav";
     inline constexpr const char* kSeEnemyDeath = "se_enemy_death.wav";
+
+    namespace UI
+    {
+        inline constexpr const char* kConfirm = "ui/confirm.wav";
+        inline constexpr const char* kHover = "ui/hover.wav";
+    }
 }
 
 namespace Path::Model

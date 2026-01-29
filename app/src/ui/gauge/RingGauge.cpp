@@ -26,7 +26,7 @@ void RingGauge::Update()
     currentValue_ = std::lerp(currentValue_, rawValue_, params_.lerpFactor);
 
     const float angleStart = params_.fillParams.radAngleStart;
-    const float angleEnd = params_.fillParams.radAngleEnd;
+    const float angleEnd = params_.fillParams.angelEndRad;
     const float angleEndNew = std::lerp(angleStart, angleEnd, currentValue_);
     modelRingFill_->SetAngleRange(Range(angleStart, angleEndNew));
 
@@ -63,17 +63,19 @@ void RingGauge::ImGui()
     {
         params_.backgroundParams.radAngleStart = angleStart;
         params_.fillParams.radAngleStart = angleStart;
-        modelRingBackground_->SetAngleRange(Range<float>(angleStart, params_.backgroundParams.radAngleEnd));
-        modelRingFill_->SetAngleRange(Range<float>(angleStart, params_.fillParams.radAngleEnd));
+        modelRingBackground_->SetAngleRange(Range<float>(angleStart, params_.backgroundParams.angelEndRad));
+        modelRingFill_->SetAngleRange(Range<float>(angleStart, params_.fillParams.angelEndRad));
     }
-    float angleEnd = params_.backgroundParams.radAngleEnd;
+    float angleEnd = params_.backgroundParams.angelEndRad;
     if (ImGui::SliderAngle("EndAngle", &angleEnd, 0.01f))
     {
-        params_.backgroundParams.radAngleEnd = angleEnd;
-        params_.fillParams.radAngleEnd = angleEnd;
+        params_.backgroundParams.angelEndRad = angleEnd;
+        params_.fillParams.angelEndRad = angleEnd;
         modelRingBackground_->SetAngleRange(Range<float>(params_.backgroundParams.radAngleStart, angleEnd));
         modelRingFill_->SetAngleRange(Range<float>(params_.fillParams.radAngleStart, angleEnd));
     }
+    ImGui::ColorEdit4("Color Background", reinterpret_cast<float*>(&params_.colorBackground.r));
+    ImGui::ColorEdit4("Color Foreground", reinterpret_cast<float*>(&params_.colorFill.r));
 
     #endif
 }

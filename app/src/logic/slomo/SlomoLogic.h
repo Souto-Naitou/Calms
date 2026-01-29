@@ -9,6 +9,8 @@
 class SlomoLogic
 {
 public:
+    constexpr static float  kSlomoTimeMax_ = 5.0f;
+
     SlomoLogic() = default;
 
     struct State
@@ -25,13 +27,14 @@ public:
     /// <param name="deltaTimeManager">デルタタイムマネージャー。</param>
     State Update(bool isSlomoActive, DeltaTimeManager* deltaTimeManager);
 
+    inline float GetRemainingTime() const { return remainingTime_; }
+
 private:
-    constexpr static float kDeltaTimeDefault_           = 1.0f / 60.0f;
-    constexpr static float kDeltaTimeSlomoGame_         = 1.0f / 120.0f;
-    constexpr static float kDeltaTimeSlomoParticle_     = 1.0f / 180.0f;
-    constexpr static float kSlomoTimeMax_               = 5.0f;
-    constexpr static float kSlomoTimeIncrementPerFrame_ = 1.0f / 60.0f;
-    constexpr static float kSlomoTimeUsableMin_         = 1.0f;
-    float remainingTime_ = kSlomoTimeMax_;
-    bool isSlomoActivePrev_ = false;
+    constexpr static float  kDeltaTimeDefault_              = 1.0f / 60.0f;
+    constexpr static float  kDeltaTimeSlomoGame_            = 1.0f / 120.0f;
+    constexpr static float  kDeltaTimeSlomoParticle_        = 1.0f / 180.0f;
+    constexpr static float  kSlomoTimeIncrementPerFrame_    = 1.0f / 60.0f;
+    constexpr static float  kSlomoTimeUsableMin_            = 1.0f;
+    float                   remainingTime_                  = kSlomoTimeMax_;
+    bool                    isSlomoActivePrev_              = false;
 };

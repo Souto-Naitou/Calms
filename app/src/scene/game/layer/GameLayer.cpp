@@ -18,6 +18,7 @@
 #include <cmath>
 #include <Effects/PostEffects/ScanLine/Scanline.h>
 #include <Effects/PostEffects/Mosaic/Mosaic.h>
+#include "Entity/Status/EntityStats.h"
 
 using namespace Math::Viewport;
 
@@ -82,7 +83,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 
     /// [ プレイヤー3DUIの初期化 ]
     pPlayerUI3d_ = std::make_unique<PlayerUI3d>();
-    pPlayerUI3d_->Initialize(pPlayer_.get(), pDx12_);
+    pPlayerUI3d_->Initialize(pDx12_);
 
     /// [ 敵生成システムの初期化 ]
     enemyPopSystem_.Initialize();
@@ -131,11 +132,6 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     /// [ スコア計算機の初期化 ]
     scoreCalculator_ = std::make_unique<ScoreCalculator>();
     scoreCalculator_->Initialize();
-
-    /// [ BGMの初期化と再生 ]
-    pBGM_ = AudioManager::GetInstance()->GetNewAudio("BGM", Path::Audio::kBgmInGame);
-    pBGM_->SetVolume(0.1f);
-    pBGM_->Play(true);
 
     /// [ スロー移動ロジックの初期化 ]
     pSlomoLogic_ = std::make_unique<SlomoLogic>();
@@ -191,7 +187,6 @@ void GameLayer::Finalize()
     }
 
     CollisionManager::GetInstance()->ClearCollider();
-    pBGM_->Stop();
     pPlayerUI3d_->Finalize();
     enemyPopSystem_.Finalize();
     pStartCountDown_->Finalize();
@@ -235,8 +230,6 @@ void GameLayer::Update()
 
     /// [ プレイヤーの更新 ]
     pPlayer_->Update();
-    pPlayerUI3d_->SetPosition(pPlayer_->GetTranslation());
-    pPlayerUI3d_->Update();
 
     bool isPlayerDead = !pPlayer_->IsAlive() && !gameOverAnimation_->IsPlaying();
     if (isPlayerDead) gameOverAnimation_->Play();
@@ -263,7 +256,7 @@ void GameLayer::Update()
     this->LimitPlayerPosition();
 
     /// [ プレイヤーのスロー更新 ]
-    this->PlayerSlowUpdate();
+    this->UpdateSlomo();
 
     /// [ 敵生成システムの更新 ]
     this->CreateEnemy();
@@ -338,14 +331,23 @@ void GameLayer::Update()
         isChangingScene_ = true;
     }
 
-    /// [ BGMのフェードアウト ]
-    if (isChangingScene_)
-    {
-        pBGM_->SetVolume(pBGM_->GetVolume() * 0.95f);
-    }
-
     /// [ インプットガイドの更新 ]
     inputGuide_->Update();
+
+    /// [ プレイヤーUI3Dの更新 ]
+    {
+        PlayerUI3d::Params param = {};
+        auto stats = static_cast<const EntityStats*>(pPlayer_->GetStats());
+        param.hp = stats->GetHp();
+        param.hpMax = stats->GetMaxHp();
+        param.explosionScore = pPlayer_->GetContext().Get().explosionScore;
+        param.explosionScoreMax = PlayerContext::kMaxExplosionScore;
+        param.slomoTime = pSlomoLogic_->GetRemainingTime();
+        param.slomoTimeMax = SlomoLogic::kSlomoTimeMax_;
+
+        pPlayerUI3d_->SetPosition(pPlayer_->GetTranslation());
+        pPlayerUI3d_->Update(param);
+    }
 
     UpdatePlayerExplosion();
 }
@@ -445,6 +447,11 @@ void GameLayer::ImGui()
     }
 
     #endif // _DEBUG
+}
+
+void GameLayer::OnSceneChangeReserved()
+{
+    
 }
 
 void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
@@ -806,19 +813,23 @@ void GameLayer::CreateEnemy()
 
 }
 
-void GameLayer::PlayerSlowUpdate()
+void GameLayer::UpdateSlomo()
 {
     constexpr float kDeltaTimeDefault = 1.0f / 60.0f;
 
     auto state = pSlomoLogic_->Update(pPlayer_->IsSlow(), pDeltaTimeManager_);
     
-    SlomoEffectController::Context context = {};
-    context.gameEyePosition = pGameEye_->GetTransform().translate;
-    context.playerPosition = pPlayer_->GetTranslation();
-    context.grayscalePower = pOptionGrayscale_->power;
-    auto resultEffect = pSlomoEffect_->Update(state.isSlomoActive, context);
-    pGameEye_->SetTranslate(resultEffect.gameEyePosition);
-    pOptionGrayscale_->power = resultEffect.grayscalePower;
+    float powerGrayscale = pOptionGrayscale_->power;
+    if (!pGameClearAnimation_->IsPlaying())
+    {
+        SlomoEffectController::Context context = {};
+        context.gameEyePosition = pGameEye_->GetTransform().translate;
+        context.playerPosition = pPlayer_->GetTranslation();
+        context.grayscalePower = pOptionGrayscale_->power;
+        auto resultEffect = pSlomoEffect_->Update(state.isSlomoActive, context);
+        pGameEye_->SetTranslate(resultEffect.gameEyePosition);
+        powerGrayscale = resultEffect.grayscalePower;
+    }
 
     Vector3 playerPos = pPlayer_->GetTranslation();
     Vector3 eyePos = pGameEye_->GetTransform().translate;
@@ -826,6 +837,8 @@ void GameLayer::PlayerSlowUpdate()
     {
         pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, kDeltaTimeDefault);
         pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, kDeltaTimeDefault);
-        pOptionGrayscale_->power = 0.0f;
+        powerGrayscale = 0.0f;
     }
+
+    pOptionGrayscale_->power = powerGrayscale;
 }

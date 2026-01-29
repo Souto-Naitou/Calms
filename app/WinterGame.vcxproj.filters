@@ -209,6 +209,7 @@
     <ClCompile Include="src\entity\generator\PlayerBulletGenerator.cpp" />
     <ClCompile Include="src\logic\slomo\SlomoLogic.cpp" />
     <ClCompile Include="src\presentation\slomo\SlomoEffectController.cpp" />
+    <ClCompile Include="src\scene\game\layer\PauseLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -323,6 +324,8 @@
     <ClInclude Include="src\entity\generator\PlayerBulletGenerator.h" />
     <ClInclude Include="src\logic\slomo\SlomoLogic.h" />
     <ClInclude Include="src\presentation\slomo\SlomoEffectController.h" />
+    <ClInclude Include="src\scene\game\layer\PauseLayer.h" />
+    <ClInclude Include="src\logic\event\PauseMenuToggleEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

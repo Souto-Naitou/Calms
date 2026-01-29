@@ -65,7 +65,7 @@ void PlayerExplosion::InitializeRing()
     modelParams.pDx12 = params_.pDx12;
     modelParams.radiusOuter = kRingThickness;
     modelParams.radiusInner = 0.0f;
-    modelParams.textureFilePath = Path::Image::kExplosionRing;
+    modelParams.textureFilePath = Path::Image::InGame::kExplosionRing;
 
     modelRing_ = std::make_unique<RingModel>(modelParams);
     modelRing_->Initialize();

@@ -66,6 +66,8 @@ public:
     void Draw() override;
     void Preload(const PreloadContext& ctx, TaskExecutor& executor) override;
     void ImGui();
+    Canvas* GetOverallCanvas() const { return canvasOverall_.get(); }
+    void OnSceneChangeReserved();
 
 private:
     void CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs);
@@ -86,7 +88,7 @@ private:
     /// <summary>
     /// プレイヤーのスロー（低速移動）状態に関連する更新処理を行います。
     /// </summary>
-    void PlayerSlowUpdate();
+    void UpdateSlomo();
 
     /// <summary>
     /// パーティクルの種類を識別するための列挙型
@@ -108,7 +110,7 @@ private:
     static constexpr inline float  kTargetDirectionalLightFlashIntensity_ = 12.0f;
 
 #ifdef _DEBUG
-    static constexpr inline uint32_t kGameLimitTime = 3200u;
+    static constexpr inline uint32_t kGameLimitTime = 5u;
 #else
     static constexpr inline uint32_t kGameLimitTime = 60u;
 #endif // _DEBUG
@@ -158,7 +160,7 @@ private:
     std::unique_ptr<Line>                           lines_                  = nullptr;  // !< エリア用ライン
     float                                           areaWidth_              = 25.0f;    // !< エリアの幅
     const uint32_t                                  kMaxEnemyCount_         = 120;      // !< 最大敵数
-    Audio*                                          pBGM_                   = nullptr;  // !< BGMポインタ
+
 
     std::optional<EventSubscription>                playerExplosionSub_     = std::nullopt;
 

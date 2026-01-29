@@ -172,6 +172,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\scene\Edit\EditScene.cpp" />
     <ClCompile Include="src\scene\game\animation\GameClearAnimation.cpp" />
     <ClCompile Include="src\scene\game\layer\GameLayer.cpp" />
+    <ClCompile Include="src\scene\game\layer\PauseLayer.cpp" />
     <ClCompile Include="src\scene\game\layer\ResultLayer.cpp" />
     <ClCompile Include="src\scene\game\layer\TitleLayer.cpp" />
     <ClCompile Include="src\scene\game\layer\TitleLayer.h" />
@@ -218,12 +219,14 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\entity\player\PlayerInput.h" />
     <ClInclude Include="src\entity\player\PlayerMovement.h" />
     <ClInclude Include="src\logic\event\KillEnemyEvent.h" />
+    <ClInclude Include="src\logic\event\PauseMenuToggleEvent.h" />
     <ClInclude Include="src\logic\event\PlayerExplosionEvent.h" />
     <ClInclude Include="src\logic\slomo\SlomoLogic.h" />
     <ClInclude Include="src\presentation\slomo\SlomoEffectController.h" />
     <ClInclude Include="src\scene\Edit\EditScene.h" />
     <ClInclude Include="src\scene\game\animation\GameClearAnimation.h" />
     <ClInclude Include="src\scene\game\layer\GameLayer.h" />
+    <ClInclude Include="src\scene\game\layer\PauseLayer.h" />
     <ClInclude Include="src\scene\game\layer\ResultLayer.h" />
     <ClInclude Include="src\config\ResourcePath.h" />
     <ClInclude Include="src\Entity\EntityBase.h" />
