@@ -10,7 +10,7 @@
 <img width="1594" alt="スクリーンショット 2025-06-28 235415" src="https://github.com/user-attachments/assets/f1c45769-11f9-472e-a2cc-1414388c1ac7" />
 
 # 環境
-- C++20 / Visual Studio 2022
+- C++20 / Visual Studio 2026
 - Windows SDK (10.0.x) for Windows 11
 - DirectX 12 	(描画)
 - XAudio2 	(サウンド再生)
@@ -24,3 +24,10 @@
 | [Dear ImGui](https://github.com/ocornut/imgui.git) | デバッグUI |
 | [assimp](https://github.com/assimp/assimp.git) | モデル読み込み |
 | [nlohmann/json](https://github.com/nlohmann/json.git) |JSON読み込み |
+
+# 実行に必要なファイルの収集
+- 必ずビルド後に実行してください
+
+```bash
+PS > automation/get_release.ps1 ./calms_standalone
+```
