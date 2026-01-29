@@ -17,7 +17,7 @@
 #include <memory>
 
 /// <summary>
-/// 敵クラス
+/// 敵クラス(ノーマル)
 /// </summary>
 class Enemy : public EntityBase
 {

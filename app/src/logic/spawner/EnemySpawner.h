@@ -15,6 +15,7 @@
 
 /// <summary>
 /// 敵生成クラス
+/// 出現範囲などを設定し、敵の自動生成を行います。
 /// </summary>
 class EnemySpawner
 {

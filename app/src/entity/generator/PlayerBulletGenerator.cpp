@@ -13,7 +13,8 @@ PlayerBulletGenerator::Generate(const Vector3& standard, const Vector3& directio
 
     const int32_t   kNumShots       = config_.numShot;
     const float     kSpreadAngleDeg = config_.spreadAngleDeg;
-    const float     kSpreadRad      = std::numbers::pi_v<float> / (360.0f / kSpreadAngleDeg);
+    // ゼロ除算防止 (0度のときは散らさない)
+    const float     kSpreadRad      = kSpreadAngleDeg == 0.0f ? 0.0f : std::numbers::pi_v<float> / (360.0f / kSpreadAngleDeg);
     const float     kBulletSpeed    = config_.bulletSpeed;
     const float     kSwingSize      = config_.swingSize;
     RandomGenerator* randomGenerator_ = RandomGenerator::GetInstance();
