@@ -134,7 +134,7 @@ void GameClearAnimation::LightIntensityUpdate()
 
     float t = timer_.GetNow<float>() / stateDurations_.at(State::plIntensity);
     float easedT = Math::Easing::EaseInQuad(t);
-    initParams_.pPointLight->GetIntensity() = Math::Lerp(original_.pointLightIntensity, 5.0f, easedT);
+    initParams_.pPointLight->GetIntensity() = std::lerp(original_.pointLightIntensity, 5.0f, easedT);
 }
 
 void GameClearAnimation::SpriteClearUpdate()

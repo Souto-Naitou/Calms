@@ -4,6 +4,8 @@
 #include <Features/SceneManager/SceneManager.h>
 #include <scene/factory/SceneFactory.h>
 #include <Features/Model/Helper/ModelHelper.h>
+#include <NiGui.h>
+#include <config/ResourcePath.h>
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -36,6 +38,12 @@ void Calms::Initialize()
 
     /// Dissolve用のテクスチャをロード
     pTextureManager_->LoadTexture("noise0.png");
+
+    /// UIサウンドの設定
+    auto pAudioConfirm = pAudioManager_->GetNewAudio("UI", Path::Audio::UI::kConfirm);
+    pAudioConfirm->SetVolume(0.5f);
+    NiGui::SetConfirmSound(pAudioConfirm);
+    NiGui::SetHoverSound(pAudioManager_->GetNewAudio("UI", Path::Audio::UI::kHover));
 }
 
 void Calms::Finalize()

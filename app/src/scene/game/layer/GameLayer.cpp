@@ -18,6 +18,7 @@
 #include <cmath>
 #include <Effects/PostEffects/ScanLine/Scanline.h>
 #include <Effects/PostEffects/Mosaic/Mosaic.h>
+#include "Entity/Status/EntityStats.h"
 
 using namespace Math::Viewport;
 
@@ -82,12 +83,21 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 
     /// [ プレイヤー3DUIの初期化 ]
     pPlayerUI3d_ = std::make_unique<PlayerUI3d>();
-    pPlayerUI3d_->Initialize(pPlayer_.get(), pDx12_);
+    pPlayerUI3d_->Initialize(pDx12_);
 
     /// [ 敵生成システムの初期化 ]
     enemyPopSystem_.Initialize();
     enemyPopSystem_.SetPopRange(Vector3(-30.0f, 0.5f, -30.0f), Vector3(30.0f, 0.5f, 30.0f));
     enemyPopSystem_.SetIgnoreRange(7.0f);
+
+    /// [ プレイヤー弾生成システムの初期化 ]
+    PlayerBulletGenerator::Config playerBulletConfig = {};
+    playerBulletConfig.pParticle = particles_[static_cast<size_t>(ParticleID::PlayerBullet)];
+    playerBulletConfig.numShot = 3;
+    playerBulletConfig.spreadAngleDeg = 15.0f;
+    playerBulletConfig.bulletSpeed = 30.0f;
+    playerBulletConfig.swingSize = 0.02f;
+    playerBulletGenerator_.SetConfig(playerBulletConfig);
 
     /// [ カウントダウンの初期化 ]
     pStartCountDown_ = std::make_unique<CountDown>();
@@ -123,10 +133,12 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     scoreCalculator_ = std::make_unique<ScoreCalculator>();
     scoreCalculator_->Initialize();
 
-    /// [ BGMの初期化と再生 ]
-    pBGM_ = AudioManager::GetInstance()->GetNewAudio("BGM", Path::Audio::kBgmInGame);
-    pBGM_->SetVolume(0.1f);
-    pBGM_->Play(true);
+    /// [ スロー移動ロジックの初期化 ]
+    pSlomoLogic_ = std::make_unique<SlomoLogic>();
+
+    /// [ スロー移動エフェクトコントローラーの初期化 ]
+    pSlomoEffect_ = std::make_unique<SlomoEffectController>();
+    pSlomoEffect_->SetConfig({});
 
     /// [ ゲームオーバーアニメーションの初期化 ]
     gameOverAnimation_ = std::make_unique<GameOverAnimation>();
@@ -175,7 +187,6 @@ void GameLayer::Finalize()
     }
 
     CollisionManager::GetInstance()->ClearCollider();
-    pBGM_->Stop();
     pPlayerUI3d_->Finalize();
     enemyPopSystem_.Finalize();
     pStartCountDown_->Finalize();
@@ -219,8 +230,6 @@ void GameLayer::Update()
 
     /// [ プレイヤーの更新 ]
     pPlayer_->Update();
-    pPlayerUI3d_->SetPosition(pPlayer_->GetTranslation());
-    pPlayerUI3d_->Update();
 
     bool isPlayerDead = !pPlayer_->IsAlive() && !gameOverAnimation_->IsPlaying();
     if (isPlayerDead) gameOverAnimation_->Play();
@@ -247,7 +256,7 @@ void GameLayer::Update()
     this->LimitPlayerPosition();
 
     /// [ プレイヤーのスロー更新 ]
-    this->PlayerSlowUpdate();
+    this->UpdateSlomo();
 
     /// [ 敵生成システムの更新 ]
     this->CreateEnemy();
@@ -322,14 +331,23 @@ void GameLayer::Update()
         isChangingScene_ = true;
     }
 
-    /// [ BGMのフェードアウト ]
-    if (isChangingScene_)
-    {
-        pBGM_->SetVolume(pBGM_->GetVolume() * 0.95f);
-    }
-
     /// [ インプットガイドの更新 ]
     inputGuide_->Update();
+
+    /// [ プレイヤーUI3Dの更新 ]
+    {
+        PlayerUI3d::Params param = {};
+        auto stats = static_cast<const EntityStats*>(pPlayer_->GetStats());
+        param.hp = stats->GetHp();
+        param.hpMax = stats->GetMaxHp();
+        param.explosionScore = pPlayer_->GetContext().Get().explosionScore;
+        param.explosionScoreMax = PlayerContext::kMaxExplosionScore;
+        param.slomoTime = pSlomoLogic_->GetRemainingTime();
+        param.slomoTimeMax = SlomoLogic::kSlomoTimeMax_;
+
+        pPlayerUI3d_->SetPosition(pPlayer_->GetTranslation());
+        pPlayerUI3d_->Update(param);
+    }
 
     UpdatePlayerExplosion();
 }
@@ -429,6 +447,11 @@ void GameLayer::ImGui()
     }
 
     #endif // _DEBUG
+}
+
+void GameLayer::OnSceneChangeReserved()
+{
+    
 }
 
 void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
@@ -619,9 +642,9 @@ void GameLayer::LimitPlayerPosition()
 {
     /// [ プレイヤーの移動範囲制限 ]
     Vector3 playerpos = {};
-    playerpos.x = Math::clamp(pPlayer_->GetTranslation().x, -areaWidth_ + 0.5f, areaWidth_ - 0.5f);
+    playerpos.x = std::clamp(pPlayer_->GetTranslation().x, -areaWidth_ + 0.5f, areaWidth_ - 0.5f);
     playerpos.y = pPlayer_->GetTranslation().y;
-    playerpos.z = Math::clamp(pPlayer_->GetTranslation().z, -areaWidth_ + 0.5f, areaWidth_ - 0.5f);
+    playerpos.z = std::clamp(pPlayer_->GetTranslation().z, -areaWidth_ + 0.5f, areaWidth_ - 0.5f);
     pPlayer_->SetTranslation(playerpos);
 }
 
@@ -682,40 +705,14 @@ void GameLayer::SpritesInitialize()
 
 void GameLayer::AddPlayerBullet()
 {
-    constexpr int32_t kNumShots = 3;
-    constexpr float kSpreadAngle = 5.0f; // degrees
-    constexpr float kSpreadRad = std::numbers::pi_v<float> / (360.0f / kSpreadAngle);
-    constexpr float kBulletSpeed = 30.0f;
-
     Vector3 direction = screenToWorld_->GetWorldPoint() - pPlayer_->GetTranslation();
-    for (int32_t i = 0; i < kNumShots; ++i)
-    {
-        // -15°〜15°の範囲で散らす
-        int32_t index = i - (kNumShots / 2);
-        float angle = kSpreadRad * static_cast<float>(index);
-
-        Vector3 newDirection = {};
-        newDirection.x = direction.x * std::cosf(angle) - direction.z * std::sinf(angle);
-        newDirection.y = 0.0f;
-        newDirection.z = direction.x * std::sinf(angle) + direction.z * std::cosf(angle);
-        newDirection = newDirection.Normalized();
-        newDirection.x += randomGenerator_->Generate(-0.02f, 0.02f);
-        newDirection.z += randomGenerator_->Generate(-0.02f, 0.02f);
-        newDirection = newDirection.Normalized();
-
-        auto& particle = particles_[static_cast<size_t>(ParticleID::PlayerBullet)];
-        particle->emplace_back({});
-
-        auto bullet = std::make_unique<PlayerBullet>(
-            PlayerBullet::Params{ &particle->GetParticleData().back() }
-        );
-        bullet->Initialize(entityCommonParams_, false);
-        bullet->SetTranslation(pPlayer_->GetTranslation());
-        bullet->SetMoveVelocity(newDirection * kBulletSpeed);
-        bullet->SetIsDrawCollisionArea(isDisplayColliderPlayerBullet_);
-
-        playerBullets_.push_back(std::move(bullet));
-    }
+    Vector3 position = pPlayer_->GetTranslation();
+    auto bulletsGenerated = playerBulletGenerator_.Generate(position, direction);
+    playerBullets_.insert(
+        playerBullets_.end(),
+        std::make_move_iterator(bulletsGenerated.begin()),
+        std::make_move_iterator(bulletsGenerated.end())
+    );
 }
 
 void GameLayer::RemovePlayerBullet()
@@ -816,14 +813,23 @@ void GameLayer::CreateEnemy()
 
 }
 
-void GameLayer::PlayerSlowUpdate()
+void GameLayer::UpdateSlomo()
 {
-    constexpr float kGameEyeFollowRateDuringSlow = 0.1f;
-    constexpr float kGameEyeFollowRateNormal = 0.1f;
-    constexpr float kGrayscalePowerDuringSlow = 0.75f;
-    constexpr float kGrayscaleBlendRateDuringSlow = 0.1f;
     constexpr float kDeltaTimeDefault = 1.0f / 60.0f;
 
+    auto state = pSlomoLogic_->Update(pPlayer_->IsSlow(), pDeltaTimeManager_);
+    
+    float powerGrayscale = pOptionGrayscale_->power;
+    if (!pGameClearAnimation_->IsPlaying())
+    {
+        SlomoEffectController::Context context = {};
+        context.gameEyePosition = pGameEye_->GetTransform().translate;
+        context.playerPosition = pPlayer_->GetTranslation();
+        context.grayscalePower = pOptionGrayscale_->power;
+        auto resultEffect = pSlomoEffect_->Update(state.isSlomoActive, context);
+        pGameEye_->SetTranslate(resultEffect.gameEyePosition);
+        powerGrayscale = resultEffect.grayscalePower;
+    }
 
     Vector3 playerPos = pPlayer_->GetTranslation();
     Vector3 eyePos = pGameEye_->GetTransform().translate;
@@ -831,32 +837,8 @@ void GameLayer::PlayerSlowUpdate()
     {
         pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, kDeltaTimeDefault);
         pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, kDeltaTimeDefault);
-        pOptionGrayscale_->power = 0.0f;
+        powerGrayscale = 0.0f;
     }
-    else if (pPlayer_->IsSlow())
-    {
-        /// [ カメラをプレイヤーに近づける ]
-        auto eyeTarget = Vector3(playerPos.x, kGameEyeHeightDuringSlow_, playerPos.z);
-        eyePos.Lerp(eyePos, eyeTarget, kGameEyeFollowRateDuringSlow);
-        pGameEye_->SetTranslate(eyePos);
 
-        /// [ グレースケールエフェクトの強さを変える (0<) ]
-        pOptionGrayscale_->power = std::lerp(
-            pOptionGrayscale_->power,
-            kGrayscalePowerDuringSlow,
-            kGrayscaleBlendRateDuringSlow);
-
-        /// [ ゲームの進行速度を遅くする ]
-        pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 120.0f);
-        pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, 1.0f / 180.0f);
-    }
-    else
-    {
-        eyePos.Lerp(eyePos, Vector3(playerPos.x, kGameEyeHeightDefault_, playerPos.z), kGameEyeFollowRateDuringSlow);
-        pOptionGrayscale_->power = std::lerp(pOptionGrayscale_->power, 0.0f, kGrayscaleBlendRateDuringSlow);
-        pGameEye_->SetTranslate(eyePos);
-
-        pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Game, kDeltaTimeDefault);
-        pDeltaTimeManager_->SetDeltaTime(DeltaTimeChannelReserved::Particle, kDeltaTimeDefault);
-    }
+    pOptionGrayscale_->power = powerGrayscale;
 }

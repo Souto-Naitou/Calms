@@ -23,7 +23,7 @@ void EntityBase::UpdatePhysics(float dt)
     velocity_ += acceleration_ * dt;
 
     /// 摩擦をかける
-    Math::clamp(friction_, 0.0f, 1.0f);
+    friction_ = std::clamp(friction_, 0.0f, 1.0f);
     velocity_ *= friction_;
 
     // 速度から位置を更新

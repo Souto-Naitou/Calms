@@ -6,7 +6,7 @@
 void ScreenToWorld::Initialize()
 {
     reticle_ = std::make_unique<Sprite>();
-    reticle_->Initialize(Path::Image::kReticle);
+    reticle_->Initialize(Path::Image::InGame::kReticle);
     reticle_->SetSizeWithFactor(0.2f);
     reticle_->SetAnchorPoint({ 0.5f, 0.5f });
     normal_ = Vector3(0, 1, 0);

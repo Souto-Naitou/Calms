@@ -13,6 +13,10 @@
 #include <Features/Lighting/PointLight/PointLight.h>
 #include <drawable/line/Line.h>
 #include <drawable/line/LineSystem.h>
+#include <drawable/object3d/Object3d.h>
+#include <drawable/particle/Particle.h>
+#include <drawable/particle/Emitter/ParticleEmitter.h>
+#include <drawable/sprite/Sprite.h>
 #include <Features/Model/ModelManager.h>
 #include <Features/RandomGenerator/RandomGenerator.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
@@ -20,12 +24,10 @@
 #include <Features/event/EventSubscription.h>
 #include <Interfaces/ISceneArgs.h>
 
-// post effects
+// PostEffects
 #include <Effects/PostEffects/Grayscale/Grayscale.h>
 
-// game
-#include <drawable/object3d/Object3d.h>
-#include <drawable/particle/Particle.h>
+// Game
 #include <entity/enemy/Enemy.h>
 #include <entity/player/GameOverAnimation.h>
 #include <entity/player/Player.h>
@@ -39,18 +41,18 @@
 #include <ui/countdown/CountDown.h>
 #include <ui/guide/InputGuide.h>
 #include <ui/PlayerUI3d.h>
+#include <scene/game/animation/GameClearAnimation.h>
 
-// stl
+// STL
 #include <cstdint>
 #include <list>
 #include <array>
 #include <vector>
 #include <memory>
-#include <scene/game/animation/GameClearAnimation.h>
-#include <drawable/sprite/Sprite.h>
-#include <drawable/particle/Emitter/ParticleEmitter.h>
 #include <optional>
-#include <Effects/PostEffects/Grayscale/Grayscale.h>
+#include <entity/generator/PlayerBulletGenerator.h>
+#include <logic/slomo/SlomoLogic.h>
+#include <presentation/slomo/SlomoEffectController.h>
 
 /// <summary>
 /// ゲーム層 (他にポーズメニュー層やリザルト層などを実装予定)
@@ -64,6 +66,8 @@ public:
     void Draw() override;
     void Preload(const PreloadContext& ctx, TaskExecutor& executor) override;
     void ImGui();
+    Canvas* GetOverallCanvas() const { return canvasOverall_.get(); }
+    void OnSceneChangeReserved();
 
 private:
     void CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs);
@@ -84,8 +88,11 @@ private:
     /// <summary>
     /// プレイヤーのスロー（低速移動）状態に関連する更新処理を行います。
     /// </summary>
-    void PlayerSlowUpdate();
+    void UpdateSlomo();
 
+    /// <summary>
+    /// パーティクルの種類を識別するための列挙型
+    /// </summary>
     enum class ParticleID
     {
         PlayerConstant,
@@ -103,7 +110,7 @@ private:
     static constexpr inline float  kTargetDirectionalLightFlashIntensity_ = 12.0f;
 
 #ifdef _DEBUG
-    static constexpr inline uint32_t kGameLimitTime = 3200u;
+    static constexpr inline uint32_t kGameLimitTime = 3600u;
 #else
     static constexpr inline uint32_t kGameLimitTime = 60u;
 #endif // _DEBUG
@@ -134,10 +141,13 @@ private:
 
     std::unique_ptr<GameOverAnimation>              gameOverAnimation_      = {};       // !< ゲームオーバーアニメーション
     std::unique_ptr<GameClearAnimation>             pGameClearAnimation_    = {};       // !< ゲームクリアアニメーション
+    std::unique_ptr<SlomoLogic>                     pSlomoLogic_            = {};       // !< スロー移動ロジック
+    std::unique_ptr<SlomoEffectController>          pSlomoEffect_           = {};       // !< スロー移動ロジック
 
     EntityCommonParams                              entityCommonParams_     = {};       // !< エンティティ共通パラメータ
 
     EnemySpawner                                    enemyPopSystem_         = {};       // !< 敵生成システム
+    PlayerBulletGenerator                           playerBulletGenerator_  = {};       // !< プレイヤー弾生成システム
     DirectionalLight                                directionalLight_       = {};       // !< ディレクショナルライト
     PointLight                                      pointLight_             = {};       // !< ポイントライト
     std::unique_ptr<CountDown>                      pStartCountDown_        = {};       // !< カウントダウン
@@ -150,13 +160,13 @@ private:
     std::unique_ptr<Line>                           lines_                  = nullptr;  // !< エリア用ライン
     float                                           areaWidth_              = 25.0f;    // !< エリアの幅
     const uint32_t                                  kMaxEnemyCount_         = 120;      // !< 最大敵数
-    Audio*                                          pBGM_                   = nullptr;  // !< BGMポインタ
+
 
     std::optional<EventSubscription>                playerExplosionSub_     = std::nullopt;
 
     // Pointers
     DirectX12*          pDx12_              = nullptr;
-    DeltaTimeManager*   pDeltaTimeManager_   = nullptr;
+    DeltaTimeManager*   pDeltaTimeManager_  = nullptr;
     RandomGenerator*    randomGenerator_    = nullptr;
     ModelManager*       pModelManager_      = nullptr;
     LineSystem*         pLineSystem_        = nullptr;

@@ -148,11 +148,11 @@ void LoadingScreen::InitializeCanvas(DirectX12* pDx12, CubemapSystem* pCubemapSy
     {
         auto scanline = static_cast<Scanline*>(effect);
         auto& option = scanline->GetOption();
-        option.opacity = 0.03f;
-        option.division = 70.0f;
-        option.speed = 5.0f;
-        option.color0 = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-        option.color1 = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
+        option.opacity = 1.0f;
+        option.division = 40.0f;
+        option.speed = 3.0f;
+        option.color0 = RGBA(0xEEEEEEFF).to_Vector4();
+        option.color1 = RGBA(0xD9D9D9FF).to_Vector4();
         option.isOverall = 1.0f;
         scanline->Enable(true);
     }
