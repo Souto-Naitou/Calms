@@ -41,17 +41,17 @@ void GameScene::Initialize()
 void GameScene::Finalize()
 {
     pBGM_->Stop();
-    pPauseLayer_->Finalize();
     pGameLayer_->Finalize();
+    pPauseLayer_->Finalize();
 }
 
 void GameScene::Update()
 {
     if (pInput_->TriggerKey(DIK_ESCAPE)) this->TogglePauseMenu();
 
-    pPauseLayer_->Update();
-    
     if (!isPauseMenuActive_) pGameLayer_->Update();
+    
+    pPauseLayer_->Update();
 
     /// [ BGMのフェードアウト ]
     if (isChangingScene_)
@@ -64,8 +64,8 @@ void GameScene::Update()
 
 void GameScene::Draw()
 {
-    pPauseLayer_->Draw();
     pGameLayer_->Draw();
+    pPauseLayer_->Draw();
 }
 
 void GameScene::PreLoad(TaskExecutor& executor)
