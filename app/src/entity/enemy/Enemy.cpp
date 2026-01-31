@@ -12,26 +12,21 @@ Enemy::Enemy(const Params& params)
     params_ = params;
 }
 
-void Enemy::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
+void Enemy::Initialize(bool enableDebugWindow)
 {
     /// 基底クラスの初期化
-    EntityBase::Initialize(params, enableDebugWindow);
-    if (isEnableDebugWindow_)
-    {
-        pDebugEntry_->SetName(utl::debug::generate_name("Enemy", this));
-    }
+    EntityBase::Initialize(enableDebugWindow);
+    EntityBase::SetName(utl::debug::generate_name("Enemy", this));
 
     /// インスタンスの取得
-    collisionManager_ = CollisionManager::GetInstance();
-    deltaTimeManager_ = DeltaTimeManager::GetInstance();
-    ppGameEye_        = Object3dSystem::GetInstance()->GetGlobalEye();
+    pCollisionManager_  = CollisionManager::GetInstance();
+    pDeltaTimeManager_  = DeltaTimeManager::GetInstance();
+    EntityBase::SetGameEye(Object3dSystem::GetInstance()->GetGlobalEye());
 
     /// パラメータの初期化
-    friction_               = 0.95f;
-    moveSpeed_              = 10.0f;
-    transform_.translate    = Vector3(0, 0.5f, 0);
-    attackPower_            = 10.0f;
-    stats_.Initialize(1.0f, 10.0f, 10.0f);
+    transform_.translate = params_.initPosition;
+    pStats_ = std::make_unique<EntityStats>();
+    pStats_->Initialize(1.0f, 10.0f, 10.0f);
 
     // オブジェクトの初期化
     this->InitializeObjects();
@@ -42,25 +37,27 @@ void Enemy::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
     sphereLine_.Initialize();
 
     // コライダーの登録
-    collisionManager_->RegisterCollider(collider_.get());
+    pCollisionManager_->RegisterCollider(pCollider_.get());
 
     // パーティクルエミッターの初期化
     this->InitializeParticleEmitters();
+
+    this->InitializeComponents();
 
     /// オーディオの初期化
     audioDeath_ = AudioManager::GetInstance()->GetNewAudio("Effect", Path::Audio::kSeEnemyDeath);
     audioDeath_->SetVolume(0.05f);
 
-    if (params.pDirLight) objectSelfBody_->SetDirectionalLight(params.pDirLight);
-    if (params.pPointLight) objectSelfBody_->SetPointLight(params.pPointLight);
+    if (params_.pDirLight) pObjectSelfBody_->SetDirectionalLight(params_.pDirLight);
+    if (params_.pPointLight) pObjectSelfBody_->SetPointLight(params_.pPointLight);
 }
 
 void Enemy::Finalize()
 {
     /// コライダーの削除
-    collisionManager_->DeleteCollider(collider_.get());
+    pCollisionManager_->DeleteCollider(pCollider_.get());
 
-    objectSelfBody_->Finalize();
+    pObjectSelfBody_->Finalize();
 
     pParticleDeathShort_->SetPosition(transform_.translate);
     pParticleDeathShort_->Emit();
@@ -70,39 +67,50 @@ void Enemy::Finalize()
     pParticleDeathShort_->Finalize();
     pParticleDeathSplatter_->Finalize();
 
-    if (commonParams_.pDirLight) 
+    if (params_.pDirLight) 
     {
-        commonParams_.pDirLight->intensity += 0.5f;
-        if (commonParams_.pDirLight->intensity > 8.0f)
+        params_.pDirLight->intensity += 0.5f;
+        if (params_.pDirLight->intensity > 8.0f)
         {
-            commonParams_.pDirLight->intensity = 8.0f;
+            params_.pDirLight->intensity = 8.0f;
         }
     }
 }
 
 void Enemy::Update()
 {
-    // 変形情報の更新 (プレイヤーに向かって追尾・向き変更)
-    this->UpdateTransform();
+    const auto  dtChannel = static_cast<uint32_t>(DeltaTimeChannelReserved::Game);
+    const float deltaTime = pDeltaTimeManager_->GetDeltaTime(dtChannel);
 
-    // 物理演算の更新
-    EntityBase::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
-
-    // オブジェクトの更新
+    /// オブジェクトの更新
     this->UpdateObjects();
 
-    // コライダーの更新
+    /// コライダーの更新
     this->UpdateCollider();
 
-    // パーティクルの更新
+    /// コンポーネントの更新
+    pMovement_->ApplyFriction(kFriction_);
+    pMovement_->Update(transform_, deltaTime);
+    pFocusOrientation_->Update(transform_, deltaTime);
+
+    /// パーティクルの更新
     pParticleDeathShort_->Update();
     pParticleDeathSplatter_->Update();
 }
 
 void Enemy::Draw1F()
 {
-    if (objectSelfBody_) objectSelfBody_->Draw1F();
+    if (pObjectSelfBody_) pObjectSelfBody_->Draw1F();
     if (isDrawCollisionArea_) sphereLine_.Draw1F();
+}
+
+void Enemy::InitializeComponents()
+{
+    pMovement_ = std::make_unique<EnemyFollowMovement>(params_.pTargetPosition);
+    pMovement_->SetFollowSpeed(kFollowSpeed_);
+    pFocusOrientation_ = std::make_unique<EntityFocusOrientation>();
+    pFocusOrientation_->SetTargetPosition(params_.pTargetPosition);
+    pFocusOrientation_->SetRotateRatio(0.95f);
 }
 
 void Enemy::InitializeObjects()
@@ -113,13 +121,13 @@ void Enemy::InitializeObjects()
     }
 
     /// オブジェクトの初期化
-    objectSelfBody_ = std::make_unique<Object3d>();
-    objectSelfBody_->Initialize(false);
-    objectSelfBody_->SetName("enemy");
-    objectSelfBody_->SetTranslate(Vector3(0, 0.5f, 0));
-    objectSelfBody_->SetRotate(Vector3(0, 0, 0));
-    objectSelfBody_->SetModel(pModelSelfBody_.get());
-    auto& option = objectSelfBody_->GetOption();
+    pObjectSelfBody_ = std::make_unique<Object3d>();
+    pObjectSelfBody_->Initialize(false);
+    pObjectSelfBody_->SetName("enemy");
+    pObjectSelfBody_->SetTranslate(Vector3(0, 0.5f, 0));
+    pObjectSelfBody_->SetRotate(Vector3(0, 0, 0));
+    pObjectSelfBody_->SetModel(pModelSelfBody_.get());
+    auto& option = pObjectSelfBody_->GetOption();
     option.materialData->environmentCoefficient = 0.0f;
     option.materialData->color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
     option.lightingData->enableLighting = false;
@@ -128,16 +136,17 @@ void Enemy::InitializeObjects()
 void Enemy::InitializeCollider()
 {
     /// コライダーの初期化
-    collider_ = std::make_unique<Collider>();
-    collider_->SetColliderID("enemy");
-    collider_->SetAttribute(collisionManager_->GetNewAttribute("enemy"));
-    collider_->SetOwner(this);
-    collider_->SetShape(Shape::Sphere);
-    collider_->SetShapeData(&sphere_);
-    collider_->SetMask(collisionManager_->GetNewMask("enemyDummy"));
-    collider_->SetOnCollisionTrigger(std::bind(&Enemy::OnCollisionTrigger, this, std::placeholders::_1));
-    collider_->SetOnCollision(std::bind(&Enemy::OnCollision, this, std::placeholders::_1));
-    collider_->SetEnableLighter(false);
+    pCollider_ = std::make_unique<Collider>();
+    pCollider_->SetColliderID("enemy");
+    pCollider_->SetAttribute(pCollisionManager_->GetNewAttribute("enemy"));
+    pCollider_->SetOwner(this);
+    pCollider_->SetShape(Shape::Sphere);
+    pCollider_->SetShapeData(&sphere_);
+    pCollider_->SetMask(pCollisionManager_->GetNewMask("enemyDummy"));
+    pCollider_->SetOnCollisionTrigger(std::bind(&Enemy::OnCollisionTrigger, this, std::placeholders::_1));
+    pCollider_->SetOnCollision(std::bind(&Enemy::OnCollision, this, std::placeholders::_1));
+    pCollider_->SetOwnerTransform(&transform_);
+    pCollider_->SetEntityStats(pStats_.get());
 }
 
 void Enemy::InitializeParticleEmitters()
@@ -162,31 +171,6 @@ void Enemy::InitializeParticleEmitters()
     pParticleDeathSplatter_->EnableManualMode();
 }
 
-void Enemy::UpdateTransform()
-{
-    if (!locationProvider_) return;
-
-    positionTarget_ = locationProvider_->GetTranslation().xz();
-    distanceToTarget = positionTarget_ - transform_.translate.xz();
-
-    /// 追尾
-    if (distanceToTarget.Length() > 0)
-    {
-        Vector2 normalDist2Target = distanceToTarget.Normalize();
-        velocity_move = normalDist2Target * moveSpeed_;
-        acceleration_ = Vector3(velocity_move.x, 0, velocity_move.y);
-    }
-
-    acceleration_ += accelerationRefl_;
-    accelerationRefl_ = Vector3(0, 0, 0);
-
-    /// 方向を変更
-    if ((distanceToTarget.x != 0 || distanceToTarget.y != 0))
-    {
-        transform_.rotate = Vector3(0, -velocity_.xz().Theta(), 0);
-    }
-}
-
 void Enemy::UpdateCollider()
 {
     /// コライダーの更新
@@ -195,26 +179,24 @@ void Enemy::UpdateCollider()
     sphereLine_.SetTransform({ Vector3(1,1,1), Vector3(0,0,0), transform_.translate });
     sphereLine_.Update();
 
-    collider_->SetShapeData(&sphere_);
+    pCollider_->SetShapeData(&sphere_);
 }
 
 void Enemy::UpdateObjects()
 {
-    objectSelfBody_->SetTranslate(transform_.translate);
-    objectSelfBody_->SetRotate(transform_.rotate);
-    objectSelfBody_->Update();
+    pObjectSelfBody_->SetTranslate(transform_.translate);
+    pObjectSelfBody_->SetRotate(transform_.rotate);
+    pObjectSelfBody_->Update();
 }
 
-void Enemy::OnCollision(const Collider* _other)
+void Enemy::OnCollision(const Collider* other)
 {
-    if (_other->GetColliderID() == "enemy")
+    if (other->GetColliderID() == "enemy")
     {
-        const EntityBase* otherOwner = _other->GetOwner<EntityBase>();
-
         /// 反発を速度に適用
-        Vector3 otherPos = otherOwner->GetTranslation();
+        Vector3 otherPos = other->GetOwnerTransform()->translate;
         Vector3 dir = transform_.translate - otherPos;
-        accelerationRefl_ = dir * reflectionPower_;
+        pMovement_->ApplyForce(dir * kReflectionPower_);
     }
 }
 
@@ -229,12 +211,14 @@ void Enemy::OnCollisionTrigger(const Collider* other)
     /// 衝突している場合
     if (isCollide)
     {
-        const EntityBase* otherOwner = other->GetOwner<EntityBase>();
-        stats_.OnCollision(otherOwner->GetStats());
+        auto pStatsOther = other->GetEntityStats();
+        assert(pStatsOther);
+        pStats_->OnCollision(pStatsOther);
         
-        if (stats_.GetHp() <= 0) 
+        if (pStats_->GetHp() <= 0) 
         {
-            isAlive_ = false;
+            // 死亡する
+            EntityBase::Dead();
             audioDeath_->Play();
             
             /// あたっている相手に応じてスコアイベントを発行
@@ -249,18 +233,16 @@ void Enemy::OnCollisionTrigger(const Collider* other)
         }
 
         /// ヒットパーティクルの再生
-        Vector3 hitPos = otherOwner->GetTranslation();
+        auto pTransformOtherOwner = other->GetOwnerTransform();
+        assert(pTransformOtherOwner);
+        Vector3 hitPos = pTransformOtherOwner->translate;
         if (hitPos.x == 0 && hitPos.y == 0 && hitPos.z == 0)
         {
             assert(0);
         }
 
-        /// 反発を速度に適用
-        Vector3 dir = transform_.translate - hitPos;
-        accelerationRefl_ = dir * bulletReflectionPower_;
-
         /// 画面揺れ
-        (*ppGameEye_)->Shake(0.1f);
+        EntityBase::ShakeCamera(kCameraShakePower_);
     }
 }
 

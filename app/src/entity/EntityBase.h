@@ -10,12 +10,6 @@
 #include <Common/structs.h>
 #include <Features/Layer/Canvas.h>
 
-struct EntityCommonParams
-{
-    DirectionalLight*   pDirLight   = nullptr;
-    PointLight*         pPointLight = nullptr;
-};
-
 /// <summary>
 /// エンティティ基底クラス
 /// </summary>
@@ -30,7 +24,7 @@ public:
     /// デバッグウィンドウの有効化設定も同時に行われます。
     /// </summary>
     /// <param name="enableDebugWindow">デバッグウィンドウを有効にする場合は true。</param>
-    virtual void Initialize(const EntityCommonParams& params, bool enableDebugWindow = true);
+    virtual void Initialize(bool enableDebugWindow = true);
 
     /// <summary>
     /// エンティティの終了処理を行います。
@@ -54,56 +48,22 @@ public:
     /// </summary>
     virtual void ImGui();
 
-
-public: /// Getter
-    const Vector3& GetRotation() const { return transform_.rotate; }
-    const Vector3& GetScale() const { return transform_.scale; }
-    const Vector3& GetTranslation() const { return transform_.translate; }
-    const Vector3& GetVelocity() const { return velocity_; }
-    const Vector3& GetAcceleration() const { return acceleration_; }
-    float GetFriction() const { return friction_; }
+    /// Getter
     const bool IsAlive() const { return isAlive_; }
-    const float GetAttackPower() const { return attackPower_; }
-    const IEntityStats* GetStats() const { return &stats_; }
 
-
-public: /// Setter
-    void SetRotation(const Vector3& rotation) { transform_.rotate = rotation; }
-    void SetScale(const Vector3& scale) { transform_.scale = scale; }
-    void SetTranslation(const Vector3& translation) { transform_.translate = translation; }
-    void SetVelocity(const Vector3& velocity) { velocity_ = velocity; }
-    void SetAcceleration(const Vector3& acceleration) { acceleration_ = acceleration; }
-    void SetFriction(float friction) { friction_ = friction; }
-    void SetParams(EntityCommonParams& params) { commonParams_ = params; }
-
-
-protected:
-    std::unique_ptr<DebugEntry<EntityBase>> pDebugEntry_ = {};
-
-    EntityCommonParams commonParams_    = {};
-
-    bool    isEnableDebugWindow_        = true;
-    bool    isAlive_                    = true;
-
-    EntityStats  stats_                 = {};
-
-    EulerTransform transform_           = {};
-    Vector3 velocity_                   = {};
-    Vector3 acceleration_               = {};
-
-    float   friction_                   = 1.0f;
-    float   attackPower_                = 0.0f;
-
+    /// Setter
+    void SetName(const std::string& name);
+    void SetGameEye(GameEye** ppGameEye) { ppGameEye_ = ppGameEye; }
 
 protected:
     /// <summary>
-    /// 単純な物理更新を行います。
-    /// 加速度・速度・減衰（摩擦）を考慮して位置を更新します。
+    /// 生存フラグを false に設定します。
     /// </summary>
-    /// <param name="dt">経過時間（秒）。</param>
-    void UpdatePhysics(float dt);
+    void Dead() { isAlive_ = false; }
+    void ShakeCamera(float power);
 
-
-protected: /// 他クラスの所有物
-    GameEye** ppGameEye_ = nullptr;
+private:
+    std::unique_ptr<DebugEntry<EntityBase>> pDebugEntry_ = {};
+    bool        isAlive_    = true;
+    GameEye**   ppGameEye_ = nullptr;
 };

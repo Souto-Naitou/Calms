@@ -112,6 +112,9 @@
     <Filter Include="Scene\Screen\Factory">
       <UniqueIdentifier>{d326010e-e7f1-4f53-adcf-015f4cd08131}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entity\Enemy\Component">
+      <UniqueIdentifier>{255d17e6-1377-4cea-911f-346cd3d720d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\Calms.cpp">
@@ -136,7 +139,6 @@
     <ClCompile Include="src\ui\guide\InputGuide.cpp">
       <Filter>UI\InputGuide</Filter>
     </ClCompile>
-    <ClCompile Include="src\stdafx.cpp" />
     <ClCompile Include="src\logic\score\ScoreCalculator.cpp">
       <Filter>Logic\Score</Filter>
     </ClCompile>
@@ -227,6 +229,13 @@
     <ClCompile Include="src\scene\game\layer\PauseLayer.cpp">
       <Filter>Scene\Game\layer</Filter>
     </ClCompile>
+    <ClCompile Include="src\entity\enemy\EnemyRusher.cpp" />
+    <ClCompile Include="src\entity\EntityMovement.cpp">
+      <Filter>Entity\Enemy\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\enemy\component\EnemyFollowMovement.cpp" />
+    <ClCompile Include="src\entity\EntityFocusOrientation.cpp" />
+    <ClCompile Include="src\entity\EntityMovementAABBLimitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -250,7 +259,6 @@
     <ClInclude Include="src\scene\Clear\ClearScene.h">
       <Filter>Scene\Clear</Filter>
     </ClInclude>
-    <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\logic\score\ScoreCalculator.h">
       <Filter>Logic\Score</Filter>
     </ClInclude>
@@ -353,6 +361,18 @@
     <ClInclude Include="src\scene\game\layer\PauseLayer.h">
       <Filter>Scene\Game\layer</Filter>
     </ClInclude>
+    <ClInclude Include="src\entity\enemy\EnemyRusher.h">
+      <Filter>Entity\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\EnemyRusherState.h">
+      <Filter>Entity\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\EntityMovement.h">
+      <Filter>Entity\Enemy\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\component\EnemyFollowMovement.h" />
+    <ClInclude Include="src\entity\EntityFocusOrientation.h" />
+    <ClInclude Include="src\entity\EntityMovementAABBLimitter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

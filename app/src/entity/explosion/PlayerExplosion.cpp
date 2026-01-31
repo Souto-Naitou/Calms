@@ -4,9 +4,9 @@
 #include <Math/Easing.h>
 
 
-void PlayerExplosion::Initialize(const EntityCommonParams& params, bool enableDebugWindow /* = true */)
+void PlayerExplosion::Initialize(bool enableDebugWindow /* = true */)
 {
-    EntityBase::Initialize(params, enableDebugWindow);
+    EntityBase::Initialize(enableDebugWindow);
 
     collisionManager_ = CollisionManager::GetInstance();
 
@@ -14,38 +14,39 @@ void PlayerExplosion::Initialize(const EntityCommonParams& params, bool enableDe
 
     this->InitializeCollider();
 
-    stats_.Initialize(1.0f, 5.0f, 1.0f);
+    pStats_ = std::make_unique<EntityStats>();
+    pStats_->Initialize(1.0f, 5.0f, 1.0f);
 
     /// タイマーの初期化と開始
-    timeMeasurer_ = std::make_unique<TimeMeasurerByDt>();
-    timeMeasurer_->Start();
+    pTimeMeasurer_ = std::make_unique<TimeMeasurerByDt>();
+    pTimeMeasurer_->Start();
 }
 
 void PlayerExplosion::Finalize()
 {
-    objectRing_->Finalize();
-    modelRing_->Finalize();
+    pObjectRing_->Finalize();
+    pModelRing_->Finalize();
 
-    collisionManager_->DeleteCollider(collider_.get());
+    collisionManager_->DeleteCollider(pCollider_.get());
 }
 
 void PlayerExplosion::Update()
 {
-    timeMeasurer_->Update(kDeltaTimeChannelNum);
+    pTimeMeasurer_->Update(kDeltaTimeChannelNum);
 
-    if (timeMeasurer_->GetNow<float>() >= kRingLifeTimeSec)
+    if (pTimeMeasurer_->GetNow<float>() >= kRingLifeTimeSec)
     {
-        this->isAlive_ = false;
+        EntityBase::Dead();
         return;
     }
 
     this->Expand();
 
-    if (objectRing_)
+    if (pObjectRing_)
     {
         this->UpdateOpacity();
-        objectRing_->SetTranslate(transform_.translate);
-        objectRing_->Update();
+        pObjectRing_->SetTranslate(transform_.translate);
+        pObjectRing_->Update();
     }
 
     this->UpdateCollider();
@@ -53,9 +54,9 @@ void PlayerExplosion::Update()
 
 void PlayerExplosion::Draw1F()
 {
-    if (objectRing_)
+    if (pObjectRing_)
     {
-        objectRing_->Draw1F();
+        pObjectRing_->Draw1F();
     }
 }
 
@@ -67,15 +68,15 @@ void PlayerExplosion::InitializeRing()
     modelParams.radiusInner = 0.0f;
     modelParams.textureFilePath = Path::Image::InGame::kExplosionRing;
 
-    modelRing_ = std::make_unique<RingModel>(modelParams);
-    modelRing_->Initialize();
-    modelRing_->SetName("Player Explosion Model");
+    pModelRing_ = std::make_unique<RingModel>(modelParams);
+    pModelRing_->Initialize();
+    pModelRing_->SetName("Player Explosion Model");
 
-    objectRing_ = std::make_unique<Object3d>();
-    objectRing_->Initialize(false);
-    objectRing_->SetName("Player Explosion Object3d");
-    objectRing_->SetModel(modelRing_.get());
-    auto& option = objectRing_->GetOption();
+    pObjectRing_ = std::make_unique<Object3d>();
+    pObjectRing_->Initialize(false);
+    pObjectRing_->SetName("Player Explosion Object3d");
+    pObjectRing_->SetModel(pModelRing_.get());
+    auto& option = pObjectRing_->GetOption();
     option.materialData->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
     option.lightingData->enableLighting = false;
     option.materialData->environmentCoefficient = 0.0f;
@@ -84,46 +85,47 @@ void PlayerExplosion::InitializeRing()
 void PlayerExplosion::InitializeCollider()
 {
     /// コライダーの初期化
-    collider_ = std::make_unique<Collider>(false);
-    collider_->SetColliderID("PlayerExplosion");
-    collider_->SetAttribute(collisionManager_->GetNewAttribute("PlayerExplosion"));
-    collider_->SetOwner(this);
-    collider_->SetShape(Shape::Sphere);
-    collider_->SetShapeData(&sphere_);
-    collider_->SetMask(collisionManager_->GetNewMask("PlayerExplosion", "playerBullet", "player"));
-    collider_->SetOnCollisionTrigger({});
-    collider_->SetEnableLighter(false);
+    pCollider_ = std::make_unique<Collider>(false);
+    pCollider_->SetColliderID("PlayerExplosion");
+    pCollider_->SetAttribute(collisionManager_->GetNewAttribute("PlayerExplosion"));
+    pCollider_->SetOwner(this);
+    pCollider_->SetShape(Shape::Sphere);
+    pCollider_->SetShapeData(&sphere_);
+    pCollider_->SetMask(collisionManager_->GetNewMask("PlayerExplosion", "playerBullet", "player"));
+    pCollider_->SetOnCollisionTrigger({});
+    pCollider_->SetOwnerTransform(&transform_);
+    pCollider_->SetEntityStats(pStats_.get());
 
-    collisionManager_->RegisterCollider(collider_.get());
+    collisionManager_->RegisterCollider(pCollider_.get());
 }
 
 void PlayerExplosion::Expand()
 {
-    const float lifeTime = timeMeasurer_->GetNow<float>();
+    const float lifeTime = pTimeMeasurer_->GetNow<float>();
     const float t = lifeTime / kRingLifeTimeSec;
     const float radius = Math::Easing::EaseOutQuad(t) * kRingRadiusTarget;
 
-    Range<float> radii = modelRing_->GetRadii();
+    Range<float> radii = pModelRing_->GetRadii();
     radii.end = radius;
     radii.start = radius - kRingThickness;
-    modelRing_->SetRadii(radii);
+    pModelRing_->SetRadii(radii);
 }
 
 void PlayerExplosion::UpdateOpacity()
 {
-    const float lifeTime = timeMeasurer_->GetNow<float>();
+    const float lifeTime = pTimeMeasurer_->GetNow<float>();
     const float t = lifeTime / kRingLifeTimeSec;
 
     const float opacity = 1.0f - Math::Easing::EaseInCubic(t);
 
-    auto& option = objectRing_->GetOption();
+    auto& option = pObjectRing_->GetOption();
     option.materialData->color.w = opacity;
 }
 
 void PlayerExplosion::UpdateCollider()
 {
-    const float radius = modelRing_->GetRadii().end;
+    const float radius = pModelRing_->GetRadii().end;
     sphere_.center_ = transform_.translate;
     sphere_.radius_ = radius;
-    collider_->SetShapeData(&sphere_);
+    pCollider_->SetShapeData(&sphere_);
 }
