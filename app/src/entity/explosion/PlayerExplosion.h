@@ -14,23 +14,18 @@ class PlayerExplosion : public EntityBase
 public:
     struct Params
     {
-        DirectX12* pDx12 = nullptr;
+        DirectX12*  pDx12       = nullptr;
     };
 
     PlayerExplosion(const Params& params) : params_(params) {}
     ~PlayerExplosion() override = default;
 
-
-    void Initialize(const EntityCommonParams& params, bool enableDebugWindow = true) override;
-
-
+    void Initialize(bool enableDebugWindow = true) override;
     void Finalize() override;
-
-
     void Update() override;
-
-
     void Draw1F() override;
+
+    void SetPosition(const Vector3& position) { transform_.translate = position; }
 
 private:
     void InitializeRing();
@@ -45,10 +40,12 @@ private:
     static constexpr float      kRingLifeTimeSec        = 0.5f;
 
     Params params_;
-    std::unique_ptr<TimeMeasurerByDt>   timeMeasurer_   = nullptr;
-    std::unique_ptr<RingModel>          modelRing_      = nullptr;
-    std::unique_ptr<Object3d>           objectRing_     = nullptr;
-    std::unique_ptr<Collider>           collider_       = nullptr;
+    EulerTransform                      transform_      = {};
+    std::unique_ptr<TimeMeasurerByDt>   pTimeMeasurer_  = nullptr;
+    std::unique_ptr<RingModel>          pModelRing_     = nullptr;
+    std::unique_ptr<Object3d>           pObjectRing_    = nullptr;
+    std::unique_ptr<Collider>           pCollider_      = nullptr;
+    std::unique_ptr<EntityStats>        pStats_         = nullptr;
     Sphere                              sphere_         = {};
 
 

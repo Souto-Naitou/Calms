@@ -166,7 +166,7 @@ void EditScene::InitializeEnemy()
     params.pModelSelfBody = pModelManager_->Load("Cube/Cube.obj");
 
     pEnemy_ = std::make_unique<Enemy>(params);
-    pEnemy_->Initialize({&directionalLight_, nullptr});
+    pEnemy_->Initialize();
 }
 
 void EditScene::InitializeObject3d()
