@@ -71,7 +71,6 @@ public:
 
 private:
     void CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs);
-    void LimitPlayerPosition();
     void ParticlesInitialize();
     void SpritesInitialize();
     void AddPlayerBullet();
@@ -144,8 +143,6 @@ private:
     std::unique_ptr<SlomoLogic>                     pSlomoLogic_            = {};       // !< スロー移動ロジック
     std::unique_ptr<SlomoEffectController>          pSlomoEffect_           = {};       // !< スロー移動ロジック
 
-    EntityCommonParams                              entityCommonParams_     = {};       // !< エンティティ共通パラメータ
-
     EnemySpawner                                    enemyPopSystem_         = {};       // !< 敵生成システム
     PlayerBulletGenerator                           playerBulletGenerator_  = {};       // !< プレイヤー弾生成システム
     DirectionalLight                                directionalLight_       = {};       // !< ディレクショナルライト
@@ -161,6 +158,7 @@ private:
     float                                           areaWidth_              = 25.0f;    // !< エリアの幅
     const uint32_t                                  kMaxEnemyCount_         = 120;      // !< 最大敵数
 
+    AABB                                            playableArea_           = {};       // !< プレイヤーの移動可能範囲
 
     std::optional<EventSubscription>                playerExplosionSub_     = std::nullopt;
 

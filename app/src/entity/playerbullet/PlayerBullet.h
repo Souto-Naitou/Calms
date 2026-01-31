@@ -10,6 +10,8 @@
 #include <Features/Primitive/OBB.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <drawable/particle/Type/ParticleType.h>
+#include <entity/status/EntityStats.h>
+#include <entity/EntityMovement.h>
 
 
 /// <summary>
@@ -21,13 +23,16 @@ public:
     struct Params
     {
         // 表示に使用するモデル (パーティクルを使用するため)
-        ParticleData* particleData = nullptr;
+        ParticleData*   pParticleData   = nullptr;
+        Vector3         direction_      = {};
+        float           moveSpeed_      = 50.0f;
+        Vector3         initPosition_   = {};
     };
 
     PlayerBullet(const Params& param);
     ~PlayerBullet()
     {
-        if (params_.particleData->currentColor.x != 0.0f)
+        if (params_.pParticleData->currentColor.x != 0.0f)
         {
             assert(false);
         }
@@ -38,7 +43,7 @@ public:
     /// モデル・コライダー等の準備を行います。
     /// </summary>
     /// <param name="_enableDebugWindow">デバッグウィンドウの有効/無効。</param>
-    void Initialize(const EntityCommonParams& params, bool enableDebugWindow = true) override;
+    void Initialize(bool enableDebugWindow = true) override;
 
     /// <summary>
     /// 終了処理を行います。
@@ -61,11 +66,8 @@ public:
     /// </summary>
     void ImGui() override;
 
-
 public: /// Setter
-    void SetMoveVelocity(const Vector3& _velocity) { moveVelocity_ = _velocity; }
     void SetIsDrawCollisionArea(bool _isDraw) { isDrawCollisionArea_ = _isDraw; }
-
 
 private:
     /// コールバック関数
@@ -91,14 +93,22 @@ private:
     /// </summary>
     void CollidersInitialize();
 
-    std::unique_ptr<TimeMeasurer> timer_ = nullptr;
-    Params params_ = {};
-    /// パラメータ
-    float lifeTimeLimit_ = 3.0f;
-    Vector3 moveVelocity_ = {};
+    /// <summary>
+    /// コンポーネントを初期化します。
+    /// </summary>
+    void ComponentsInitialize();
 
-    /// コライダー
-    std::unique_ptr<Collider> collider_ = nullptr;
+    static constexpr float kLifeTimeLimit_  = 2.5f;
+    static constexpr float kFriction_       = 1.0f;
+
+    std::unique_ptr<TimeMeasurer>   pTimeMeasurer_ = nullptr;
+    Params params_ = {};
+
+    /// [ コンポーネント ]
+    EulerTransform                  transform_  = {};
+    std::unique_ptr<EntityStats>    pStats_     = nullptr;
+    std::unique_ptr<Collider>       pCollider_  = nullptr;
+    std::unique_ptr<EntityMovement> pMovement_  = nullptr;
     Sphere sphere_ = {};
 
     /// フラグ

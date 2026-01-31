@@ -5,44 +5,31 @@
 #include <imgui.h>
 #include <drawable/object3d/Object3dSystem.h>
 
-void EntityBase::Initialize(const EntityCommonParams& params, bool enableDebugWindow /*= true*/)
+void EntityBase::Initialize(bool enableDebugWindow /*= true*/)
 {
-    isEnableDebugWindow_ = enableDebugWindow;
-    if (isEnableDebugWindow_)
+    if (enableDebugWindow)
     {
         pDebugEntry_ = std::make_unique<DebugEntry<EntityBase>>("GameObject", this);
     }
-    commonParams_ = params;
 
     ppGameEye_ = Object3dSystem::GetInstance()->GetGlobalEye();
 }
 
-void EntityBase::UpdatePhysics(float dt)
+void EntityBase::ImGui() 
 {
-    // 加速度から速度を更新
-    velocity_ += acceleration_ * dt;
+    #ifdef _DEBUG
 
-    /// 摩擦をかける
-    friction_ = std::clamp(friction_, 0.0f, 1.0f);
-    velocity_ *= friction_;
+    ImGui::Text("Alive : %s", isAlive_ ? "True" : "False");
 
-    // 速度から位置を更新
-    transform_.translate += velocity_ * dt;
-
-    // 加速度をリセット
-    acceleration_ = {};
+    #endif // _DEBUG
 }
 
-void EntityBase::ImGui()
+void EntityBase::SetName(const std::string& name)
 {
-#ifdef _DEBUG
+    if (pDebugEntry_) pDebugEntry_->SetName(name);
+}
 
-    ImGui::DragFloat3("Scale", &transform_.scale.x, 0.12f);
-    ImGui::DragFloat3("Rotation", &transform_.rotate.x, 0.12f);
-    ImGui::DragFloat3("Translation", &transform_.translate.x, 0.12f);
-    ImGui::DragFloat3("Velocity", &velocity_.x, 0.12f);
-    ImGui::DragFloat3("Acceleration", &acceleration_.x, 0.12f);
-    ImGui::SliderFloat("Friction", &friction_, 0.0f, 1.0f);
-
-#endif // DEBUG
+void EntityBase::ShakeCamera(float power)
+{
+    (*ppGameEye_)->Shake(power);
 }

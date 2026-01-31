@@ -1,4 +1,5 @@
 #pragma once
+#include <entity/EntityMovement.h>
 #include <Vector3.h>
 #include <Math/Transform.h>
 #include "PlayerInput.h"
@@ -6,34 +7,20 @@
 /// <summary>
 /// プレイヤーの移動処理 実装クラス
 /// </summary>
-class PlayerMovement
+class PlayerMovement : public EntityMovement
 {
 public:
-    struct Data
-    {
-        Vector3 acceleration    = {};
-        Vector3 velocity        = {};
-        float movePower         = 25.0f;
-        float friction          = 0.95f;
-    };
-
-    PlayerMovement() = default;
+    PlayerMovement(PlayerInput* pInput) : pInput_(pInput) {}
     ~PlayerMovement() = default;
-    void Initialize(PlayerInput* pInput, EulerTransform* pTransform);
-    void Update(float dt);
 
-    const auto& GetData() const { return data_; }
-    bool IsMove(float threshold = 0.0f) const;
+    void Update(EulerTransform& transform, float deltaTime) override;
 
-    inline void AddAcceleration(const Vector3& acc) { data_.acceleration += acc; }
-    inline void SetEnable(bool flag) { isEnabled_ = flag; }
+    bool IsMove(float speedThreshold = 0.001f) const;
+    void SetMovePower(float power) { movePower_ = power; }
 
 private:
     void UpdateByInput(float dt);
-    void ApplyPhysics(float dt);
 
-    bool            isEnabled_  = true;
-    Data            data_       = {};
     PlayerInput*    pInput_     = nullptr;
-    EulerTransform* pTransform_ = nullptr;
+    float           movePower_  = 25.0f;
 };

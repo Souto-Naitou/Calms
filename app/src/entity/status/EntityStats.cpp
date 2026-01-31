@@ -4,6 +4,8 @@
 #include <imgui.h>
 #include <typeinfo>
 #include <cassert>
+#include <algorithm>
+#undef max
 
 void EntityStats::Initialize(float health, float attack, float speed)
 {
@@ -36,25 +38,10 @@ void EntityStats::OnCollision(const IEntityStats* other)
 {
     /// [ 型チェック ]
     assert(other != nullptr);
-    const EntityStats* casted = nullptr;
-
-    try
-    {
-        casted = static_cast<const EntityStats*>(other);
-    }
-    catch (const std::bad_cast& e)
-    {
-        Logger::GetInstance()->LogError(__FILE__, __FUNCTION__, e.what());
-        assert(false);
-        return;
-    }
 
     /// [ ダメージ計算 ]
-    float damage = casted->attack_;
-    if (damage < 0.0f)
-    {
-        damage = 0.0f;
-    }
+    float damage = other->GetDamage();
+    damage = std::max(damage, 0.0f);
 
     /// [ 適用 ]
 

@@ -70,16 +70,22 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     /// [ パーティクルの初期化 ]
     this->ParticlesInitialize();
 
-    /// [ エンティティ共通パラメータをパック ]
-    entityCommonParams_.pDirLight = &directionalLight_;
-    entityCommonParams_.pPointLight = &pointLight_;
+    /// [ 移動可能範囲の設定 ]
+    {
+        Vector3 min = Vector3(-areaWidth_, 0.0f, -areaWidth_);
+        Vector3 max = Vector3(areaWidth_, 5.0f, areaWidth_);
+        playableArea_.SetMinMax(min, max);
+    }
 
     /// [ プレイヤーの初期化 ]
     Player::Params playerParams = {};
     playerParams.particle = particles_[static_cast<size_t>(ParticleID::PlayerConstant)];
     playerParams.pModelManager = pModelManager_;
+    playerParams.pDirLight = &directionalLight_;
+    playerParams.pPointLight = &pointLight_;
+    playerParams.pMovableBounds = &playableArea_;
     pPlayer_ = std::make_unique<Player>(playerParams);
-    pPlayer_->Initialize(entityCommonParams_);
+    pPlayer_->Initialize();
 
     /// [ プレイヤー3DUIの初期化 ]
     pPlayerUI3d_ = std::make_unique<PlayerUI3d>();
@@ -252,9 +258,6 @@ void GameLayer::Update()
     gameOverAnimation_->Update();
     pGameClearAnimation_->Update();
 
-    /// [ プレイヤーの移動範囲制限 ]
-    this->LimitPlayerPosition();
-
     /// [ プレイヤーのスロー更新 ]
     this->UpdateSlomo();
 
@@ -304,7 +307,7 @@ void GameLayer::Update()
     /// [ ポイントライトの更新 ]
     {
         auto& position = pointLight_.GetPosition();
-        position = pPlayer_->GetTranslation();
+        position = pPlayer_->GetTransform().translate;
         position.y = 5.0f;
     }
 
@@ -337,15 +340,15 @@ void GameLayer::Update()
     /// [ プレイヤーUI3Dの更新 ]
     {
         PlayerUI3d::Params param = {};
-        auto stats = static_cast<const EntityStats*>(pPlayer_->GetStats());
-        param.hp = stats->GetHp();
-        param.hpMax = stats->GetMaxHp();
+        auto& stats = pPlayer_->GetStats();
+        param.hp = stats.GetHp();
+        param.hpMax = stats.GetMaxHp();
         param.explosionScore = pPlayer_->GetContext().Get().explosionScore;
         param.explosionScoreMax = PlayerContext::kMaxExplosionScore;
         param.slomoTime = pSlomoLogic_->GetRemainingTime();
         param.slomoTimeMax = SlomoLogic::kSlomoTimeMax_;
 
-        pPlayerUI3d_->SetPosition(pPlayer_->GetTranslation());
+        pPlayerUI3d_->SetPosition(pPlayer_->GetTransform().translate);
         pPlayerUI3d_->Update(param);
     }
 
@@ -638,16 +641,6 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
     executor.AddTask(create_overall_canvas);
 }
 
-void GameLayer::LimitPlayerPosition()
-{
-    /// [ プレイヤーの移動範囲制限 ]
-    Vector3 playerpos = {};
-    playerpos.x = std::clamp(pPlayer_->GetTranslation().x, -areaWidth_ + 0.5f, areaWidth_ - 0.5f);
-    playerpos.y = pPlayer_->GetTranslation().y;
-    playerpos.z = std::clamp(pPlayer_->GetTranslation().z, -areaWidth_ + 0.5f, areaWidth_ - 0.5f);
-    pPlayer_->SetTranslation(playerpos);
-}
-
 void GameLayer::ParticlesInitialize()
 {
     /// [ パーティクルの初期化 ]
@@ -705,8 +698,8 @@ void GameLayer::SpritesInitialize()
 
 void GameLayer::AddPlayerBullet()
 {
-    Vector3 direction = screenToWorld_->GetWorldPoint() - pPlayer_->GetTranslation();
-    Vector3 position = pPlayer_->GetTranslation();
+    Vector3 direction = screenToWorld_->GetWorldPoint() - pPlayer_->GetTransform().translate;
+    Vector3 position = pPlayer_->GetTransform().translate;
     auto bulletsGenerated = playerBulletGenerator_.Generate(position, direction);
     playerBullets_.insert(
         playerBullets_.end(),
@@ -761,8 +754,8 @@ void GameLayer::AddPlayerExplosion(const PlayerExplosionEvent&)
     PlayerExplosion::Params explosionParams = {};
     explosionParams.pDx12 = pDx12_;
     auto explosion = std::make_unique<PlayerExplosion>(explosionParams);
-    explosion->Initialize(entityCommonParams_, false);
-    explosion->SetTranslation(pPlayer_->GetTranslation());
+    explosion->Initialize(false);
+    explosion->SetPosition(pPlayer_->GetTransform().translate);
     playerExplosions_.emplace_back(std::move(explosion));
 }
 
@@ -770,7 +763,7 @@ void GameLayer::UpdatePlayerExplosion()
 {
     for (auto& explosion : playerExplosions_)
     {
-        explosion->SetTranslation(pPlayer_->GetTranslation());
+        explosion->SetPosition(pPlayer_->GetTransform().translate);
         explosion->Update();
     }
 
@@ -787,7 +780,7 @@ void GameLayer::UpdatePlayerExplosion()
 
 void GameLayer::CreateEnemy()
 {
-    enemyPopSystem_.SetIgnorePosition(pPlayer_->GetTranslation());
+    enemyPopSystem_.SetIgnorePosition(pPlayer_->GetTransform().translate);
     enemyPopSystem_.Update();
     while (enemyPopSystem_.IsExistPopRequest())
     {
@@ -802,11 +795,13 @@ void GameLayer::CreateEnemy()
         enemyParams.pModelSelfBody = pModelManager_->Load("Cube/Cube.obj");
         enemyParams.pParticleTriangle = particles_[static_cast<size_t>(ParticleID::EnemyDeath)];
         enemyParams.pParticleCircle = particles_[static_cast<size_t>(ParticleID::PlayerBullet)];
+        enemyParams.pDirLight = &directionalLight_;
+        enemyParams.pPointLight = &pointLight_;
+        enemyParams.initPosition = popPoint;
+        enemyParams.pTargetPosition = &pPlayer_->GetTransform().translate;
 
         auto enemy = std::make_unique<Enemy>(enemyParams);
-        enemy->Initialize(entityCommonParams_, false);
-        enemy->SetTranslation(popPoint);
-        enemy->SetLocationProvider(pPlayer_.get());
+        enemy->Initialize(false);
         enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
         enemies_.emplace_back(std::move(enemy));
     }
@@ -824,14 +819,14 @@ void GameLayer::UpdateSlomo()
     {
         SlomoEffectController::Context context = {};
         context.gameEyePosition = pGameEye_->GetTransform().translate;
-        context.playerPosition = pPlayer_->GetTranslation();
+        context.playerPosition = pPlayer_->GetTransform().translate;
         context.grayscalePower = pOptionGrayscale_->power;
         auto resultEffect = pSlomoEffect_->Update(state.isSlomoActive, context);
         pGameEye_->SetTranslate(resultEffect.gameEyePosition);
         powerGrayscale = resultEffect.grayscalePower;
     }
 
-    Vector3 playerPos = pPlayer_->GetTranslation();
+    Vector3 playerPos = pPlayer_->GetTransform().translate;
     Vector3 eyePos = pGameEye_->GetTransform().translate;
     if (pGameClearAnimation_->IsPlaying())
     {

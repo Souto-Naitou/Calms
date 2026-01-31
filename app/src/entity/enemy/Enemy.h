@@ -5,16 +5,20 @@
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Collision/Collider/Collider.h>
 #include <Features/Collision/Manager/CollisionManager.h>
-#include <Features/Primitive/OBB.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <drawable/particle/Emitter/ParticleEmitter.h>
 #include <Features/Audio/AudioManager.h>
 #include <drawable/particle/Particle.h>
 #include <Features/Primitive/SphereLine.h>
 #include <Features/Primitive/Sphere.h>
-#include "./EnemyTypes.h"
 #include <Vector3.h>
+#include "./EnemyTypes.h"
+#include "component/EnemyFollowMovement.h"
 #include <memory>
+#include <entity/EntityFocusOrientation.h>
+#include <common/structs.h>
+#include <Features/Lighting/PointLight/PointLight.h>
+#include <entity/status/EntityStats.h>
 
 /// <summary>
 /// 敵クラス(ノーマル)
@@ -24,9 +28,13 @@ class Enemy : public EntityBase
 public:
     struct Params
     {
-        Particle*   pParticleTriangle   = nullptr;      // デスパーティクル
-        Particle*   pParticleCircle     = nullptr;      // デスパーティクル
-        IModel*     pModelSelfBody      = nullptr;      // 本体モデル
+        DirectionalLight*   pDirLight           = nullptr;
+        PointLight*         pPointLight         = nullptr;
+        Particle*           pParticleTriangle   = nullptr;      // デスパーティクル
+        Particle*           pParticleCircle     = nullptr;      // デスパーティクル
+        IModel*             pModelSelfBody      = nullptr;      // 本体モデル
+        Vector3             initPosition        = {};           // 初期位置
+        const Vector3*      pTargetPosition     = nullptr;      // 追尾対象位置
     };
 
 public:
@@ -37,7 +45,7 @@ public:
     /// モデル・コライダー・各種システムとの接続を準備します。
     /// </summary>
     /// <param name="_enableDebugWindow">デバッグウィンドウの有効/無効。</param>
-    void Initialize(const EntityCommonParams& params, bool enableDebugWindow = true) override;
+    void Initialize(bool enableDebugWindow = true) override;
 
     /// <summary>
     /// 終了処理を行います。
@@ -60,13 +68,15 @@ public:
     /// </summary>
     void ImGui() override;
 
-
-public: /// Setter
-    void SetLocationProvider(EntityBase* _gameObject) { locationProvider_ = _gameObject; }
-    void SetIsDrawCollisionArea(bool _isDraw) { isDrawCollisionArea_ = _isDraw; }
-
+    /// Setter
+    void SetIsDrawCollisionArea(bool isDraw) { isDrawCollisionArea_ = isDraw; }
 
 private:
+    /// <summary>
+    /// コンポーネントを初期化します。
+    /// </summary>
+    void InitializeComponents();
+
     /// <summary>
     /// モデルや表示オブジェクトを初期化します。
     /// </summary>
@@ -83,11 +93,6 @@ private:
     void InitializeParticleEmitters();
 
     /// <summary>
-    /// 変換（位置・回転・スケール）を更新します。
-    /// </summary>
-    void UpdateTransform();
-
-    /// <summary>
     /// 当たり判定の更新を行います。
     /// </summary>
     void UpdateCollider();
@@ -101,47 +106,48 @@ private:
     /// 物理衝突時に呼ばれます。
     /// </summary>
     /// <param name="_other">衝突相手のコライダー。</param>
-    void OnCollision(const Collider* _other);
+    void OnCollision(const Collider* other);
 
     /// <summary>
     /// トリガー衝突時に呼ばれます。
     /// </summary>
     /// <param name="_other">衝突相手のコライダー。</param>
-    void OnCollisionTrigger(const Collider* _other);
+    void OnCollisionTrigger(const Collider* other);
 
 private:
-    static constexpr EnemyTypes enemyType = EnemyTypes::Normal;
+    static constexpr EnemyTypes kEnemyType_         = EnemyTypes::Normal;
+    static constexpr float      kFollowSpeed_       = 10.0f;
+    static constexpr float      kFriction_          = 0.95f;
+    static constexpr float      kReflectionPower_   = 15.0f;
+    static constexpr float      kCameraShakePower_  = 0.1f;
 
-    Params          params_                     = {};
-    float           lifeTimeLimit_              = 3.0f;
-    Vector3         accelerationRefl_           = {};
-    Vector3         moveVelocity_               = {};
-    Vector2         distanceToTarget            = {};
-    EntityBase*     locationProvider_           = nullptr;
-    Vector2         positionTarget_             = {};
-    Vector2         velocity_move               = {};
-    float           moveSpeed_                  = 0.0f;
-    float           reflectionPower_            = 15.0f;
-    float           bulletReflectionPower_      = 40.0f;
+    /// [ 初期化パラメータ ]
+    Params  params_ = {};
 
-    std::unique_ptr<Object3d>           objectSelfBody_     = {};
-    std::unique_ptr<TimeMeasurer>       timeMeasurer_       = {};
+    /// [ コンポーネント ]
+    EulerTransform                          transform_          = {};
+    std::unique_ptr<Object3d>               pObjectSelfBody_    = {};
+    std::unique_ptr<IModel>                 pModelSelfBody_     = nullptr;
+    std::unique_ptr<TimeMeasurer>           pTimeMeasurer_      = {};
+    std::unique_ptr<EntityStats>            pStats_             = nullptr;
+    std::unique_ptr<EnemyFollowMovement>    pMovement_          = nullptr;
+    std::unique_ptr<EntityFocusOrientation> pFocusOrientation_  = nullptr;
+    std::unique_ptr<Collider>               pCollider_          = nullptr;
 
-    // Collision
-    std::unique_ptr<Collider>   collider_               = nullptr;
-    Sphere                      sphere_                 = {};
-    SphereLine                  sphereLine_             = {};
-    bool                        isDrawCollisionArea_    = false;
+    /// [ コライダー付随データ ]
+    Sphere      sphere_                 = {};
+    SphereLine  sphereLine_             = {};
+    bool        isDrawCollisionArea_    = false;
 
-    Audio* audioDeath_  = nullptr;
+    /// [ SE ]
+    Audio*  audioDeath_  = nullptr;
 
-    /// パーティクル
-    std::unique_ptr<ParticleEmitter>    pParticleDeathShort_             = nullptr;
+    /// [ パーティクルエミッタ ]
+    std::unique_ptr<ParticleEmitter>    pParticleDeathShort_        = nullptr;
     std::unique_ptr<ParticleEmitter>    pParticleDeathSplatter_     = nullptr;
-    std::unique_ptr<IModel>             pModelSelfBody_             = nullptr;
 
-private: /// 他クラスの所有物
-    CollisionManager*   collisionManager_   = nullptr;
-    DeltaTimeManager*   deltaTimeManager_   = nullptr;
-    AudioManager*       audioManager_       = nullptr;
+    /// [ 他クラスの所有物 ]
+    CollisionManager*   pCollisionManager_  = nullptr;
+    DeltaTimeManager*   pDeltaTimeManager_  = nullptr;
+    AudioManager*       pAudioManager_      = nullptr;
 };

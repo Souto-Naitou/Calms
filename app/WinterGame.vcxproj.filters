@@ -97,11 +97,23 @@
     <Filter Include="UI\Player3d">
       <UniqueIdentifier>{9f362a64-0aa2-49aa-a999-35a3755878f0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Screen">
+    <Filter Include="Logic\Slomo">
+      <UniqueIdentifier>{009a4906-beec-44a7-b8bd-ce883048cad4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Presentation">
+      <UniqueIdentifier>{7189a5dc-6581-485b-805a-fd187f2c5d89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Presentation\Slomo">
+      <UniqueIdentifier>{42345e7b-8a0a-4f25-a4da-84ee0c1a0003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\Screen">
       <UniqueIdentifier>{d6626474-7f0b-4d49-a712-f932ec9d61c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Screen\Factory">
+    <Filter Include="Scene\Screen\Factory">
       <UniqueIdentifier>{d326010e-e7f1-4f53-adcf-015f4cd08131}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Enemy\Component">
+      <UniqueIdentifier>{255d17e6-1377-4cea-911f-346cd3d720d5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -127,7 +139,6 @@
     <ClCompile Include="src\ui\guide\InputGuide.cpp">
       <Filter>UI\InputGuide</Filter>
     </ClCompile>
-    <ClCompile Include="src\stdafx.cpp" />
     <ClCompile Include="src\logic\score\ScoreCalculator.cpp">
       <Filter>Logic\Score</Filter>
     </ClCompile>
@@ -195,21 +206,36 @@
       <Filter>UI\Player3d</Filter>
     </ClCompile>
     <ClCompile Include="src\screen\loading\LoadingScreen.cpp">
-      <Filter>Screen</Filter>
+      <Filter>Scene\Screen</Filter>
     </ClCompile>
     <ClCompile Include="src\scene\Title\Animation\OpeningAnimation.cpp">
       <Filter>Scene\Title\Animation</Filter>
     </ClCompile>
     <ClCompile Include="src\screen\factory\IntermediateScreenFactory.cpp">
-      <Filter>Screen\Factory</Filter>
+      <Filter>Scene\Screen\Factory</Filter>
     </ClCompile>
     <ClCompile Include="src\scene\Title\TitleScene.cpp">
       <Filter>Scene\Title</Filter>
     </ClCompile>
-    <ClCompile Include="src\entity\generator\PlayerBulletGenerator.cpp" />
-    <ClCompile Include="src\logic\slomo\SlomoLogic.cpp" />
-    <ClCompile Include="src\presentation\slomo\SlomoEffectController.cpp" />
-    <ClCompile Include="src\scene\game\layer\PauseLayer.cpp" />
+    <ClCompile Include="src\logic\slomo\SlomoLogic.cpp">
+      <Filter>Logic\Slomo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\presentation\slomo\SlomoEffectController.cpp">
+      <Filter>Presentation\Slomo</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\generator\PlayerBulletGenerator.cpp">
+      <Filter>Entity\PlayerBullet</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\game\layer\PauseLayer.cpp">
+      <Filter>Scene\Game\layer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\enemy\EnemyRusher.cpp" />
+    <ClCompile Include="src\entity\EntityMovement.cpp">
+      <Filter>Entity\Enemy\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\enemy\component\EnemyFollowMovement.cpp" />
+    <ClCompile Include="src\entity\EntityFocusOrientation.cpp" />
+    <ClCompile Include="src\entity\EntityMovementAABBLimitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -233,7 +259,6 @@
     <ClInclude Include="src\scene\Clear\ClearScene.h">
       <Filter>Scene\Clear</Filter>
     </ClInclude>
-    <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\logic\score\ScoreCalculator.h">
       <Filter>Logic\Score</Filter>
     </ClInclude>
@@ -307,7 +332,7 @@
       <Filter>UI\Player3d</Filter>
     </ClInclude>
     <ClInclude Include="src\screen\loading\LoadingScreen.h">
-      <Filter>Screen</Filter>
+      <Filter>Scene\Screen</Filter>
     </ClInclude>
     <ClInclude Include="src\entity\enemy\EnemyTypes.h">
       <Filter>Entity\Enemy</Filter>
@@ -316,16 +341,38 @@
       <Filter>Scene\Title\Animation</Filter>
     </ClInclude>
     <ClInclude Include="src\screen\factory\IntermediateScreenFactory.h">
-      <Filter>Screen\Factory</Filter>
+      <Filter>Scene\Screen\Factory</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\Title\TitleScene.h">
       <Filter>Scene\Title</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\generator\PlayerBulletGenerator.h" />
-    <ClInclude Include="src\logic\slomo\SlomoLogic.h" />
-    <ClInclude Include="src\presentation\slomo\SlomoEffectController.h" />
-    <ClInclude Include="src\scene\game\layer\PauseLayer.h" />
-    <ClInclude Include="src\logic\event\PauseMenuToggleEvent.h" />
+    <ClInclude Include="src\logic\slomo\SlomoLogic.h">
+      <Filter>Logic\Slomo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\presentation\slomo\SlomoEffectController.h">
+      <Filter>Presentation\Slomo</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\generator\PlayerBulletGenerator.h">
+      <Filter>Entity\PlayerBullet</Filter>
+    </ClInclude>
+    <ClInclude Include="src\logic\event\PauseMenuToggleEvent.h">
+      <Filter>Logic\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\game\layer\PauseLayer.h">
+      <Filter>Scene\Game\layer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\EnemyRusher.h">
+      <Filter>Entity\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\EnemyRusherState.h">
+      <Filter>Entity\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\EntityMovement.h">
+      <Filter>Entity\Enemy\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\component\EnemyFollowMovement.h" />
+    <ClInclude Include="src\entity\EntityFocusOrientation.h" />
+    <ClInclude Include="src\entity\EntityMovementAABBLimitter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

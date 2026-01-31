@@ -34,8 +34,8 @@ public:
     // Getter
     float GetHp() const { return health_; }
     float GetMaxHp() const { return maxHealth_; }
-    float GetAttack() const { return attack_; }
     float GetSpeed() const { return speed_; }
+    float GetDamage() const override { return attack_; }
 
     // Setter
     EntityStats& SetHp(float hp) { health_ = hp; return *this; }

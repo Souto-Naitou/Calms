@@ -7,29 +7,24 @@ PlayerBullet::PlayerBullet(const Params& param)
     params_ = param;
 }
 
-void PlayerBullet::Initialize(const EntityCommonParams& params, bool enableDebugWindow)
+void PlayerBullet::Initialize(bool enableDebugWindow)
 {
-    EntityBase::Initialize(params, enableDebugWindow);
-    if (isEnableDebugWindow_)
-    {
-        pDebugEntry_->SetName(utl::debug::generate_name("PlayerBullet", this));
-    }
+    EntityBase::Initialize(enableDebugWindow);
+    EntityBase::SetName(utl::debug::generate_name("PlayerBullet", this));
 
     /// インスタンスの取得
     collisionManager_ = CollisionManager::GetInstance();
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
 
     /// タイマーの初期化
-    timer_ = std::make_unique<TimeMeasurer>();
-    timer_->Start();
+    pTimeMeasurer_ = std::make_unique<TimeMeasurer>();
+    pTimeMeasurer_->Start();
+
+    // コンポーネントの初期化
+    this->ComponentsInitialize();
 
     // オブジェクトの初期化
     this->ObjectsInitialize();
-
-    /// パラメータの初期化
-    friction_ = 1.0f;
-    attackPower_ = 5.0f;
-    stats_.Initialize(1.0f, 5.0f, 1.0f);
 
     // コライダーの初期化
     this->CollidersInitialize();
@@ -38,26 +33,28 @@ void PlayerBullet::Initialize(const EntityCommonParams& params, bool enableDebug
 
 void PlayerBullet::Finalize()
 {
-    params_.particleData->currentColor = {};
-    params_.particleData->colorRange = {};
+    params_.pParticleData->currentColor = {};
+    params_.pParticleData->colorRange = {};
 
-    collisionManager_->DeleteCollider(collider_.get());
+    collisionManager_->DeleteCollider(pCollider_.get());
 }
 
 
 void PlayerBullet::Update()
 {
+    const uint32_t  deltaTimeChannel    = static_cast<uint32_t>(DeltaTimeChannelReserved::Game);
+    const float     deltaTime           = deltaTimeManager_->GetDeltaTime(deltaTimeChannel);
+
     // 生存フラグの更新
-    if (timer_->GetNow<float>() > lifeTimeLimit_)
+    if (pTimeMeasurer_->GetNow<float>() > kLifeTimeLimit_)
     {
-        isAlive_ = false;
+        EntityBase::Dead();
     }
 
-    // 速度の決定
-    velocity_ = moveVelocity_;
-
     // 位置の更新
-    EntityBase::UpdatePhysics(deltaTimeManager_->GetDeltaTime(1));
+    pMovement_->AddImpulse(params_.direction_ * params_.moveSpeed_);
+    pMovement_->Update(transform_, deltaTime);
+    pMovement_->ResetVelocity();
 
     // オブジェクトの更新
     this->ObjectsUpdate();
@@ -66,7 +63,7 @@ void PlayerBullet::Update()
     sphere_.center_ = transform_.translate;
     sphere_.radius_ = 0.3f;
 
-    collider_->SetShapeData(&sphere_);
+    pCollider_->SetShapeData(&sphere_);
 }
 
 
@@ -78,7 +75,7 @@ void PlayerBullet::OnCollisionTrigger(const Collider* _other)
 {
     if (_other->GetColliderID() == "enemy")
     {
-        isAlive_ = false;
+        EntityBase::Dead();
     }
 }
 
@@ -94,7 +91,7 @@ void PlayerBullet::ObjectsInitialize()
 {
     /// [ オブジェクトの初期化 ]
     /// - パーティクルを使用して弾を描画する
-    auto& data = params_.particleData;
+    auto& data = params_.pParticleData;
     data->transform.translate = {0.0f, 0.5f, 0.0f};
     data->colorRange = Range(RGBA(0xffffffff).to_Vector4(), RGBA(0x91bbffff).to_Vector4());
     data->transform.scale = { 0.1f, 0.1f, 0.1f };
@@ -105,21 +102,30 @@ void PlayerBullet::ObjectsInitialize()
 void PlayerBullet::ObjectsUpdate()
 {
     // 位置の反映
-    auto& data = params_.particleData;
+    auto& data = params_.pParticleData;
     data->transform.translate = transform_.translate;
 }
 
 void PlayerBullet::CollidersInitialize()
 {
     /// コライダーの初期化
-    collider_ = std::make_unique<Collider>(false);
-    collider_->SetColliderID("playerBullet");
-    collider_->SetAttribute(collisionManager_->GetNewAttribute("playerBullet"));
-    collider_->SetOwner(this);
-    collider_->SetShape(Shape::Sphere);
-    collider_->SetMask(collisionManager_->GetNewMask("playerBullet", "player"));
-    collider_->SetOnCollisionTrigger(std::bind(&PlayerBullet::OnCollisionTrigger, this, std::placeholders::_1));
-    collider_->SetEnableLighter(false);
+    pCollider_ = std::make_unique<Collider>(false);
+    pCollider_->SetColliderID("playerBullet");
+    pCollider_->SetAttribute(collisionManager_->GetNewAttribute("playerBullet"));
+    pCollider_->SetOwner(this);
+    pCollider_->SetShape(Shape::Sphere);
+    pCollider_->SetMask(collisionManager_->GetNewMask("playerBullet", "player"));
+    pCollider_->SetOnCollisionTrigger(std::bind(&PlayerBullet::OnCollisionTrigger, this, std::placeholders::_1));
+    pCollider_->SetOwnerTransform(&transform_);
+    pCollider_->SetEntityStats(pStats_.get());
 
-    collisionManager_->RegisterCollider(collider_.get());
+    collisionManager_->RegisterCollider(pCollider_.get());
+}
+
+void PlayerBullet::ComponentsInitialize()
+{
+    transform_.translate = params_.initPosition_;
+    pMovement_ = std::make_unique<EntityMovement>();
+    pStats_ = std::make_unique<EntityStats>();
+    pStats_->Initialize(1.0f, 5.0f, 1.0f);
 }

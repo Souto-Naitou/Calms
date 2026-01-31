@@ -38,12 +38,13 @@ PlayerBulletGenerator::Generate(const Vector3& standard, const Vector3& directio
         auto& pParticle = config_.pParticle;
         pParticle->emplace_back({});
 
-        auto bullet = std::make_unique<PlayerBullet>(
-            PlayerBullet::Params{ &pParticle->GetParticleData().back() }
-        );
-        bullet->Initialize({}, false);
-        bullet->SetTranslation(standard);
-        bullet->SetMoveVelocity(newDirection * kBulletSpeed);
+        PlayerBullet::Params params{};
+        params.pParticleData = &pParticle->GetParticleData().back();
+        params.direction_ = newDirection;
+        params.moveSpeed_ = kBulletSpeed;
+        params.initPosition_ = standard;
+        auto bullet = std::make_unique<PlayerBullet>(params);
+        bullet->Initialize(false);
         bullet->SetIsDrawCollisionArea(false);
         bullets.push_back(std::move(bullet));
     }
