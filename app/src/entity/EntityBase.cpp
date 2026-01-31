@@ -19,7 +19,7 @@ void EntityBase::ImGui()
 {
     #ifdef _DEBUG
 
-    ImGui::Text("Alive : %b", &isAlive_);
+    ImGui::Text("Alive : %s", isAlive_ ? "True" : "False");
 
     #endif // _DEBUG
 }
