@@ -10,12 +10,12 @@ void PlayerExplosion::Initialize(bool enableDebugWindow /* = true */)
 
     collisionManager_ = CollisionManager::GetInstance();
 
+    pStats_ = std::make_unique<EntityStats>();
+    pStats_->Initialize(1.0f, 5.0f, 1.0f);
+
     this->InitializeRing();
 
     this->InitializeCollider();
-
-    pStats_ = std::make_unique<EntityStats>();
-    pStats_->Initialize(1.0f, 5.0f, 1.0f);
 
     /// タイマーの初期化と開始
     pTimeMeasurer_ = std::make_unique<TimeMeasurerByDt>();
