@@ -220,7 +220,7 @@ void Player::ComponentInitialize()
     // AABB制限
     if (params_.pMovableBounds)
     {
-        pAABBLimitter_ = std::make_unique<MovementAABBLimitter>();
+        pAABBLimitter_ = std::make_unique<MovementLimitterAABB>();
         pAABBLimitter_->SetBounds(params_.pMovableBounds);
     }
 }

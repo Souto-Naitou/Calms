@@ -1,9 +1,9 @@
-#include "EntityMovementAABBLimitter.h"
+#include "MovementLimitterAABB.h"
 #include <algorithm>
 
 
 
-void EntityMovementAABBLimitter::Update(EulerTransform& transform)
+void MovementLimitterAABB::Update(EulerTransform& transform)
 {
     if (pBounds_ == nullptr) return;
 

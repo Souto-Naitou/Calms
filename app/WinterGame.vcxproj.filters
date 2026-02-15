@@ -112,9 +112,6 @@
     <Filter Include="Scene\Screen\Factory">
       <UniqueIdentifier>{d326010e-e7f1-4f53-adcf-015f4cd08131}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entity\Enemy\Component">
-      <UniqueIdentifier>{fa351845-f8ce-4b6b-ae32-e3bab1b2dcc3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Component">
       <UniqueIdentifier>{255d17e6-1377-4cea-911f-346cd3d720d5}</UniqueIdentifier>
     </Filter>
@@ -238,9 +235,6 @@
     <ClCompile Include="src\component\DashMovementLinear.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="src\entity\enemy\component\EnemyFollowMovement.cpp">
-      <Filter>Entity\Enemy\Component</Filter>
-    </ClCompile>
     <ClCompile Include="src\entity\enemy\rusher\EnemyRusher.cpp">
       <Filter>Entity\Enemy\Rusher</Filter>
     </ClCompile>
@@ -259,7 +253,7 @@
     <ClCompile Include="src\component\FollowMovement.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="src\component\MovementAABBLimitter.cpp">
+    <ClCompile Include="src\component\MovementLimitterAABB.cpp">
       <Filter>Component</Filter>
     </ClCompile>
     <ClCompile Include="src\component\FocusOrientation.cpp">
@@ -405,9 +399,6 @@
     <ClInclude Include="src\component\DashMovementLinear.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\enemy\component\EnemyFollowMovement.h">
-      <Filter>Entity\Enemy\Component</Filter>
-    </ClInclude>
     <ClInclude Include="src\entity\enemy\EnemyRusher.h">
       <Filter>Entity\Enemy\Rusher</Filter>
     </ClInclude>
@@ -426,7 +417,7 @@
     <ClInclude Include="src\component\FollowMovement.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="src\component\MovementAABBLimitter.h">
+    <ClInclude Include="src\component\MovementLimitterAABB.h">
       <Filter>Component</Filter>
     </ClInclude>
     <ClInclude Include="src\component\IMovement.h">

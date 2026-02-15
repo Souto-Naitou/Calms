@@ -167,11 +167,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\component\FollowMovement.cpp" />
     <ClCompile Include="src\component\FocusOrientation.cpp" />
     <ClCompile Include="src\component\PhysicsMovement.cpp" />
-    <ClCompile Include="src\entity\enemy\component\EnemyFollowMovement.cpp" />
     <ClCompile Include="src\entity\enemy\EnemyFactory.cpp" />
     <ClCompile Include="src\entity\enemy\EnemyRusher.cpp" />
     <ClCompile Include="src\entity\enemy\rusher\EnemyRusher.cpp" />
-    <ClCompile Include="src\component\MovementAABBLimitter.cpp" />
+    <ClCompile Include="src\component\MovementLimitterAABB.cpp" />
     <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateAim.cpp" />
     <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateDash.cpp" />
     <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateFollow.cpp" />
@@ -225,7 +224,6 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\component\FollowMovement.h" />
     <ClInclude Include="src\component\FocusOrientation.h" />
     <ClInclude Include="src\component\PhysicsMovement.h" />
-    <ClInclude Include="src\entity\enemy\component\EnemyFollowMovement.h" />
     <ClInclude Include="src\entity\enemy\EnemyFactory.h" />
     <ClInclude Include="src\entity\enemy\EnemyInitParams.h" />
     <ClInclude Include="src\entity\enemy\EnemyRusher.h" />
@@ -233,7 +231,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\entity\enemy\rusher\EnemyRusher.h" />
     <ClInclude Include="src\entity\enemy\rusher\EnemyRusherState.h" />
     <ClInclude Include="src\entity\enemy\EnemyTypes.h" />
-    <ClInclude Include="src\component\MovementAABBLimitter.h" />
+    <ClInclude Include="src\component\MovementLimitterAABB.h" />
     <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateAim.h" />
     <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateDash.h" />
     <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateFollow.h" />

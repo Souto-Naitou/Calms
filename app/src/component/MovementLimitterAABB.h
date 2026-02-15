@@ -3,7 +3,7 @@
 #include <Math/Transform.h>
 #include <Features/Primitive/AABB.h>
 
-class EntityMovementAABBLimitter
+class MovementLimitterAABB
 {
 public:
     void SetBounds(const AABB* pBounds) { pBounds_ = pBounds; }
