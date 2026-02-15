@@ -113,7 +113,13 @@
       <UniqueIdentifier>{d326010e-e7f1-4f53-adcf-015f4cd08131}</UniqueIdentifier>
     </Filter>
     <Filter Include="Entity\Enemy\Component">
+      <UniqueIdentifier>{fa351845-f8ce-4b6b-ae32-e3bab1b2dcc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Component">
       <UniqueIdentifier>{255d17e6-1377-4cea-911f-346cd3d720d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Entity\Enemy\Rusher">
+      <UniqueIdentifier>{83909d92-b5bf-4f81-9f79-0cece499ec6b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -229,18 +235,42 @@
     <ClCompile Include="src\scene\game\layer\PauseLayer.cpp">
       <Filter>Scene\Game\layer</Filter>
     </ClCompile>
-    <ClCompile Include="src\entity\enemy\rusher\EnemyRusher.cpp" />
-    <ClCompile Include="src\component\PhysicsMovement.cpp">
+    <ClCompile Include="src\component\DashMovementLinear.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\enemy\component\EnemyFollowMovement.cpp">
       <Filter>Entity\Enemy\Component</Filter>
     </ClCompile>
-    <ClCompile Include="src\component\FollowMovement.cpp" />
-    <ClCompile Include="src\component\FocusOrientation.cpp" />
-    <ClCompile Include="src\component\MovementAABBLimitter.cpp" />
-    <ClCompile Include="src\component\DashMovementLinear.cpp" />
-    <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateFollow.cpp" />
-    <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateAim.cpp" />
-    <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateDash.cpp" />
-    <ClCompile Include="src\entity\enemy\EnemyFactory.cpp" />
+    <ClCompile Include="src\entity\enemy\rusher\EnemyRusher.cpp">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\enemy\EnemyRusher.cpp">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateAim.cpp">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateDash.cpp">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateFollow.cpp">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\component\FollowMovement.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="src\component\MovementAABBLimitter.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="src\component\FocusOrientation.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\enemy\EnemyFactory.cpp">
+      <Filter>Entity\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\component\PhysicsMovement.cpp">
+      <Filter>Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -372,19 +402,48 @@
     <ClInclude Include="src\entity\enemy\rusher\EnemyRusherState.h">
       <Filter>Entity\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="src\component\PhysicsMovement.h">
+    <ClInclude Include="src\component\DashMovementLinear.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\component\EnemyFollowMovement.h">
       <Filter>Entity\Enemy\Component</Filter>
     </ClInclude>
-    <ClInclude Include="src\component\FollowMovement.h" />
-    <ClInclude Include="src\component\FocusOrientation.h" />
-    <ClInclude Include="src\component\MovementAABBLimitter.h" />
-    <ClInclude Include="src\component\DashMovementLinear.h" />
-    <ClInclude Include="src\component\IMovement.h" />
-    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateFollow.h" />
-    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateAim.h" />
-    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateDash.h" />
-    <ClInclude Include="src\entity\enemy\EnemyFactory.h" />
-    <ClInclude Include="src\entity\enemy\EnemyInitParams.h" />
+    <ClInclude Include="src\entity\enemy\EnemyRusher.h">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\EnemyRusherState.h">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateAim.h">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateDash.h">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateFollow.h">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\component\FollowMovement.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\component\MovementAABBLimitter.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\component\IMovement.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\component\FocusOrientation.h">
+      <Filter>Component</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\EnemyInitParams.h">
+      <Filter>Entity\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\EnemyFactory.h">
+      <Filter>Entity\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\component\PhysicsMovement.h">
+      <Filter>Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">
