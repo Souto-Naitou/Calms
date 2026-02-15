@@ -151,8 +151,7 @@ void EnemySpawner::PopRandom()
 {
     Vector3 randPosition = {};
 
-    bool isValid = true;
-    do
+    while (true)
     {
         /// ランダム生成
         randPosition.x = randomGenerator_->Generate(popRangeBegin_.x, popRangeEnd_.x);
@@ -160,16 +159,15 @@ void EnemySpawner::PopRandom()
         randPosition.z = randomGenerator_->Generate(popRangeBegin_.z, popRangeEnd_.z);
 
         /// 除外位置との距離を計算
-        isValid = true;
         if (ignoreRange_ > 0.0f)
         {
             float distance = (randPosition - ignorePosition_).LengthWithoutRoot();
-            if (distance < ignoreRange_ * ignoreRange_)
-            {
-                isValid = false;
-            }
+            // 除外範囲内ならもう一度
+            if (distance < ignoreRange_ * ignoreRange_) continue;
+            // 範囲外ならループを抜ける
+            break;
         }
-    } while (isValid != true);
+    }
 
     // 生成位置をキューに追加
     popPoints_.push(randPosition);

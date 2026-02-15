@@ -21,7 +21,7 @@
 #include <Features/Lighting/PointLight/PointLight.h>
 #include <Common/structs.h>
 #include <Features/Primitive/AABB.h>
-#include <entity/EntityMovementAABBLimitter.h>
+#include <component/MovementLimitterAABB.h>
 
 
 /// <summary>
@@ -147,7 +147,7 @@ private:
     std::unique_ptr<PlayerMovement>             pMovement_          = nullptr;
     std::unique_ptr<PlayerExplosionTrigger>     pExplosionTrigger_  = nullptr;
     std::unique_ptr<EntityStats>                pStats_             = nullptr;
-    std::unique_ptr<EntityMovementAABBLimitter> pAABBLimitter_      = nullptr;
+    std::unique_ptr<MovementLimitterAABB> pAABBLimitter_      = nullptr;
     std::unique_ptr<IModel>                     pModelSelfBody_     = nullptr;
     std::unique_ptr<Object3d>                   pObject_            = nullptr;
     std::unique_ptr<Collider>                   pCollider_          = nullptr;

@@ -9,12 +9,12 @@ void PlayerMovement::Update(EulerTransform& transform, float deltaTime)
     this->UpdateByInput(deltaTime);
 
     // 位置の更新 (加速度と速度から算出)
-    EntityMovement::PositionUpdate(transform.translate, deltaTime);
+    PhysicsMovement::PositionUpdate(transform.translate, deltaTime);
 }
 
 bool PlayerMovement::IsMove(float speedThreshold /*= 0.0f*/) const
 {
-    const float speedSq = EntityMovement::GetVelocity().LengthWithoutRoot();
+    const float speedSq = PhysicsMovement::GetVelocity().LengthWithoutRoot();
     const float thresholdSq = speedThreshold * speedThreshold;
     return speedSq > thresholdSq;
 }

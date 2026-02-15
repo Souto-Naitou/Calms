@@ -51,13 +51,14 @@ void Player::Initialize(bool enableDebugWindow)
 void Player::Finalize()
 {
     pObject_->Finalize();
-    pEmitterConstant_->Finalize();
+    pCollisionManager_->UnregisterCollider(pCollider_.get());
+    if (pEmitterConstant_) pEmitterConstant_->Finalize();
 }
 
 void Player::Update()
 {
-    const auto  kDeltaTimeChannel   = static_cast<uint32_t>(DeltaTimeChannelReserved::Game);
-    const float kDeltaTime          = pDeltaTimeManager_->GetDeltaTime(kDeltaTimeChannel);
+    const auto  kDeltaTimeChannel = static_cast<uint32_t>(DeltaTimeChannelReserved::Game);
+    const float kDeltaTime = pDeltaTimeManager_->GetDeltaTime(kDeltaTimeChannel);
 
     isShot_ = false;
 
@@ -71,22 +72,26 @@ void Player::Update()
 
     /// 座標更新
     if (!(flags_ & static_cast<uint32_t>(Flags::DisableMovement)))
-    { 
+    {
         pMovement_->ApplyFriction(kFriction_);
         pMovement_->Update(transform_, kDeltaTime);
     }
 
     // AABBリミッターの更新 (ここで座標補正が入る)
-    pAABBLimitter_->Update(transform_);
+    if (pAABBLimitter_) pAABBLimitter_->Update(transform_);
 
     // パーティクルエミッターの更新 (動いている or 動きが無効化されている場合にパーティクルをエミット)
-    if ((pMovement_->IsMove(0.2f)) || flags_ & static_cast<uint32_t>(Flags::DisableMovement))
+    if (pEmitterConstant_)
     {
-        pEmitterConstant_->SetPosition(transform_.translate);
-        pEmitterConstant_->Emit();
+        if ((pMovement_->IsMove(0.2f)) || flags_ & static_cast<uint32_t>(Flags::DisableMovement))
+        {
+
+            pEmitterConstant_->SetPosition(transform_.translate);
+            pEmitterConstant_->Emit();
+        }
+        pEmitterConstant_->Update();
     }
 
-    pEmitterConstant_->Update();
     pExplosionTrigger_->Update();
 
     /// 3dモデルの更新
@@ -104,7 +109,7 @@ void Player::Draw1F()
 {
     // オブジェクトの描画
     pObject_->Draw1F();
-    pEmitterConstant_->Draw1F();
+    if (pEmitterConstant_) pEmitterConstant_->Draw1F();
 }
 
 void Player::ObjectsInitialize()
@@ -142,9 +147,10 @@ void Player::ColliderInitialize()
 
 void Player::ParticleEmittersInitialize()
 {
+    if (!params_.particle) return;
     ParticleEmitterInitParams emitterParams = {};
     emitterParams.particle = params_.particle;
-    emitterParams.jsonPath = "resources/json/particles/PlayerConstant.json";
+    emitterParams.jsonPath = Path::ParticleEmitter::kPlayerConstantTrail;
     pEmitterConstant_ = std::make_unique<ParticleEmitter>();
     pEmitterConstant_->Initialize(emitterParams);
     pEmitterConstant_->EnableManualMode();
@@ -212,8 +218,11 @@ void Player::ComponentInitialize()
     pExplosionTrigger_ = std::make_unique<PlayerExplosionTrigger>();
     pExplosionTrigger_->Initialize(pInput_.get(), pContext_.get());
     // AABB制限
-    pAABBLimitter_ = std::make_unique<EntityMovementAABBLimitter>();
-    pAABBLimitter_->SetBounds(params_.pMovableBounds);
+    if (params_.pMovableBounds)
+    {
+        pAABBLimitter_ = std::make_unique<MovementLimitterAABB>();
+        pAABBLimitter_->SetBounds(params_.pMovableBounds);
+    }
 }
 
 void Player::ImGui()
@@ -241,7 +250,7 @@ void Player::OnCollisionTrigger(const Collider* other)
         auto pOtherEntityStats = other->GetEntityStats();
         assert(pOtherEntityStats);
         pStats_->OnCollision(pOtherEntityStats);
-        params_.pDirLight->intensity -= kLightIntensityDecreaseAmount_;
+        if (params_.pDirLight) params_.pDirLight->intensity -= kLightIntensityDecreaseAmount_;
         EntityBase::ShakeCamera(kGameEyeShakePowerWhenDamage_);
         if (pStats_->GetHp() <= 0.0f)
         {
@@ -261,6 +270,7 @@ void Player::OnCollision(const Collider* other)
         assert(other->GetOwnerTransform() && "衝突相手のTransformが設定されていません。");
         /// 反発を速度に適用
         Vector3 otherPos = other->GetOwnerTransform()->translate;
+        otherPos.y = transform_.translate.y; // Y軸は無視する
         Vector3 dir = transform_.translate - otherPos;
 
         if (pMovement_)

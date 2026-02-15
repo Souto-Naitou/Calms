@@ -13,9 +13,9 @@
 #include <Features/Primitive/Sphere.h>
 #include <Vector3.h>
 #include "./EnemyTypes.h"
-#include "component/EnemyFollowMovement.h"
+#include <component/FollowMovement.h>
 #include <memory>
-#include <entity/EntityFocusOrientation.h>
+#include <component/FocusOrientation.h>
 #include <common/structs.h>
 #include <Features/Lighting/PointLight/PointLight.h>
 #include <entity/status/EntityStats.h>
@@ -130,8 +130,8 @@ private:
     std::unique_ptr<IModel>                 pModelSelfBody_     = nullptr;
     std::unique_ptr<TimeMeasurer>           pTimeMeasurer_      = {};
     std::unique_ptr<EntityStats>            pStats_             = nullptr;
-    std::unique_ptr<EnemyFollowMovement>    pMovement_          = nullptr;
-    std::unique_ptr<EntityFocusOrientation> pFocusOrientation_  = nullptr;
+    std::unique_ptr<FollowMovement>         pMovement_          = nullptr;
+    std::unique_ptr<FocusOrientation>       pFocusOrientation_  = nullptr;
     std::unique_ptr<Collider>               pCollider_          = nullptr;
 
     /// [ コライダー付随データ ]

@@ -27,7 +27,7 @@ void PlayerExplosion::Finalize()
     pObjectRing_->Finalize();
     pModelRing_->Finalize();
 
-    collisionManager_->DeleteCollider(pCollider_.get());
+    collisionManager_->UnregisterCollider(pCollider_.get());
 }
 
 void PlayerExplosion::Update()

@@ -1,6 +1,7 @@
 #include "GameOverAnimation.h"
 #include <mathExtension.h>
 #include <Math/Easing.h>
+#include <config/ResourcePath.h>
 
 
 void GameOverAnimation::Initialize(Params params)
@@ -8,7 +9,7 @@ void GameOverAnimation::Initialize(Params params)
     initParams_ = params;
     ParticleEmitterInitParams emitterParams = {};
     emitterParams.particle = initParams_.pParticle;
-    emitterParams.jsonPath = "resources/json/death.json";
+    emitterParams.jsonPath = Path::ParticleEmitter::kGameOverExplosion;
     pEmitter_ = std::make_unique<ParticleEmitter>();
     pEmitter_->Initialize(emitterParams);
     pEmitter_->SetEnableBillboard(true);

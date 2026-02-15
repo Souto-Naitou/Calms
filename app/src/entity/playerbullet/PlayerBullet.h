@@ -1,17 +1,15 @@
 #pragma once
 
 #include <Entity/EntityBase.h>
-#include <drawable/object3d/Object3d.h>
 #include <Vector3.h>
 #include <memory>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Collision/Collider/Collider.h>
 #include <Features/Collision/Manager/CollisionManager.h>
-#include <Features/Primitive/OBB.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <drawable/particle/Type/ParticleType.h>
 #include <entity/status/EntityStats.h>
-#include <entity/EntityMovement.h>
+#include <component/PhysicsMovement.h>
 
 
 /// <summary>
@@ -108,7 +106,7 @@ private:
     EulerTransform                  transform_  = {};
     std::unique_ptr<EntityStats>    pStats_     = nullptr;
     std::unique_ptr<Collider>       pCollider_  = nullptr;
-    std::unique_ptr<EntityMovement> pMovement_  = nullptr;
+    std::unique_ptr<PhysicsMovement> pMovement_  = nullptr;
     Sphere sphere_ = {};
 
     /// フラグ

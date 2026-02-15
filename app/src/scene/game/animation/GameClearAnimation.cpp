@@ -13,7 +13,7 @@ void GameClearAnimation::Initialize(Params params)
     initParams_ = params;
     ParticleEmitterInitParams emitterParams = {};
     emitterParams.particle = initParams_.pParticle;
-    emitterParams.jsonPath = "resources/json/particles/clear.json";
+    emitterParams.jsonPath = Path::ParticleEmitter::kGameClearExplosion;
     pEmitter_ = std::make_unique<ParticleEmitter>();
     pEmitter_->Initialize(emitterParams);
     pEmitter_->SetEnableBillboard(true);

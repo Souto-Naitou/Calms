@@ -163,11 +163,17 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\entity\enemy\component\EnemyFollowMovement.cpp" />
-    <ClCompile Include="src\entity\EntityFocusOrientation.cpp" />
-    <ClCompile Include="src\entity\EntityMovement.cpp" />
+    <ClCompile Include="src\component\DashMovementLinear.cpp" />
+    <ClCompile Include="src\component\FollowMovement.cpp" />
+    <ClCompile Include="src\component\FocusOrientation.cpp" />
+    <ClCompile Include="src\component\PhysicsMovement.cpp" />
+    <ClCompile Include="src\entity\enemy\EnemyFactory.cpp" />
     <ClCompile Include="src\entity\enemy\EnemyRusher.cpp" />
-    <ClCompile Include="src\entity\EntityMovementAABBLimitter.cpp" />
+    <ClCompile Include="src\entity\enemy\rusher\EnemyRusher.cpp" />
+    <ClCompile Include="src\component\MovementLimitterAABB.cpp" />
+    <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateAim.cpp" />
+    <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateDash.cpp" />
+    <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateFollow.cpp" />
     <ClCompile Include="src\entity\explosion\PlayerExplosion.cpp" />
     <ClCompile Include="src\entity\generator\PlayerBulletGenerator.cpp" />
     <ClCompile Include="src\entity\player\GameOverAnimation.cpp" />
@@ -212,14 +218,23 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\ui\PlayerUI3d.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\component\IMovement.h" />
     <ClInclude Include="src\core\ISceneLayer.h" />
-    <ClInclude Include="src\entity\enemy\component\EnemyFollowMovement.h" />
-    <ClInclude Include="src\entity\EntityFocusOrientation.h" />
-    <ClInclude Include="src\entity\EntityMovement.h" />
+    <ClInclude Include="src\component\DashMovementLinear.h" />
+    <ClInclude Include="src\component\FollowMovement.h" />
+    <ClInclude Include="src\component\FocusOrientation.h" />
+    <ClInclude Include="src\component\PhysicsMovement.h" />
+    <ClInclude Include="src\entity\enemy\EnemyFactory.h" />
+    <ClInclude Include="src\entity\enemy\EnemyInitParams.h" />
     <ClInclude Include="src\entity\enemy\EnemyRusher.h" />
     <ClInclude Include="src\entity\enemy\EnemyRusherState.h" />
+    <ClInclude Include="src\entity\enemy\rusher\EnemyRusher.h" />
+    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherState.h" />
     <ClInclude Include="src\entity\enemy\EnemyTypes.h" />
-    <ClInclude Include="src\entity\EntityMovementAABBLimitter.h" />
+    <ClInclude Include="src\component\MovementLimitterAABB.h" />
+    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateAim.h" />
+    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateDash.h" />
+    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateFollow.h" />
     <ClInclude Include="src\entity\explosion\PlayerExplosion.h" />
     <ClInclude Include="src\entity\generator\PlayerBulletGenerator.h" />
     <ClInclude Include="src\entity\player\GameOverAnimation.h" />
