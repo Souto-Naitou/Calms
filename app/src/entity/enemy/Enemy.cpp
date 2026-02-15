@@ -36,9 +36,6 @@ void Enemy::Initialize(bool enableDebugWindow)
 
     sphereLine_.Initialize();
 
-    // コライダーの登録
-    pCollisionManager_->RegisterCollider(pCollider_.get());
-
     // パーティクルエミッターの初期化
     this->InitializeParticleEmitters();
 
@@ -47,25 +44,27 @@ void Enemy::Initialize(bool enableDebugWindow)
     /// オーディオの初期化
     audioDeath_ = AudioManager::GetInstance()->GetNewAudio("Effect", Path::Audio::kSeEnemyDeath);
     audioDeath_->SetVolume(0.05f);
-
-    if (params_.pDirLight) pObjectSelfBody_->SetDirectionalLight(params_.pDirLight);
-    if (params_.pPointLight) pObjectSelfBody_->SetPointLight(params_.pPointLight);
 }
 
 void Enemy::Finalize()
 {
     /// コライダーの削除
-    pCollisionManager_->DeleteCollider(pCollider_.get());
+    pCollisionManager_->UnregisterCollider(pCollider_.get());
 
     pObjectSelfBody_->Finalize();
 
-    pParticleDeathShort_->SetPosition(transform_.translate);
-    pParticleDeathShort_->Emit();
-    pParticleDeathSplatter_->SetPosition(transform_.translate);
-    pParticleDeathSplatter_->Emit();
-
-    pParticleDeathShort_->Finalize();
-    pParticleDeathSplatter_->Finalize();
+    if (pParticleDeathShort_)
+    {
+        pParticleDeathShort_->SetPosition(transform_.translate);
+        pParticleDeathShort_->Emit();
+        pParticleDeathShort_->Finalize();
+    }
+    if (pParticleDeathSplatter_)
+    {
+        pParticleDeathSplatter_->SetPosition(transform_.translate);
+        pParticleDeathSplatter_->Emit();
+        pParticleDeathSplatter_->Finalize();
+    }
 
     if (params_.pDirLight) 
     {
@@ -94,8 +93,8 @@ void Enemy::Update()
     pFocusOrientation_->Update(transform_, deltaTime);
 
     /// パーティクルの更新
-    pParticleDeathShort_->Update();
-    pParticleDeathSplatter_->Update();
+    if (pParticleDeathShort_) pParticleDeathShort_->Update();
+    if (pParticleDeathSplatter_) pParticleDeathSplatter_->Update();
 }
 
 void Enemy::Draw1F()
@@ -106,9 +105,9 @@ void Enemy::Draw1F()
 
 void Enemy::InitializeComponents()
 {
-    pMovement_ = std::make_unique<EnemyFollowMovement>(params_.pTargetPosition);
+    pMovement_ = std::make_unique<FollowMovement>(params_.pTargetPosition);
     pMovement_->SetFollowSpeed(kFollowSpeed_);
-    pFocusOrientation_ = std::make_unique<EntityFocusOrientation>();
+    pFocusOrientation_ = std::make_unique<FocusOrientation>();
     pFocusOrientation_->SetTargetPosition(params_.pTargetPosition);
     pFocusOrientation_->SetRotateRatio(0.95f);
 }
@@ -147,6 +146,7 @@ void Enemy::InitializeCollider()
     pCollider_->SetOnCollision(std::bind(&Enemy::OnCollision, this, std::placeholders::_1));
     pCollider_->SetOwnerTransform(&transform_);
     pCollider_->SetEntityStats(pStats_.get());
+    pCollisionManager_->RegisterCollider(pCollider_.get());
 }
 
 void Enemy::InitializeParticleEmitters()
@@ -154,21 +154,27 @@ void Enemy::InitializeParticleEmitters()
     /// パラメータを作成
     ParticleEmitterInitParams params;
 
-    params.particle = params_.pParticleTriangle;
-    params.jsonPath = "resources/json/particles/Death.json";
-    pParticleDeathShort_ = std::make_unique<ParticleEmitter>();
-    pParticleDeathShort_->Initialize(params);
-    pParticleDeathShort_->SetEnableBillboard(true);
-    pParticleDeathShort_->SetPosition(transform_.translate);
-    pParticleDeathShort_->EnableManualMode();
-    
-    params.particle = params_.pParticleCircle;
-    params.jsonPath = "resources/json/particles/Death2.json";
-    pParticleDeathSplatter_ = std::make_unique<ParticleEmitter>();
-    pParticleDeathSplatter_->Initialize(params);
-    pParticleDeathSplatter_->SetEnableBillboard(true);
-    pParticleDeathSplatter_->SetPosition(transform_.translate);
-    pParticleDeathSplatter_->EnableManualMode();
+    if (params_.pParticleTriangle)
+    {
+        params.particle = params_.pParticleTriangle;
+        params.jsonPath = Path::ParticleEmitter::kEnemyNormalDeathExplosion;
+        pParticleDeathShort_ = std::make_unique<ParticleEmitter>();
+        pParticleDeathShort_->Initialize(params);
+        pParticleDeathShort_->SetEnableBillboard(true);
+        pParticleDeathShort_->SetPosition(transform_.translate);
+        pParticleDeathShort_->EnableManualMode();
+    }
+
+    if (params_.pParticleCircle)
+    {
+        params.particle = params_.pParticleCircle;
+        params.jsonPath = Path::ParticleEmitter::kEnemyNormalDeathSpark;
+        pParticleDeathSplatter_ = std::make_unique<ParticleEmitter>();
+        pParticleDeathSplatter_->Initialize(params);
+        pParticleDeathSplatter_->SetEnableBillboard(true);
+        pParticleDeathSplatter_->SetPosition(transform_.translate);
+        pParticleDeathSplatter_->EnableManualMode();
+    }
 }
 
 void Enemy::UpdateCollider()

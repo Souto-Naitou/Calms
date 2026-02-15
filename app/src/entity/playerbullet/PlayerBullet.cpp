@@ -36,7 +36,7 @@ void PlayerBullet::Finalize()
     params_.pParticleData->currentColor = {};
     params_.pParticleData->colorRange = {};
 
-    collisionManager_->DeleteCollider(pCollider_.get());
+    collisionManager_->UnregisterCollider(pCollider_.get());
 }
 
 
@@ -125,7 +125,7 @@ void PlayerBullet::CollidersInitialize()
 void PlayerBullet::ComponentsInitialize()
 {
     transform_.translate = params_.initPosition_;
-    pMovement_ = std::make_unique<EntityMovement>();
+    pMovement_ = std::make_unique<PhysicsMovement>();
     pStats_ = std::make_unique<EntityStats>();
-    pStats_->Initialize(1.0f, 5.0f, 1.0f);
+    pStats_->Initialize(1.0f, 1.0f, 1.0f);
 }

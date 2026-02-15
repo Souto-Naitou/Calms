@@ -9,13 +9,14 @@
 #include <Features/Model/ModelManager.h>
 #include <Features/GameEye/GameEye.h>
 #include <drawable/particle/Emitter/ParticleEmitter.h>
-#include <entity/enemy/Enemy.h>
 #include <DebugTools/DebugEntry/DebugEntry.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Common/structs.h>
-#include <Features/Primitive/RingModel.h>
 #include <ui/gauge/RingGauge.h>
 #include <drawable/font/NumericView.h>
+#include <entity/enemy/Rusher/EnemyRusher.h>
+#include <entity/player/Player.h>
+#include <entity/enemy/Enemy.h>
 
 class EditScene : public SceneBase
 {
@@ -40,7 +41,8 @@ public:
 private:
     void InitializeCanvas();
     void InitializeParticle();
-    void InitializeEnemy();
+    void InitializeEnemy(Player* pPlayer);
+    void InitializePlayer();
     void InitializeObject3d();
     void InitializeNumeric();
 
@@ -52,14 +54,17 @@ private:
     std::unique_ptr<DebugEntry<EditScene>>  pDebugEntry_        = nullptr;
     std::unique_ptr<TimeMeasurer>           pTime_              = nullptr;
     std::unique_ptr<Canvas>                 pCanvasGrid_        = nullptr;
+    std::unique_ptr<Canvas>                 pCanvasObject_      = nullptr;
     std::unique_ptr<Canvas>                 pCanvasParticle_    = nullptr;
     std::unique_ptr<Canvas>                 pCanvasUI_          = nullptr;
     std::unique_ptr<Object3d>               pGrid_              = nullptr;
     std::unique_ptr<RingGauge>              pRing_              = nullptr;
     std::unique_ptr<GameEye>                pGameEye_           = nullptr;
     std::unique_ptr<ParticleEmitter>        pParticleEmitter_   = nullptr;
-    std::unique_ptr<Enemy>                  pEnemy_             = nullptr;
+    std::unique_ptr<Enemy>                  pEnemyNormal_       = nullptr;
+    std::unique_ptr<EnemyRusher>            pEnemyRusher_       = nullptr;
     std::unique_ptr<NumericView>            pNumeric_           = nullptr;
+    std::unique_ptr<Player>                 pPlayer_            = nullptr;
     DirectionalLight                        directionalLight_   = {};
 
     bool                                    isKillEnemy_        = false;

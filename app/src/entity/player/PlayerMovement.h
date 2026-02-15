@@ -1,5 +1,5 @@
 #pragma once
-#include <entity/EntityMovement.h>
+#include <component/PhysicsMovement.h>
 #include <Vector3.h>
 #include <Math/Transform.h>
 #include "PlayerInput.h"
@@ -7,7 +7,7 @@
 /// <summary>
 /// プレイヤーの移動処理 実装クラス
 /// </summary>
-class PlayerMovement : public EntityMovement
+class PlayerMovement : public PhysicsMovement
 {
 public:
     PlayerMovement(PlayerInput* pInput) : pInput_(pInput) {}

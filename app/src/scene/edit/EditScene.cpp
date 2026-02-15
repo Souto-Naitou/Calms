@@ -29,6 +29,7 @@ void EditScene::Initialize()
     Object3dSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     SpriteSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     ParticleSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
+    LineSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
 
     /// [ パーティクルの初期化 ]
     this->InitializeParticle();
@@ -50,11 +51,12 @@ void EditScene::Initialize()
     /// [ 平行光源の初期化 ]
     directionalLight_.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
     directionalLight_.direction = Vector3(0.0f, -1.0f, -0.0f);
-    directionalLight_.intensity = 1.0f;
+    directionalLight_.intensity = 3.0f;
 
-    /// [ 敵の初期化 ]
+    /// [ エンティティの初期化 ]
     pTime_ = std::make_unique<TimeMeasurer>();
-    this->InitializeEnemy();
+    this->InitializePlayer();
+    this->InitializeEnemy(pPlayer_.get());
 
     /// [ デルタタイムの設定 ]
     DeltaTimeManager::GetInstance()->SetDeltaTime(static_cast<uint32_t>(DeltaTimeChannelReserved::Game), 1.0f / 60.0f);
@@ -63,9 +65,12 @@ void EditScene::Initialize()
 
 void EditScene::Finalize()
 {
-    if (pEnemy_) pEnemy_->Finalize();
+    if (pEnemyRusher_) pEnemyRusher_->Finalize();
+    if (pEnemyNormal_) pEnemyNormal_->Finalize();
 
+    pPlayer_->Finalize();
     pCanvasGrid_->Finalize();
+    pCanvasObject_->Finalize();
     pCanvasParticle_->Finalize();
     pCanvasUI_->Finalize();
 
@@ -73,17 +78,21 @@ void EditScene::Finalize()
     ParticleStorage::GetInstance()->ReleaseAllParticle();
 
     pLayer_->RemoveCanvas(pCanvasGrid_.get());
+    pLayer_->RemoveCanvas(pCanvasObject_.get());
     pLayer_->RemoveCanvas(pCanvasParticle_.get());
     pLayer_->RemoveCanvas(pCanvasUI_.get());
 }
 
 void EditScene::Update()
 {
+    directionalLight_.intensity = std::lerp(directionalLight_.intensity, 6.0f, 0.1f);
+
     pGameEye_->Update();
     pGrid_->Update();
     pRing_->Update();
     pParticleEmitter_->Update();
     pNumeric_->Update();
+    pPlayer_->Update();
 
     /// 敵が死んだら再生成
     this->EnemyUpdate();
@@ -93,8 +102,12 @@ void EditScene::Draw()
 {
     CanvasScope canvasScopeGrid(pCanvasGrid_.get());
     pGrid_->Draw1F();
+
+    CanvasScope canvasScopeObject(pCanvasObject_.get());
     pRing_->Draw1F();
-    if (pEnemy_) pEnemy_->Draw1F();
+    pPlayer_->Draw1F();
+    if (pEnemyRusher_) pEnemyRusher_->Draw1F();
+    if (pEnemyNormal_) pEnemyNormal_->Draw1F();
 
     CanvasScope canvasScopeParticle(pCanvasParticle_.get());
     pParticleCircle_->Draw1F();
@@ -132,6 +145,11 @@ void EditScene::InitializeCanvas()
     pCanvasGrid_->Initialize(canvasParams);
     pLayer_->AddCanvas(pCanvasGrid_.get());
 
+    canvasParams.name = "Object_Canvas";
+    pCanvasObject_ = std::make_unique<Canvas>();
+    pCanvasObject_->Initialize(canvasParams);
+    pLayer_->AddCanvas(pCanvasObject_.get());
+
     canvasParams.name = "Particle_Canvas";
     pCanvasParticle_ = std::make_unique<Canvas>();
     pCanvasParticle_->Initialize(canvasParams);
@@ -158,15 +176,39 @@ void EditScene::InitializeParticle()
     pParticleTriangle_->reserve(500);
 }
 
-void EditScene::InitializeEnemy()
+void EditScene::InitializeEnemy(Player* pPlayer)
 {
-    Enemy::Params params = {};
-    params.pParticleTriangle = pParticleTriangle_;
-    params.pParticleCircle = pParticleCircle_;
-    params.pModelSelfBody = pModelManager_->Load("Cube/Cube.obj");
+    {
+        EnemyRusher::Params params = {};
+        params.pTargetPosition = &pPlayer->GetTransform().translate;
+        params.pModelSelfBody = pModelManager_->Load(Path::Model::kEnemyRusher);
+        params.pDirLight = &directionalLight_;
+        pEnemyRusher_ = std::make_unique<EnemyRusher>(params);
+        pEnemyRusher_->Initialize();
+    }
 
-    pEnemy_ = std::make_unique<Enemy>(params);
-    pEnemy_->Initialize();
+    if constexpr (false) 
+    {
+        Enemy::Params params = {};
+        params.initPosition = Vector3(0.0f, 0.5f, 0.0f);
+        params.pTargetPosition = &pPlayer->GetTransform().translate;
+        params.pModelSelfBody = pModelManager_->Load(Path::Model::kEnemyNormal);
+        params.pDirLight = &directionalLight_;
+        pEnemyNormal_ = std::make_unique<Enemy>(params);
+        pEnemyNormal_->Initialize();
+    }
+}
+
+void EditScene::InitializePlayer()
+{
+    Player::Params params = {};
+    params.particle = nullptr;
+    params.pModelManager = pModelManager_;
+    params.pDirLight = &directionalLight_;
+    params.pPointLight = nullptr;
+    params.pMovableBounds = nullptr;
+    pPlayer_ = std::make_unique<Player>(params);
+    pPlayer_->Initialize();
 }
 
 void EditScene::InitializeObject3d()
@@ -214,32 +256,35 @@ void EditScene::InitializeNumeric()
 
 void EditScene::EnemyUpdate()
 {
-    if (pEnemy_)
+    if ((pEnemyRusher_ || pEnemyNormal_) && isKillEnemy_)
     {
-        if (isKillEnemy_)
+        if (pEnemyRusher_)
         {
-            pEnemy_->Finalize();
-            pEnemy_.reset();
-            isKillEnemy_ = false;
-            pTime_->Reset();
-            pTime_->Start();
-            return;
+            pEnemyRusher_->Finalize();
+            pEnemyRusher_.reset();
         }
+        if (pEnemyNormal_)
+        {
+            pEnemyNormal_->Finalize();
+            pEnemyNormal_.reset();
+        }
+
+        isKillEnemy_ = false;
+        pTime_->Reset();
+        pTime_->Start();
     }
     else if (pTime_->GetNow<float>() > kEnemyRespawnInterval_)
     {
-        this->InitializeEnemy();
+        this->InitializeEnemy(pPlayer_.get());
     }
 
-    if (pEnemy_)
-    {
-        pEnemy_->Update();
-    }
+    if (pEnemyRusher_) pEnemyRusher_->Update();
+    if (pEnemyNormal_) pEnemyNormal_->Update();
 }
 
 void EditScene::KillEnemy()
 {
-    if (pEnemy_)
+    if (pEnemyRusher_ || pEnemyNormal_)
     {
         isKillEnemy_ = true;
     }
