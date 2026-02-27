@@ -11,6 +11,7 @@ public:
     void StartDash(const Vector3& direction, float distance, float durationSec);
     void Update(EulerTransform& transform, float deltaTime) override;
     bool IsFinished() const;
+    float GetElapsedTime() const { return elapsedTime_; }
 
 private:
     Vector3 direction_      = { 1.0f, 0.0f, 0.0f };

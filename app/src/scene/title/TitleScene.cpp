@@ -11,6 +11,8 @@
 #include <Features/Audio/AudioManager.h>
 #include <Features/Layer/CanvasScope.h>
 #include <Math/ViewportUnits.hpp>
+#include <NiGui.h>
+#include <Math/Easing.h>
 
 void TitleScene::Initialize()
 {
@@ -53,11 +55,12 @@ void TitleScene::Initialize()
     /// フィルタの初期化と登録
     {
         auto tempBloom = pCanvasBack_->GetPostEffectExecutor().AddEffect(PostEffectClassName::GaussianBloom);
-        auto tempRandom = pCanvasBack_->GetPostEffectExecutor().AddEffect(PostEffectClassName::RandomFilter);
+        auto tempGaussian = pCanvasBack_->GetPostEffectExecutor().AddEffect(PostEffectClassName::SeparatedGaussianFilter);
+        auto tempMosaic = pCanvasBack_->GetPostEffectExecutor().AddEffect(PostEffectClassName::Mosaic);
         auto tempRadial = pCanvasSprite_->GetPostEffectExecutor().AddEffect(PostEffectClassName::RadialBlur);
-        pRandomFilter_ = static_cast<RandomFilter*>(tempRandom);
         pGaussianBloom_ = static_cast<GaussianBloom*>(tempBloom);
-        pRadialBlur_ = static_cast<RadialBlur*>(tempRadial);
+        pMosaic_ = static_cast<Mosaic*>(tempMosaic);
+        pSeparatedGaussianFilter_ = static_cast<SeparatedGaussianFilter*>(tempGaussian);
     }
 
     this->InitializePostEffects();
@@ -80,8 +83,6 @@ void TitleScene::Finalize()
 {
     pSoundBGM_->Stop();
     gameEye_.reset();
-    pCanvasBack_->GetPostEffectExecutor().RemoveEffect(pRandomFilter_);
-
     pLayer_->RemoveCanvas(pCanvasBack_.get());
     pLayer_->RemoveCanvas(pCanvasSprite_.get());
     pCanvasBack_->Finalize();
@@ -92,10 +93,23 @@ void TitleScene::Update()
 {
     Vector3 eyeRotate = gameEye_->GetTransform().rotate;
     eyeRotate.y += 0.001f;
+
+    float t = (std::sinf(eyeRotate.y * 10.0f) + 1.0f) / 2.0f; // 0から1の範囲で変化する値
+    Vector3 eyePos = gameEye_->GetTransform().translate;
+    eyePos.z = std::lerp(kEyePosZMin_, kEyePosZMax_, Math::Easing::EaseInOutSine(t));
     gameEye_->SetRotate(eyeRotate);
+    gameEye_->SetTranslate(eyePos);
     gameEye_->Update();
 
-    if (pInput_->TriggerKey(DIK_SPACE) && !isChangingScene_)
+    float threshold = std::lerp(kBloomThresholdMin_, 0.5f, Math::Easing::EaseInOutSine(t));
+    pGaussianBloom_->SetThreshold(threshold);
+
+    t = (std::sinf(eyeRotate.y * 20.0f) + 1.0f) / 2.0f; // 0から1の範囲で変化する値
+    float kernelSize = std::lerp(3.0f, 31.0f, Math::Easing::EaseInOutQuad(t));
+    pSeparatedGaussianFilter_->GetOption().kernelSize = static_cast<int>(kernelSize);
+    pSeparatedGaussianFilter_->CreateKernel();
+
+    if (pInput_->ReleaseKey(DIK_SPACE) && !isChangingScene_)
     {
         pSoundStartButton_->Play();
         pTransShutter_ = std::make_unique<TransShutter>();
@@ -110,8 +124,6 @@ void TitleScene::Update()
 
     this->UpdateTitleAnimation();
     this->UpdateStartPromptAnimation();
-
-    pRandomFilter_->SetSeed(eyeRotate.y);
 
     pSkybox_->Update();
     pSpriteTitle_->Update();
@@ -136,6 +148,7 @@ void TitleScene::InitializeGameEye()
     gameEye_->SetName("main");
     gameEye_->SetTranslate(Vector3(0, 15.0f, -30.0f));
     gameEye_->SetRotate(Vector3(-1.2f, 0, 0));
+    gameEye_->SetFov(1.2f);
 
     /// ゲームアイをセット
     Object3dSystem::GetInstance()->SetGlobalEye(gameEye_.get());
@@ -186,15 +199,18 @@ void TitleScene::InitializeSkybox()
 
 void TitleScene::InitializePostEffects()
 {
-    pRandomFilter_->Enable(true);
     pGaussianBloom_->Enable(true);
-    pRadialBlur_->Enable(true);
+    pSeparatedGaussianFilter_->Enable(true);
+    pMosaic_->Enable(true);
 
-    pRandomFilter_->SetOpacity(0.15f);
     pGaussianBloom_->SetKernelSize(31);
     pGaussianBloom_->SetSigma(27.9f);
     pGaussianBloom_->SetThreshold(0.313f);
     pGaussianBloom_->SetBloomIntensity(2.14f);
+
+    pSeparatedGaussianFilter_->SetSigma(27.0f);
+
+    pMosaic_->GetOption().power = 200.0f;
 }
 
 void TitleScene::UpdateTitleAnimation()
@@ -213,4 +229,13 @@ void TitleScene::UpdateStartPromptAnimation()
     opacityStartPrompt_ = (std::sinf(t) + 1.5f) / 3.0f;
     t += 0.04f;
     pSpritePressStart_->SetColor(Vector4(1.0f, 1.0f, 1.0f, opacityStartPrompt_));
+
+    if (pInput_->PushKey(DIK_SPACE))
+    {
+        pSpritePressStart_->SetSizeWithFactor(kPressSpaceScaleActive_);
+    }
+    else
+    {
+        pSpritePressStart_->SetSizeWithFactor(1.05f);
+    }
 }

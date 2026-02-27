@@ -18,6 +18,8 @@
 #include <Effects/PostEffects/RadialBlur/RadialBlur.h>
 #include <Effects/SceneTransition/TransShutter.h>
 #include "nima_engine/src/Features/Audio/Audio.h"
+#include <Math/ViewportUnits.hpp>
+#include <Effects/PostEffects/Mosaic/Mosaic.h>
 
 /// <summary>
 /// タイトルシーン
@@ -63,24 +65,28 @@ private:
     /// 「Press Start」等の開始プロンプトのアニメーション更新を行います。
     /// </summary>
     void UpdateStartPromptAnimation();
-
-    bool                                isChangingScene_    = false;
-    std::unique_ptr<TransShutter>       pTransShutter_      = nullptr;      // !< シャッター遷移エフェクト
-    std::unique_ptr<Canvas>             pCanvasBack_        = nullptr;      // !< タイトルキャンバス
-    std::unique_ptr<Canvas>             pCanvasSprite_      = nullptr;      // !< タイトルキャンバス
-    std::unique_ptr<GameEye>            gameEye_            = {};           // !< ゲームアイ
-    std::unique_ptr<Sprite>             pSpriteTitle_       = nullptr;      // !< タイトル
-    std::unique_ptr<Sprite>             pSpriteFrameScreen_ = nullptr;      // !< タイトル
-    std::unique_ptr<Sprite>             pSpritePressStart_  = nullptr;      // !< メニュー
-    std::unique_ptr<Skybox>             pSkybox_            = nullptr;      // !< スカイボックス
-    std::unique_ptr<OpeningAnimation>   pOpeningAnimation_  = nullptr;      // !< オープニングアニメーション
-    float                               opacityStartPrompt_ = 0.0f;         // !< スタートプロンプトの不透明度
-    const float                         kPosYTitle_         = Window::clientHeight / 2.0f - 50.0f ; // !< タイトルのY座標
-    RandomFilter*                       pRandomFilter_      = nullptr;      // !< ランダムフィルタ
-    GaussianBloom*                      pGaussianBloom_     = nullptr;      // !< ガウスぼかし
-    RadialBlur*                         pRadialBlur_        = nullptr;      // !< 放射状ブラー
-    Audio*                              pSoundStartButton_  = nullptr;      // !< スタートボタン音声
-    Audio*                              pSoundBGM_          = nullptr;      // !< BGM音声
+    
+    static constexpr float              kEyePosZMin_                = -120.0f;      // !< カメラのZ座標の最小値
+    static constexpr float              kEyePosZMax_                = 120.0f;       // !< カメラのZ座標の最大値
+    static constexpr float              kBloomThresholdMin_         = 0.313f;       // !< ブルームの閾値の最小値
+    static constexpr float              kPressSpaceScaleActive_     = 1.2f;         // !< スタートプロンプトのアクティブ時のスケール
+    const float                         kPosYTitle_                 = Math::Viewport::Unit::vh(50.0f) - 50.0f; // !< タイトルのY座標
+    bool                                isChangingScene_            = false;
+    std::unique_ptr<TransShutter>       pTransShutter_              = nullptr;      // !< シャッター遷移エフェクト
+    std::unique_ptr<Canvas>             pCanvasBack_                = nullptr;      // !< タイトルキャンバス
+    std::unique_ptr<Canvas>             pCanvasSprite_              = nullptr;      // !< タイトルキャンバス
+    std::unique_ptr<GameEye>            gameEye_                    = {};           // !< ゲームアイ
+    std::unique_ptr<Sprite>             pSpriteTitle_               = nullptr;      // !< タイトル
+    std::unique_ptr<Sprite>             pSpriteFrameScreen_         = nullptr;      // !< タイトル
+    std::unique_ptr<Sprite>             pSpritePressStart_          = nullptr;      // !< メニュー
+    std::unique_ptr<Skybox>             pSkybox_                    = nullptr;      // !< スカイボックス
+    std::unique_ptr<OpeningAnimation>   pOpeningAnimation_          = nullptr;      // !< オープニングアニメーション
+    float                               opacityStartPrompt_         = 0.0f;         // !< スタートプロンプトの不透明度
+    GaussianBloom*                      pGaussianBloom_             = nullptr;      // !< ガウスぼかし
+    SeparatedGaussianFilter*            pSeparatedGaussianFilter_   = nullptr;    // !< 分離ガウスフィルタ
+    Mosaic*                             pMosaic_                    = nullptr;      // !< モザイク
+    Audio*                              pSoundStartButton_          = nullptr;      // !< スタートボタン音声
+    Audio*                              pSoundBGM_                  = nullptr;      // !< BGM音声
 
     /// 他クラスのインスタンス
     PostEffectExecutor*         pPostEffectExecutor_    = nullptr;      // !< ポストエフェクト実行クラス

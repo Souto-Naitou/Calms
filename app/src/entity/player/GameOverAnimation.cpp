@@ -7,7 +7,7 @@
 void GameOverAnimation::Initialize(Params params)
 {
     initParams_ = params;
-    ParticleEmitterInitParams emitterParams = {};
+    ParticleEmitter::Params emitterParams = {};
     emitterParams.particle = initParams_.pParticle;
     emitterParams.jsonPath = Path::ParticleEmitter::kGameOverExplosion;
     pEmitter_ = std::make_unique<ParticleEmitter>();

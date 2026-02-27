@@ -16,6 +16,7 @@
 #include <drawable/object3d/Object3d.h>
 #include <drawable/particle/Particle.h>
 #include <drawable/particle/Emitter/ParticleEmitter.h>
+#include <drawable/particle/emitter/ParticleEmitterGroup.h>
 #include <drawable/sprite/Sprite.h>
 #include <Features/Model/ModelManager.h>
 #include <Features/RandomGenerator/RandomGenerator.h>
@@ -28,20 +29,24 @@
 #include <Effects/PostEffects/Grayscale/Grayscale.h>
 
 // Game
-#include <entity/enemy/Enemy.h>
 #include <entity/player/GameOverAnimation.h>
 #include <entity/player/Player.h>
+#include <entity/generator/PlayerBulletGenerator.h>
 #include <entity/playerbullet/PlayerBullet.h>
 #include <entity/screentoworld/ScreenToWorld.h>
 #include <entity/explosion/PlayerExplosion.h>
+#include <entity/enemy/EnemyFactory.h>
+#include <entity/enemy/EnemyRepository.h>
 #include <logic/spawner/EnemySpawner.h>
 #include <logic/timer/InGameTimer.h>
 #include <logic/event/PlayerExplosionEvent.h>
 #include <logic/score/ScoreCalculator.h>
+#include <logic/slomo/SlomoLogic.h>
 #include <ui/countdown/CountDown.h>
 #include <ui/guide/InputGuide.h>
 #include <ui/PlayerUI3d.h>
 #include <scene/game/animation/GameClearAnimation.h>
+#include <presentation/slomo/SlomoEffectController.h>
 
 // STL
 #include <cstdint>
@@ -50,9 +55,6 @@
 #include <vector>
 #include <memory>
 #include <optional>
-#include <entity/generator/PlayerBulletGenerator.h>
-#include <logic/slomo/SlomoLogic.h>
-#include <presentation/slomo/SlomoEffectController.h>
 
 /// <summary>
 /// ゲーム層 (他にポーズメニュー層やリザルト層などを実装予定)
@@ -75,10 +77,9 @@ private:
     void SpritesInitialize();
     void AddPlayerBullet();
     void RemovePlayerBullet();
-    void RemoveDeadEnemy();
-    void KillAllEnemies();
     void AddPlayerExplosion(const PlayerExplosionEvent&);
     void UpdatePlayerExplosion();
+    void RegisterParticleEmitters();
 
     /// <summary>
     /// </summary>
@@ -96,24 +97,28 @@ private:
     {
         PlayerConstant,
         PlayerDeath,
-        EnemyDeath,
-        PlayerBullet,
+        Triangle,
+        Spark,
         Background,
 
         Size
     };
 
     static constexpr inline size_t kMaxParticleIDs_ = static_cast<size_t>(ParticleID::Size);
+    static constexpr inline size_t kMaxPlayerBullets = 128u;
     static constexpr inline float  kGameEyeHeightDefault_ = 65.0f;
     static constexpr inline float  kGameEyeHeightDuringSlow_ = 30.0f;
     static constexpr inline float  kTargetDirectionalLightFlashIntensity_ = 12.0f;
 
 #ifdef _DEBUG
-    static constexpr inline uint32_t kGameLimitTime = 3600u;
+    static constexpr inline uint32_t kGameLimitTime = 60u;
 #else
     static constexpr inline uint32_t kGameLimitTime = 60u;
 #endif // _DEBUG
+
     std::unique_ptr<DebugEntry<GameLayer>>          pDebugEntry_            = nullptr;  // !< デバッグエントリ
+
+    /// Canvases
     std::unique_ptr<Canvas>                         canvasBackground_       = {};       // !< 背景キャンバス
     std::unique_ptr<Canvas>                         canvasUI_               = {};       // !< UIキャンバス
     std::unique_ptr<Canvas>                         canvasGrid_             = {};       // !< Gridキャンバス
@@ -121,16 +126,20 @@ private:
     std::unique_ptr<Canvas>                         canvasParticle_         = {};       // !< パーティクルキャンバス
     std::unique_ptr<Canvas>                         canvasOverall_          = {};       // !< 全体キャンバス
     std::unique_ptr<Canvas>                         canvasUIEffected_       = {};       // !< ラインキャンバス
+    
+    /// Enemy
+    std::unique_ptr<EnemyRepository>                pEnemyRepository_       = {};       // !< 敵リポジトリ
+    std::unique_ptr<EnemySpawner>                   pEnemyPopSystem_        = {};       // !< 敵生成システム
+    std::unique_ptr<EnemyFactory>                   pEnemyFactory_          = {};       // !< 敵生成ファクトリ
 
-    std::unique_ptr<Object3d>                       grid_                   = {};       // !< グリッド
+    std::unique_ptr<Object3d>                       pGrid_                  = {};       // !< グリッド
     std::unique_ptr<GameEye>                        pGameEye_               = {};       // !< ゲームアイ
     std::unique_ptr<Player>                         pPlayer_                = {};       // !< プレイヤー
-    std::vector<std::unique_ptr<Enemy>>             enemies_                = {};       // !< 敵s
-    std::list<std::unique_ptr<PlayerBullet>>        playerBullets_          = {};       // !< プレイヤー弾s
+    std::vector<std::unique_ptr<PlayerBullet>>      playerBullets_          = {};       // !< プレイヤー弾s
     std::unique_ptr<ScreenToWorld>                  screenToWorld_          = {};       // !< 座標変換
-    std::array<Particle*, kMaxParticleIDs_>         particles_              = {};       // !< パーティクル
     std::vector<std::unique_ptr<PlayerExplosion>>   playerExplosions_       = {};       // !< プレイヤー爆発エフェクト
     std::unique_ptr<ScoreCalculator>                scoreCalculator_        = {};       // !< スコア計算機
+
     /// UI
     std::unique_ptr<InGameTimer>                    ingameTimer_            = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                     inputGuide_             = {};       // !< 入力ガイド
@@ -143,7 +152,6 @@ private:
     std::unique_ptr<SlomoLogic>                     pSlomoLogic_            = {};       // !< スロー移動ロジック
     std::unique_ptr<SlomoEffectController>          pSlomoEffect_           = {};       // !< スロー移動ロジック
 
-    EnemySpawner                                    enemyPopSystem_         = {};       // !< 敵生成システム
     PlayerBulletGenerator                           playerBulletGenerator_  = {};       // !< プレイヤー弾生成システム
     DirectionalLight                                directionalLight_       = {};       // !< ディレクショナルライト
     PointLight                                      pointLight_             = {};       // !< ポイントライト
@@ -156,11 +164,13 @@ private:
     bool                                            isChangingScene_        = false;    // !< シーン遷移中かどうか
     std::unique_ptr<Line>                           lines_                  = nullptr;  // !< エリア用ライン
     float                                           areaWidth_              = 25.0f;    // !< エリアの幅
-    const uint32_t                                  kMaxEnemyCount_         = 120;      // !< 最大敵数
 
     AABB                                            playableArea_           = {};       // !< プレイヤーの移動可能範囲
 
     std::optional<EventSubscription>                playerExplosionSub_     = std::nullopt;
+    std::optional<EventSubscription>                particleEmitSub_        = std::nullopt;
+    std::array<Particle*, kMaxParticleIDs_>         particles_              = {};       // !< パーティクル
+    std::unique_ptr<ParticleEmitterGroup>           pEmitterGroup_          = nullptr;  // !< エミッターグループ
 
     // Pointers
     DirectX12*          pDx12_              = nullptr;

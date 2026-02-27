@@ -35,7 +35,7 @@ void EditScene::Initialize()
     this->InitializeParticle();
 
     /// [ パーティクルエミッターの初期化 ]
-    ParticleEmitterInitParams emitterParams = {};
+    ParticleEmitter::Params emitterParams = {};
     emitterParams.particle = pParticleCircle_;
     emitterParams.jsonPath = "";
     pParticleEmitter_ = std::make_unique<ParticleEmitter>();
@@ -178,25 +178,6 @@ void EditScene::InitializeParticle()
 
 void EditScene::InitializeEnemy(Player* pPlayer)
 {
-    {
-        EnemyRusher::Params params = {};
-        params.pTargetPosition = &pPlayer->GetTransform().translate;
-        params.pModelSelfBody = pModelManager_->Load(Path::Model::kEnemyRusher);
-        params.pDirLight = &directionalLight_;
-        pEnemyRusher_ = std::make_unique<EnemyRusher>(params);
-        pEnemyRusher_->Initialize();
-    }
-
-    if constexpr (false) 
-    {
-        Enemy::Params params = {};
-        params.initPosition = Vector3(0.0f, 0.5f, 0.0f);
-        params.pTargetPosition = &pPlayer->GetTransform().translate;
-        params.pModelSelfBody = pModelManager_->Load(Path::Model::kEnemyNormal);
-        params.pDirLight = &directionalLight_;
-        pEnemyNormal_ = std::make_unique<Enemy>(params);
-        pEnemyNormal_->Initialize();
-    }
 }
 
 void EditScene::InitializePlayer()

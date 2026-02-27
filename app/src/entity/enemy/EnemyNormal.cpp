@@ -1,18 +1,19 @@
-#include "Enemy.h"
+#include "EnemyNormal.h"
 
 #include <imgui.h>
 #include <Utility/Debug/dbgutl.h>
 #include <config/ResourcePath.h>
 #include <Features/Event/EventListener.h>
 #include <logic/event/KillEnemyEvent.h>
+#include <logic/event/ParticleEmitEvent.h>
 
-Enemy::Enemy(const Params& params)
+EnemyNormal::EnemyNormal(const EnemyNormalInitParams& param)
 {
-    pModelSelfBody_ = params.pModelSelfBody->Cloned();
-    params_ = params;
+    pModelSelfBody_ = param.pModelSelfBody->Cloned();
+    params_ = param;
 }
 
-void Enemy::Initialize(bool enableDebugWindow)
+void EnemyNormal::Initialize(bool enableDebugWindow)
 {
     /// 基底クラスの初期化
     EntityBase::Initialize(enableDebugWindow);
@@ -24,7 +25,7 @@ void Enemy::Initialize(bool enableDebugWindow)
     EntityBase::SetGameEye(Object3dSystem::GetInstance()->GetGlobalEye());
 
     /// パラメータの初期化
-    transform_.translate = params_.initPosition;
+    transform_.translate = params_.position;
     pStats_ = std::make_unique<EntityStats>();
     pStats_->Initialize(1.0f, 10.0f, 10.0f);
 
@@ -36,9 +37,6 @@ void Enemy::Initialize(bool enableDebugWindow)
 
     sphereLine_.Initialize();
 
-    // パーティクルエミッターの初期化
-    this->InitializeParticleEmitters();
-
     this->InitializeComponents();
 
     /// オーディオの初期化
@@ -46,25 +44,22 @@ void Enemy::Initialize(bool enableDebugWindow)
     audioDeath_->SetVolume(0.05f);
 }
 
-void Enemy::Finalize()
+void EnemyNormal::Finalize()
 {
     /// コライダーの削除
     pCollisionManager_->UnregisterCollider(pCollider_.get());
 
     pObjectSelfBody_->Finalize();
 
-    if (pParticleDeathShort_)
-    {
-        pParticleDeathShort_->SetPosition(transform_.translate);
-        pParticleDeathShort_->Emit();
-        pParticleDeathShort_->Finalize();
-    }
-    if (pParticleDeathSplatter_)
-    {
-        pParticleDeathSplatter_->SetPosition(transform_.translate);
-        pParticleDeathSplatter_->Emit();
-        pParticleDeathSplatter_->Finalize();
-    }
+    EventListener* pEventListener = EventListener::GetInstance();
+
+    ParticleEmitEvent emitEvent;
+    emitEvent.position = transform_.translate;
+
+    emitEvent.type = ParticleType::EnemyNormalDeathSpark;
+    pEventListener->Publish(emitEvent);
+    emitEvent.type = ParticleType::EnemyNormalDeathExplosion;
+    pEventListener->Publish(emitEvent);
 
     if (params_.pDirLight) 
     {
@@ -76,7 +71,7 @@ void Enemy::Finalize()
     }
 }
 
-void Enemy::Update()
+void EnemyNormal::Update()
 {
     const auto  dtChannel = static_cast<uint32_t>(DeltaTimeChannelReserved::Game);
     const float deltaTime = pDeltaTimeManager_->GetDeltaTime(dtChannel);
@@ -91,19 +86,15 @@ void Enemy::Update()
     pMovement_->ApplyFriction(kFriction_);
     pMovement_->Update(transform_, deltaTime);
     pFocusOrientation_->Update(transform_, deltaTime);
-
-    /// パーティクルの更新
-    if (pParticleDeathShort_) pParticleDeathShort_->Update();
-    if (pParticleDeathSplatter_) pParticleDeathSplatter_->Update();
 }
 
-void Enemy::Draw1F()
+void EnemyNormal::Draw1F()
 {
     if (pObjectSelfBody_) pObjectSelfBody_->Draw1F();
     if (isDrawCollisionArea_) sphereLine_.Draw1F();
 }
 
-void Enemy::InitializeComponents()
+void EnemyNormal::InitializeComponents()
 {
     pMovement_ = std::make_unique<FollowMovement>(params_.pTargetPosition);
     pMovement_->SetFollowSpeed(kFollowSpeed_);
@@ -112,7 +103,7 @@ void Enemy::InitializeComponents()
     pFocusOrientation_->SetRotateRatio(0.95f);
 }
 
-void Enemy::InitializeObjects()
+void EnemyNormal::InitializeObjects()
 {
     if (pModelSelfBody_ == nullptr)
     {
@@ -132,7 +123,7 @@ void Enemy::InitializeObjects()
     option.lightingData->enableLighting = false;
 }
 
-void Enemy::InitializeCollider()
+void EnemyNormal::InitializeCollider()
 {
     /// コライダーの初期化
     pCollider_ = std::make_unique<Collider>();
@@ -142,42 +133,14 @@ void Enemy::InitializeCollider()
     pCollider_->SetShape(Shape::Sphere);
     pCollider_->SetShapeData(&sphere_);
     pCollider_->SetMask(pCollisionManager_->GetNewMask("enemyDummy"));
-    pCollider_->SetOnCollisionTrigger(std::bind(&Enemy::OnCollisionTrigger, this, std::placeholders::_1));
-    pCollider_->SetOnCollision(std::bind(&Enemy::OnCollision, this, std::placeholders::_1));
+    pCollider_->SetOnCollisionTrigger(std::bind(&EnemyNormal::OnCollisionTrigger, this, std::placeholders::_1));
+    pCollider_->SetOnCollision(std::bind(&EnemyNormal::OnCollision, this, std::placeholders::_1));
     pCollider_->SetOwnerTransform(&transform_);
     pCollider_->SetEntityStats(pStats_.get());
     pCollisionManager_->RegisterCollider(pCollider_.get());
 }
 
-void Enemy::InitializeParticleEmitters()
-{
-    /// パラメータを作成
-    ParticleEmitterInitParams params;
-
-    if (params_.pParticleTriangle)
-    {
-        params.particle = params_.pParticleTriangle;
-        params.jsonPath = Path::ParticleEmitter::kEnemyNormalDeathExplosion;
-        pParticleDeathShort_ = std::make_unique<ParticleEmitter>();
-        pParticleDeathShort_->Initialize(params);
-        pParticleDeathShort_->SetEnableBillboard(true);
-        pParticleDeathShort_->SetPosition(transform_.translate);
-        pParticleDeathShort_->EnableManualMode();
-    }
-
-    if (params_.pParticleCircle)
-    {
-        params.particle = params_.pParticleCircle;
-        params.jsonPath = Path::ParticleEmitter::kEnemyNormalDeathSpark;
-        pParticleDeathSplatter_ = std::make_unique<ParticleEmitter>();
-        pParticleDeathSplatter_->Initialize(params);
-        pParticleDeathSplatter_->SetEnableBillboard(true);
-        pParticleDeathSplatter_->SetPosition(transform_.translate);
-        pParticleDeathSplatter_->EnableManualMode();
-    }
-}
-
-void Enemy::UpdateCollider()
+void EnemyNormal::UpdateCollider()
 {
     /// コライダーの更新
     sphere_.center_ = transform_.translate;
@@ -188,14 +151,14 @@ void Enemy::UpdateCollider()
     pCollider_->SetShapeData(&sphere_);
 }
 
-void Enemy::UpdateObjects()
+void EnemyNormal::UpdateObjects()
 {
     pObjectSelfBody_->SetTranslate(transform_.translate);
     pObjectSelfBody_->SetRotate(transform_.rotate);
     pObjectSelfBody_->Update();
 }
 
-void Enemy::OnCollision(const Collider* other)
+void EnemyNormal::OnCollision(const Collider* other)
 {
     if (other->GetColliderID() == "enemy")
     {
@@ -206,7 +169,7 @@ void Enemy::OnCollision(const Collider* other)
     }
 }
 
-void Enemy::OnCollisionTrigger(const Collider* other)
+void EnemyNormal::OnCollisionTrigger(const Collider* other)
 {
     bool isCollide = other->GetColliderID() == "playerBullet";
     isCollide |= other->GetColliderID() == "PlayerExplosion";
@@ -230,11 +193,11 @@ void Enemy::OnCollisionTrigger(const Collider* other)
             /// あたっている相手に応じてスコアイベントを発行
             if (isPlayerBullet)
             {
-                EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Normal, 0.2f });
+                EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyType::Normal, 0.2f });
             }
             else if (isPlayerExplosion)
             {
-                EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Normal, 1.0f });
+                EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyType::Normal, 1.0f });
             }
         }
 
@@ -252,7 +215,7 @@ void Enemy::OnCollisionTrigger(const Collider* other)
     }
 }
 
-void Enemy::ImGui()
+void EnemyNormal::ImGui()
 {
 #ifdef _DEBUG
     EntityBase::ImGui();

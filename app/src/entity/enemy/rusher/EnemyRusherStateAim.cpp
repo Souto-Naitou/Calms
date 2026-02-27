@@ -11,7 +11,7 @@ void EnemyRusherStateAim::Update(EnemyRusher& enemy, float deltaTime)
 {
     if (elapsedTimeSec_ >= kAimDurationSec_ - kDashColorDurationSec_)
     {
-        enemy.ChangeColor(RGBA(0x40c4faff).to_Vector4());
+        enemy.ChangeColor(EnemyRusher::kColorDashing_.to_Vector4());
     }
 
     if (elapsedTimeSec_ < kAimDurationSec_)

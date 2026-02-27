@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36705.20 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11415.280 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "externals", "externals", "{3BC02507-77C0-40A8-9E3B-2FA4A06BE9B2}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NiGui", "modules\nima_engine\modules\nigui\NiGui.vcxproj", "{E3E0F431-57AB-47BD-9CAD-DB622644B99C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VecMat", "modules\nima_engine\modules\vectormatrix\Project\VecMat.vcxproj", "{A87AD77F-CC08-4788-8630-68470354FCD3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imguizmo_1_83", "modules\nima_engine\externals\imguizmo_1_83\imguizmo_1_83.vcxproj", "{05AB97A5-44CD-444D-A6FF-BB04401C0536}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,6 +66,12 @@ Global
 		{A87AD77F-CC08-4788-8630-68470354FCD3}.Debug|x64.Build.0 = Debug|x64
 		{A87AD77F-CC08-4788-8630-68470354FCD3}.Release|x64.ActiveCfg = Release|x64
 		{A87AD77F-CC08-4788-8630-68470354FCD3}.Release|x64.Build.0 = Release|x64
+		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.AddressSanitizer|x64.ActiveCfg = Debug|x64
+		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.AddressSanitizer|x64.Build.0 = Debug|x64
+		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.Debug|x64.ActiveCfg = Debug|x64
+		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.Debug|x64.Build.0 = Debug|x64
+		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.Release|x64.ActiveCfg = Release|x64
+		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +82,7 @@ Global
 		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B} = {3BC02507-77C0-40A8-9E3B-2FA4A06BE9B2}
 		{E3E0F431-57AB-47BD-9CAD-DB622644B99C} = {C162FE81-3C10-437A-9DA2-21FBB4536F63}
 		{A87AD77F-CC08-4788-8630-68470354FCD3} = {C162FE81-3C10-437A-9DA2-21FBB4536F63}
+		{05AB97A5-44CD-444D-A6FF-BB04401C0536} = {3BC02507-77C0-40A8-9E3B-2FA4A06BE9B2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {83ACFAB7-7736-4934-9FD3-5E67DB15118D}

@@ -29,7 +29,7 @@
                 "name" : "Wave4",
                 "beginTime" : 40.000,
                 "endTime" : 50.000,
-                "enemyType" : "Rusher",
+                "enemyType" : "Normal",
                 "enemyCount" : 20,
                 "interval" : 5.000
             },
@@ -37,7 +37,7 @@
                 "name" : "Wave5",
                 "beginTime" : 50.000,
                 "endTime" : 60.000,
-                "enemyType" : "Rusher",
+                "enemyType" : "Normal",
                 "enemyCount" : 12,
                 "interval" : 2.000
             }

@@ -10,7 +10,7 @@ public:
     void Update(EnemyRusher& enemy, float deltaTime) override;
 
 private:
-    static constexpr float kAimDurationSec_ = 2.0f;
-    static constexpr float kDashColorDurationSec_ = 0.3f;
+    static constexpr float kAimDurationSec_ = 1.0f;
+    static constexpr float kDashColorDurationSec_ = 0.5f;
     float elapsedTimeSec_ = 0.0f;
 };
