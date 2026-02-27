@@ -2,11 +2,16 @@
 #include <Features/Text/Text.h>
 #include <memory>
 #include <drawable/font/NumericView.h>
+#include <entity/enemy/EnemyType.h>
+#include <optional>
+#include <unordered_map>
+#include <Features/event/EventSubscription.h>
 
 
 namespace ScorePerUnit
 {
-    static constexpr auto kEnemy = 100u;
+    static constexpr auto kEnemyNormal = 50u;
+    static constexpr auto kEnemyRusher = 150u;
 }
 
 /// <summary>
@@ -38,7 +43,7 @@ public:
     /// <summary>
     /// 敵撃破数をカウントし、スコア加算を行います。
     /// </summary>
-    void CountEnemyDeath();
+    void CountEnemyDeath(EnemyType type);
 
     /// <summary>
     /// スコアを取得します。
@@ -47,6 +52,7 @@ public:
     float GetScore() const { return score_; }
 
 private:
+    void InitializeScoreTable();
     void InitializeNumericView();
     void UpdateNumericView();
     void UpdateDisplayScore();
@@ -60,6 +66,8 @@ private:
     float           score_              = 0.0f;
     unsigned int    enemyDeathCount_    = 0u;
     float           receiveAddScore_    = 0.0f;
+    std::unordered_map<EnemyType, uint32_t> scoreTable_;
+    std::optional<EventSubscription> subKillEnemy_ = std::nullopt;
 
     // 毎フレーム加算するスコア量
     std::unique_ptr<Text>           pName_    = nullptr;

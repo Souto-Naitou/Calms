@@ -1,16 +1,17 @@
 #pragma once
 
 #include <Features/RandomGenerator/RandomGenerator.h>
-#include <Features/TimeMeasurer/TimeMeasurer.h>
-#include <Vector3.h>
-#include <Features/GameEye/GameEye.h>
 #include <drawable/line/Line.h>
 #include <Utility/PathResolver/PathResolver.h>
-#include <queue>
-#include <string>
 #include <Utility/JSONIO/JSONIO.h>
-#include <nlohmann/json.hpp>
 #include <DebugTools/DebugEntry/DebugEntry.h>
+#include <Features/TimeMeasurer/TimeMeasurerByDt.h>
+#include <entity/enemy/EnemyFactory.h>
+#include <entity/enemy/EnemyRepository.h>
+#include <Range.h>
+#include <nlohmann/json.hpp>
+#include <Vector3.h>
+#include <string>
 #include <memory>
 
 /// <summary>
@@ -35,7 +36,7 @@ public:
     /// 敵生成システムを初期化します。
     /// 生成範囲やJSON設定の読み込みなどを行います。
     /// </summary>
-    void    Initialize();
+    void    Initialize(EnemyRepository* pRepository, EnemyFactory* pFactory);
 
     /// <summary>
     /// 終了処理を行います。
@@ -59,25 +60,6 @@ public:
     void    DrawArea();
 
     /// <summary>
-    /// 手動で敵のポップ要求を追加します。
-    /// 位置はランダムレンジから決定されます。
-    /// </summary>
-    void    ManualPop();
-
-    /// <summary>
-    /// 手動で敵のポップ要求を追加します。
-    /// </summary>
-    /// <param name="_position">生成位置。</param>
-    void    ManualPop(const Vector3& _position);
-    bool    IsExistPopRequest() const { return !popPoints_.empty(); }
-
-    /// <summary>
-    /// 次に生成する位置を取得し、内部キューから取り出します。
-    /// </summary>
-    /// <returns>生成位置。</returns>
-    Vector3 GetPopPoint();
-
-    /// <summary>
     /// 自動生成を開始します。
     /// </summary>
     void    StartPop();
@@ -89,16 +71,12 @@ public:
     bool    IsEnablePop() const { return isEnablePop_; }
 
     /// Setter
-    void SetPopInterval(float _interval) { popInterval_ = _interval; }
-    void SetPopCount(uint32_t _count) { popCount_ = _count; }
-    void SetPopRange(const Vector3& _begin, const Vector3& _end)
-    {
-        popRangeBegin_ = _begin;
-        popRangeEnd_ = _end;
-    }
+    void    SetPopInterval(float interval) { popInterval_ = interval; }
+    void    SetPopCount(uint32_t count) { popCount_ = count; }
+    void    SetPopRange(const Range<Vector3>& range) { popRange_ = range; }
 
-    void SetIgnorePosition(const Vector3& _position) { ignorePosition_ = _position; }
-    void SetIgnoreRange(float _range) { ignoreRange_ = _range; }
+    void    SetIgnorePosition(const Vector3& position) { ignorePosition_ = position; }
+    void    SetIgnoreRange(float radius) { ignoreRange_ = radius; }
     
 
 private:
@@ -125,15 +103,13 @@ private:
 
     // Common methods
     using json = nlohmann::json;
-    TimeMeasurer                   timerOverall_           = {};                   // !< 全体用タイマー
-    TimeMeasurer                   timerPop_               = {};                   // !< 生成用タイマー
-    TimeMeasurer                   timerPopDelay_          = {};                   // !< 遅延生成用タイマー
+    TimeMeasurerByDt        timerOverall_           = {};                   // !< 全体用タイマー
+    TimeMeasurerByDt        timerPop_               = {};                   // !< 生成用タイマー
+    TimeMeasurerByDt        timerPopDelay_          = {};                   // !< 遅延生成用タイマー
     float                   popInterval_            = 1.0f;                 // !< 生成間隔
-    std::queue<Vector3>     popPoints_              = {};                   // !< 生成する位置のキュー
     uint32_t                popCount_               = 1;                    // !< 一度に生成する数
     uint32_t                popDelayCount_          = 0;                    // !< 遅延生成する数
     bool                    isEnablePop_            = false;                // !< 生成フラグ
-
 
     /// Json
     const std::string       kJsonFileName_          = "PopTimeTable.json";  // !< Jsonファイルパス
@@ -142,16 +118,12 @@ private:
     std::vector<PopData>    popData_                = {};                   // !< 生成データ
     size_t                  popDataIndex_           = 0;                    // !< 生成データのインデックス
 
-
     /// ランダム生成の範囲
-    Vector3                 popRangeBegin_          = {};                   // !< 生成範囲 - 開始
-    Vector3                 popRangeEnd_            = {};                   // !< 生成範囲 - 終了
-
+    Range<Vector3>          popRange_               = {};                   // !< 生成範囲
 
     /// 除外する位置と範囲
     Vector3                 ignorePosition_         = {};                   // !< 除外範囲 - 中心
     float                   ignoreRange_            = 0.0f;                 // !< 除外範囲 - 半径
-
 
     /// デバッグ用
     std::unique_ptr<DebugEntry<EnemySpawner>> pDebugEntry_ = {};            // !< デバッグエントリ
@@ -160,6 +132,8 @@ private:
     bool                    isDisplayArea_          = false;                // !< 生成範囲表示フラグ
 
 private:
+    EnemyRepository*        pEnemyRepository_       = nullptr;              // !< 敵リポジトリ
+    EnemyFactory*           pEnemyFactory_          = nullptr;              // !< 敵生成ファクトリー
     RandomGenerator*        randomGenerator_        = nullptr;              // !< ランダム生成器
     JSONIO*                 jsonIO_                 = nullptr;              // !< Json入出力
 };

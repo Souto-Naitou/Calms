@@ -145,7 +145,7 @@
     <ClCompile Include="src\logic\score\ScoreCalculator.cpp">
       <Filter>Logic\Score</Filter>
     </ClCompile>
-    <ClCompile Include="src\Entity\Enemy\Enemy.cpp">
+    <ClCompile Include="src\Entity\Enemy\EnemyNormal.cpp">
       <Filter>Entity\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="src\Entity\Player\Player.cpp">
@@ -238,9 +238,6 @@
     <ClCompile Include="src\entity\enemy\rusher\EnemyRusher.cpp">
       <Filter>Entity\Enemy\Rusher</Filter>
     </ClCompile>
-    <ClCompile Include="src\entity\enemy\EnemyRusher.cpp">
-      <Filter>Entity\Enemy\Rusher</Filter>
-    </ClCompile>
     <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateAim.cpp">
       <Filter>Entity\Enemy\Rusher</Filter>
     </ClCompile>
@@ -265,6 +262,8 @@
     <ClCompile Include="src\component\PhysicsMovement.cpp">
       <Filter>Component</Filter>
     </ClCompile>
+    <ClCompile Include="src\entity\enemy\EnemyRepository.cpp" />
+    <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateKnockback.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -291,7 +290,7 @@
     <ClInclude Include="src\logic\score\ScoreCalculator.h">
       <Filter>Logic\Score</Filter>
     </ClInclude>
-    <ClInclude Include="src\Entity\Enemy\Enemy.h">
+    <ClInclude Include="src\Entity\Enemy\EnemyNormal.h">
       <Filter>Entity\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="src\Entity\Player\Player.h">
@@ -363,7 +362,7 @@
     <ClInclude Include="src\screen\loading\LoadingScreen.h">
       <Filter>Scene\Screen</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\enemy\EnemyTypes.h">
+    <ClInclude Include="src\entity\enemy\EnemyType.h">
       <Filter>Entity\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\Title\Animation\OpeningAnimation.h">
@@ -399,12 +398,6 @@
     <ClInclude Include="src\component\DashMovementLinear.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\enemy\EnemyRusher.h">
-      <Filter>Entity\Enemy\Rusher</Filter>
-    </ClInclude>
-    <ClInclude Include="src\entity\enemy\EnemyRusherState.h">
-      <Filter>Entity\Enemy\Rusher</Filter>
-    </ClInclude>
     <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateAim.h">
       <Filter>Entity\Enemy\Rusher</Filter>
     </ClInclude>
@@ -435,6 +428,10 @@
     <ClInclude Include="src\component\PhysicsMovement.h">
       <Filter>Component</Filter>
     </ClInclude>
+    <ClInclude Include="src\entity\enemy\EnemyRepository.h" />
+    <ClInclude Include="src\logic\event\ParticleEmitEvent.h" />
+    <ClInclude Include="src\presentation\ParticleType.h" />
+    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateKnockback.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

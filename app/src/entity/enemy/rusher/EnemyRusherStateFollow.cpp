@@ -6,7 +6,7 @@ void EnemyRusherStateFollow::Enter(EnemyRusher& enemy)
 {
     /// 追尾移動に切り替え
     enemy.ToFollowMovement();
-    enemy.ChangeColor(RGBA(0x1f4145ff).to_Vector4());
+    enemy.ChangeColor(RGBA(0x17485cff).to_Vector4());
 }
 
 void EnemyRusherStateFollow::Update(EnemyRusher& enemy, float deltaTime)

@@ -3,6 +3,8 @@
 #include <format>
 #include <Core/DirectX12/TextureManager.h>
 #include <Math/ViewportUnits.hpp>
+#include <Features/event/EventListener.h>
+#include <logic/event/KillEnemyEvent.h>
 
 void ScoreCalculator::Initialize()
 {
@@ -10,7 +12,12 @@ void ScoreCalculator::Initialize()
     score_ = 0;
     enemyDeathCount_ = 0;
 
+    this->InitializeScoreTable();
     this->InitializeNumericView();
+    subKillEnemy_ = EventListener::GetInstance()->Subscribe<KillEnemyEvent>([this](const KillEnemyEvent& e)
+    {
+        this->CountEnemyDeath(e.enemyType);
+    });
 }
 
 void ScoreCalculator::Update()
@@ -29,10 +36,16 @@ void ScoreCalculator::Finalize()
 {
 }
 
-void ScoreCalculator::CountEnemyDeath()
+void ScoreCalculator::CountEnemyDeath(EnemyType type)
 {
     ++enemyDeathCount_;
-    receiveAddScore_ += ScorePerUnit::kEnemy;
+    receiveAddScore_ += scoreTable_[type];
+}
+
+void ScoreCalculator::InitializeScoreTable()
+{
+    scoreTable_[EnemyType::Normal] = ScorePerUnit::kEnemyNormal;
+    scoreTable_[EnemyType::Rusher] = ScorePerUnit::kEnemyRusher;
 }
 
 void ScoreCalculator::InitializeNumericView()

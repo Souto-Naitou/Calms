@@ -96,7 +96,7 @@ private:
     /// </summary>
     void ComponentsInitialize();
 
-    static constexpr float kLifeTimeLimit_  = 2.5f;
+    static constexpr float kLifeTimeLimit_  = 1.5f;
     static constexpr float kFriction_       = 1.0f;
 
     std::unique_ptr<TimeMeasurer>   pTimeMeasurer_ = nullptr;

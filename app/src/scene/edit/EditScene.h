@@ -16,7 +16,7 @@
 #include <drawable/font/NumericView.h>
 #include <entity/enemy/Rusher/EnemyRusher.h>
 #include <entity/player/Player.h>
-#include <entity/enemy/Enemy.h>
+#include <entity/enemy/EnemyNormal.h>
 
 class EditScene : public SceneBase
 {
@@ -61,7 +61,7 @@ private:
     std::unique_ptr<RingGauge>              pRing_              = nullptr;
     std::unique_ptr<GameEye>                pGameEye_           = nullptr;
     std::unique_ptr<ParticleEmitter>        pParticleEmitter_   = nullptr;
-    std::unique_ptr<Enemy>                  pEnemyNormal_       = nullptr;
+    std::unique_ptr<EnemyNormal>                  pEnemyNormal_       = nullptr;
     std::unique_ptr<EnemyRusher>            pEnemyRusher_       = nullptr;
     std::unique_ptr<NumericView>            pNumeric_           = nullptr;
     std::unique_ptr<Player>                 pPlayer_            = nullptr;

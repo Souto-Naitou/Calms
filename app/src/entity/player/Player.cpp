@@ -148,7 +148,7 @@ void Player::ColliderInitialize()
 void Player::ParticleEmittersInitialize()
 {
     if (!params_.particle) return;
-    ParticleEmitterInitParams emitterParams = {};
+    ParticleEmitter::Params emitterParams = {};
     emitterParams.particle = params_.particle;
     emitterParams.jsonPath = Path::ParticleEmitter::kPlayerConstantTrail;
     pEmitterConstant_ = std::make_unique<ParticleEmitter>();

@@ -1,7 +1,6 @@
 #include "GameLayer.h"
 #include <Features/SceneManager/SceneManager.h>
 #include <drawable/particle/ParticleStorage.h>
-#include <Core/Window/Window.h>
 #include <Effects/PostEffects/DepthBasedOutline/DepthBasedOutline.h>
 #include <Effects/PostEffects/GaussianBloom/GaussianBloom.h>
 #include <Effects/SceneTransition/TransFadeInOut.h>
@@ -11,14 +10,13 @@
 #include <Presets/Object3d/Grid/Preset_Grid.h>
 #include <drawable/sprite/SpriteSystem.h>
 #include <Math/ViewportUnits.hpp>
-#include <imgui.h>
-#include <mathExtension.h>
 #include <config/ResourcePath.h>
-#include <mathExtension.h>
 #include <cmath>
 #include <Effects/PostEffects/ScanLine/Scanline.h>
 #include <Effects/PostEffects/Mosaic/Mosaic.h>
 #include "Entity/Status/EntityStats.h"
+#include <Presentation/ParticleType.h>
+#include <logic/event/ParticleEmitEvent.h>
 
 using namespace Math::Viewport;
 
@@ -37,12 +35,12 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     pDebugEntry_ = std::make_unique<DebugEntry<GameLayer>>("Scene", "GameLayer", this);
 
     /// [ グリッドの初期化 ]
-    grid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
-    grid_->GetOption().lightingData->enableLighting = true;
-    grid_->SetPointLight(&pointLight_);
-    grid_->SetDirectionalLight(&directionalLight_);
-    grid_->SetScale(Vector3(0.5f, 30.0f, 0.5f));
-    grid_->GetOption().tilingData->tilingMultiply = Vector2(10.0f, 10.0f);
+    pGrid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
+    pGrid_->GetOption().lightingData->enableLighting = true;
+    pGrid_->SetPointLight(&pointLight_);
+    pGrid_->SetDirectionalLight(&directionalLight_);
+    pGrid_->SetScale(Vector3(0.5f, 30.0f, 0.5f));
+    pGrid_->GetOption().tilingData->tilingMultiply = Vector2(10.0f, 10.0f);
 
     /// [ ゲームアイの初期化 ]
     pGameEye_ = std::make_unique<GameEye>();
@@ -91,19 +89,34 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     pPlayerUI3d_ = std::make_unique<PlayerUI3d>();
     pPlayerUI3d_->Initialize(pDx12_);
 
+    /// [ 敵リポジトリの初期化 ]
+    pEnemyRepository_ = std::make_unique<EnemyRepository>();
+
+    /// [ 敵ファクトリの初期化 ]
+    pEnemyFactory_ = std::make_unique<EnemyFactory>();
+    EnemyContext enemyCtx = {};
+    enemyCtx.pDirLight = &directionalLight_;
+    enemyCtx.pModelSelfBody = pModelManager_->Load("Cube/Cube.obj");
+    enemyCtx.pTargetPosition = &pPlayer_->GetTransform().translate;
+    pEnemyFactory_->SetContext(enemyCtx);
+
     /// [ 敵生成システムの初期化 ]
-    enemyPopSystem_.Initialize();
-    enemyPopSystem_.SetPopRange(Vector3(-30.0f, 0.5f, -30.0f), Vector3(30.0f, 0.5f, 30.0f));
-    enemyPopSystem_.SetIgnoreRange(7.0f);
+    pEnemyPopSystem_ = std::make_unique<EnemySpawner>();
+    pEnemyPopSystem_->Initialize(pEnemyRepository_.get(), pEnemyFactory_.get());
+    pEnemyPopSystem_->SetPopRange(Range<Vector3>(Vector3(-30.0f, 0.5f, -30.0f), Vector3(30.0f, 0.5f, 30.0f)));
+    pEnemyPopSystem_->SetIgnoreRange(7.0f);
 
     /// [ プレイヤー弾生成システムの初期化 ]
     PlayerBulletGenerator::Config playerBulletConfig = {};
-    playerBulletConfig.pParticle = particles_[static_cast<size_t>(ParticleID::PlayerBullet)];
+    playerBulletConfig.pParticle = particles_[static_cast<size_t>(ParticleID::Spark)];
     playerBulletConfig.numShot = 3;
     playerBulletConfig.spreadAngleDeg = 15.0f;
     playerBulletConfig.bulletSpeed = 30.0f;
     playerBulletConfig.swingSize = 0.02f;
     playerBulletGenerator_.SetConfig(playerBulletConfig);
+
+    /// [ プレイヤー弾配列の要素を取得 ]
+    playerBullets_.reserve(kMaxPlayerBullets);
 
     /// [ カウントダウンの初期化 ]
     pStartCountDown_ = std::make_unique<CountDown>();
@@ -129,9 +142,6 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     inputGuide_ = std::make_unique<InputGuide>();
     inputGuide_->Initialize();
 
-    /// [ 敵コンテナのサイズ予約 ]
-    enemies_.reserve(kMaxEnemyCount_);
-
     /// [ スプライトの初期化 ]
     this->SpritesInitialize();
 
@@ -145,6 +155,15 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     /// [ スロー移動エフェクトコントローラーの初期化 ]
     pSlomoEffect_ = std::make_unique<SlomoEffectController>();
     pSlomoEffect_->SetConfig({});
+
+    /// [ エミッターグループの初期化 ]
+    pEmitterGroup_ = std::make_unique<ParticleEmitterGroup>();
+    particleEmitSub_ = EventListener::GetInstance()->Subscribe<ParticleEmitEvent>(
+            [this](const ParticleEmitEvent& e) {
+        pEmitterGroup_->Emit(static_cast<uint32_t>(e.type), e.position);
+    });
+
+    this->RegisterParticleEmitters();
 
     /// [ ゲームオーバーアニメーションの初期化 ]
     gameOverAnimation_ = std::make_unique<GameOverAnimation>();
@@ -178,12 +197,10 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 
 void GameLayer::Finalize()
 {
-    for (auto& enemy : enemies_)
-    {
-        enemy->Finalize();
-    }
+    /// 敵の終了処理
+    pEnemyRepository_->Finalize();
 
-    grid_->Finalize();
+    pGrid_->Finalize();
     pPlayer_->Finalize();
 
     for (auto& bullet : playerBullets_)
@@ -194,7 +211,7 @@ void GameLayer::Finalize()
 
     CollisionManager::GetInstance()->ClearCollider();
     pPlayerUI3d_->Finalize();
-    enemyPopSystem_.Finalize();
+    pEnemyPopSystem_->Finalize();
     pStartCountDown_->Finalize();
     screenToWorld_->Finalize();
     ingameTimer_->Finalize();
@@ -222,7 +239,7 @@ void GameLayer::Update()
     static constexpr float kDirectionalLightTargetIntensity = 0.25f;
 
     pGameEye_->Update();
-    grid_->Update();
+    pGrid_->Update();
     screenToWorld_->Update();
     spriteClear_->Update();
     spriteSpace_->Update();
@@ -245,10 +262,10 @@ void GameLayer::Update()
 
     if (isPlayerDead || isClear)
     {
-        this->KillAllEnemies();
+        pEnemyRepository_->KillAll();
         pPlayer_->DisableInput();
         pPlayer_->DisableMovement();
-        enemyPopSystem_.StopPop();
+        pEnemyPopSystem_->StopPop();
         ingameTimer_->Reset();
         ingameTimer_->SetDisplay(false);
         isEnding_ = true;
@@ -264,10 +281,8 @@ void GameLayer::Update()
     /// [ 敵生成システムの更新 ]
     this->CreateEnemy();
 
-    for (auto& enemy : enemies_)
-    {
-        enemy->Update();
-    }
+    /// [ 敵の更新 ]
+    pEnemyRepository_->Update();
 
     /// [ プレイヤー弾の生成 ]
     if (pPlayer_->IsShot())
@@ -280,9 +295,6 @@ void GameLayer::Update()
     {
         bullet->Update();
     }
-
-    /// [ 敵の削除 ]
-    this->RemoveDeadEnemy();
 
     /// [ プレイヤー弾の削除 ]
     this->RemovePlayerBullet();
@@ -297,9 +309,9 @@ void GameLayer::Update()
         isGameStartFlashed_ = true;
     }
 
-    if (pStartCountDown_->IsEnd() && !enemyPopSystem_.IsEnablePop() && !ingameTimer_->GetNowTime() && !isEnding_)
+    if (pStartCountDown_->IsEnd() && !pEnemyPopSystem_->IsEnablePop() && !ingameTimer_->GetNowTime() && !isEnding_)
     {
-        enemyPopSystem_.StartPop();
+        pEnemyPopSystem_->StartPop();
         ingameTimer_->Start();
         ingameTimer_->SetDisplay(true);
     }
@@ -353,6 +365,9 @@ void GameLayer::Update()
     }
 
     UpdatePlayerExplosion();
+
+    /// [ エミッターの更新 ]
+    pEmitterGroup_->UpdateEmitters();
 }
 
 void GameLayer::Draw()
@@ -363,22 +378,22 @@ void GameLayer::Draw()
 
     CanvasScope gridCanvasScope(canvasGrid_.get());
     {
-        grid_->Draw1F();
+        pGrid_->Draw1F();
     }
 
     CanvasScope obj3dCanvasScope(canvas3dObject_.get());
     {
         pPlayer_->Draw1F();
-        for (auto& enemy : enemies_)
-        {
-            enemy->Draw1F();
-        }
+
+        /// [ 敵の描画 ]
+        pEnemyRepository_->Draw1F();
+
         for (auto& bullet : playerBullets_)
         {
             bullet->Draw1F();
         }
 
-        enemyPopSystem_.DrawArea();
+        pEnemyPopSystem_->DrawArea();
         for (auto& explosion : playerExplosions_)
         {
             explosion->Draw1F();
@@ -440,21 +455,12 @@ void GameLayer::ImGui()
 {
     #ifdef _DEBUG
 
-    ImGui::SeparatorText("Collider Visualization");
-    if (ImGui::Checkbox("Enemy", &isDisplayColliderEnemy_))
-    {
-        for (auto& enemy : enemies_)
-        {
-            enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
-        }
-    }
-
     #endif // _DEBUG
 }
 
 void GameLayer::OnSceneChangeReserved()
 {
-    
+
 }
 
 void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
@@ -660,14 +666,14 @@ void GameLayer::ParticlesInitialize()
         particle->reserve(500);
     }
     {
-        auto& particle = particles_[static_cast<size_t>(ParticleID::PlayerBullet)] = ParticleStorage::GetInstance()->CreateParticle();
+        auto& particle = particles_[static_cast<size_t>(ParticleID::Spark)] = ParticleStorage::GetInstance()->CreateParticle();
         IModel* model = pModelManager_->Load(Path::Model::kParticlePlane);
         particle->Initialize(model);
-        particle->reserve(100);
+        particle->reserve(kMaxPlayerBullets);
         particle->SetEnableBillboard(true);
     }
     {
-        auto& particle = particles_[static_cast<size_t>(ParticleID::EnemyDeath)] = ParticleStorage::GetInstance()->CreateParticle();
+        auto& particle = particles_[static_cast<size_t>(ParticleID::Triangle)] = ParticleStorage::GetInstance()->CreateParticle();
         particle->Initialize(pModelManager_->Load("Triangle/Triangle.obj"));
         particle->reserve(500);
     }
@@ -710,43 +716,15 @@ void GameLayer::AddPlayerBullet()
 
 void GameLayer::RemovePlayerBullet()
 {
-    playerBullets_.remove_if([](const std::unique_ptr<PlayerBullet>& _bullet)
+    playerBullets_.erase(std::remove_if(playerBullets_.begin(), playerBullets_.end(), [&](auto& bullet)
     {
-        if (!_bullet->IsAlive())
+        bool shouldRemove = !bullet->IsAlive();
+        if (shouldRemove)
         {
-            _bullet->Finalize();
-            return true;
+            bullet->Finalize();
         }
-        return false;
-    });
-}
-
-void GameLayer::RemoveDeadEnemy()
-{
-    enemies_.erase(
-        std::remove_if(enemies_.begin(), enemies_.end(),
-            [&](auto& e)
-    {
-        bool isDead = !e->IsAlive();
-        if (isDead)
-        {
-            e->Finalize();
-            scoreCalculator_->CountEnemyDeath();
-        }
-        return isDead;
-    }
-        ),
-        enemies_.end()
-    );
-}
-
-void GameLayer::KillAllEnemies()
-{
-    for (auto& enemy : enemies_)
-    {
-        enemy->Finalize();
-    }
-    enemies_.clear();
+        return shouldRemove;
+    }), playerBullets_.end());
 }
 
 void GameLayer::AddPlayerExplosion(const PlayerExplosionEvent&)
@@ -778,34 +756,24 @@ void GameLayer::UpdatePlayerExplosion()
     }), playerExplosions_.end());
 }
 
+void GameLayer::RegisterParticleEmitters()
+{
+    pEmitterGroup_->Register(static_cast<uint32_t>(ParticleType::EnemyNormalDeathSpark), {
+        .pParticle = particles_[static_cast<size_t>(ParticleID::Spark)],
+        .configPath = Path::ParticleEmitter::kEnemyNormalDeathSpark,
+        .enableBillboard = true
+        });
+    pEmitterGroup_->Register(static_cast<uint32_t>(ParticleType::EnemyNormalDeathExplosion), {
+       .pParticle = particles_[static_cast<size_t>(ParticleID::Triangle)],
+       .configPath = Path::ParticleEmitter::kEnemyNormalDeathExplosion,
+       .enableBillboard = true
+        });
+}
+
 void GameLayer::CreateEnemy()
 {
-    enemyPopSystem_.SetIgnorePosition(pPlayer_->GetTransform().translate);
-    enemyPopSystem_.Update();
-    while (enemyPopSystem_.IsExistPopRequest())
-    {
-        if (enemies_.size() >= kMaxEnemyCount_)
-        {
-            break; // 最大数に達している場合は生成しない
-        }
-
-        auto popPoint = enemyPopSystem_.GetPopPoint();
-
-        Enemy::Params enemyParams = {};
-        enemyParams.pModelSelfBody = pModelManager_->Load("Cube/Cube.obj");
-        enemyParams.pParticleTriangle = particles_[static_cast<size_t>(ParticleID::EnemyDeath)];
-        enemyParams.pParticleCircle = particles_[static_cast<size_t>(ParticleID::PlayerBullet)];
-        enemyParams.pDirLight = &directionalLight_;
-        enemyParams.pPointLight = &pointLight_;
-        enemyParams.initPosition = popPoint;
-        enemyParams.pTargetPosition = &pPlayer_->GetTransform().translate;
-
-        auto enemy = std::make_unique<Enemy>(enemyParams);
-        enemy->Initialize(false);
-        enemy->SetIsDrawCollisionArea(isDisplayColliderEnemy_);
-        enemies_.emplace_back(std::move(enemy));
-    }
-
+    pEnemyPopSystem_->SetIgnorePosition(pPlayer_->GetTransform().translate);
+    pEnemyPopSystem_->Update();
 }
 
 void GameLayer::UpdateSlomo()
@@ -813,7 +781,7 @@ void GameLayer::UpdateSlomo()
     constexpr float kDeltaTimeDefault = 1.0f / 60.0f;
 
     auto state = pSlomoLogic_->Update(pPlayer_->IsSlow(), pDeltaTimeManager_);
-    
+
     float powerGrayscale = pOptionGrayscale_->power;
     if (!pGameClearAnimation_->IsPlaying())
     {

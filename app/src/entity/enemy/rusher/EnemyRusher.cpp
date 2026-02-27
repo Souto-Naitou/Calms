@@ -1,11 +1,14 @@
 #include "EnemyRusher.h"
-#include "nima_engine/src/Features/DeltaTimeManager/DeltaTimeManager.h"
+#include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include "EnemyRusherStateFollow.h"
+#include "EnemyRusherStateKnockback.h"
 #include <Color.h>
-#include "nima_engine/src/Features/Collision/Manager/CollisionManager.h"
+#include <Features/Collision/Manager/CollisionManager.h>
 #include <functional>
 #include <logic/event/KillEnemyEvent.h>
 #include "nima_engine/src/Features/event/EventListener.h"
+#include <logic/event/ParticleEmitEvent.h>
+#include <presentation/ParticleType.h>
 
 
 
@@ -14,13 +17,34 @@ void EnemyRusher::Initialize(bool enableDebugWindow /*= true*/)
     EntityBase::Initialize(enableDebugWindow);
     EntityBase::SetName(utl::debug::generate_name("EnemyRusher", this));
 
-    this->InitializeState();
     this->InitializeComponents();
+    this->InitializeState();
 }
 
 void EnemyRusher::Finalize()
 {
+    EventListener* pEventListener = EventListener::GetInstance();
+
+    ParticleEmitEvent emitEvent;
+    emitEvent.position = transform_.translate;
+
+    emitEvent.type = ParticleType::EnemyNormalDeathSpark;
+    pEventListener->Publish(emitEvent);
+    emitEvent.type = ParticleType::EnemyNormalDeathExplosion;
+    pEventListener->Publish(emitEvent);
+
     CollisionManager::GetInstance()->UnregisterCollider(pCollider_.get());
+
+    pObjectSelfBody_->Finalize();
+
+    if (params_.pDirLight)
+    {
+        params_.pDirLight->intensity += 0.5f;
+        if (params_.pDirLight->intensity > 8.0f)
+        {
+            params_.pDirLight->intensity = 8.0f;
+        }
+    }
 }
 
 void EnemyRusher::Update()
@@ -36,6 +60,7 @@ void EnemyRusher::Update()
     }
 
     /// 移動更新
+    pPhysicsMovement_->ApplyFriction(0.925f);
     if (pCurrentMovement_)
     {
         pCurrentMovement_->Update(transform_, deltaTime);
@@ -85,11 +110,11 @@ void EnemyRusher::OnCollisionTrigger(const Collider* pOther)
             /// あたっている相手に応じてスコアイベントを発行
             if (isPlayerBullet)
             {
-                EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Rusher, 0.2f });
+                EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyType::Rusher, 0.2f });
             }
             else if (isPlayerExplosion)
             {
-                EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyTypes::Rusher, 1.0f });
+                EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyType::Rusher, 1.0f });
             }
         }
 
@@ -116,6 +141,15 @@ void EnemyRusher::OnCollision(const Collider* pOther)
         otherPos.y = transform_.translate.y; // 水平方向のみ反発
         Vector3 dir = transform_.translate - otherPos;
         pFollowMovement_->ApplyForce(dir * kReflectionPower_);
+    }
+    else if (pOther->GetColliderID() == "PlayerExplosion")
+    {
+        ChangeState(std::make_unique<EnemyRusherStateKnockback>());
+
+        Vector3 otherPos = pOther->GetOwnerTransform()->translate;
+        otherPos.y = transform_.translate.y; // 水平方向のみ反発
+        Vector3 dir = transform_.translate - otherPos;
+        pPhysicsMovement_->ApplyForce(dir * kReflectionPowerPlayerExplosion_);
     }
 }
 
@@ -151,12 +185,18 @@ void EnemyRusher::ToFollowMovement()
 {
     // 現在の移動コンポーネントを追尾移動に設定
     pCurrentMovement_ = pFollowMovement_.get();
+    pFollowMovement_->ResetVelocity();
 }
 
 void EnemyRusher::ToDashMovement()
 {
     // 現在の移動コンポーネントをダッシュ移動に設定
     pCurrentMovement_ = pDashMovement_.get();
+}
+
+void EnemyRusher::ToPhysicsMovement()
+{
+    pCurrentMovement_ = pPhysicsMovement_.get();
 }
 
 void EnemyRusher::DisableMovement()
@@ -183,6 +223,28 @@ bool EnemyRusher::IsDashing() const
     return !pDashMovement_->IsFinished();
 }
 
+bool EnemyRusher::IsStopped() const
+{
+    if (!pCurrentMovement_) return true;
+
+    // 追尾移動や物理移動の場合は、速度がほぼ0かどうかで判定
+    Vector3 vel = pPhysicsMovement_->GetVelocity();
+    Vector3 acc = pPhysicsMovement_->GetAcceleration();
+    bool isPhysicsStopped = vel.Length() < 0.01f && acc.Length() < 0.01f;
+    if (isPhysicsStopped)
+    {
+        return true;
+    }
+
+    return false; // 追尾移動や物理移動は常に停止状態ではないとみなす
+}
+
+float EnemyRusher::GetDashElapsedTime() const
+{
+    if (!pDashMovement_) return 0.0f;
+    return pDashMovement_->GetElapsedTime();
+}
+
 void EnemyRusher::InitializeState()
 {
     // 初期状態を追尾状態に設定
@@ -204,6 +266,8 @@ void EnemyRusher::InitializeTransform()
     transform_.scale = Vector3(1.2f, 1.2f, 1.2f);
     transform_.rotate = Vector3(0.0f, 0.0f, 0.0f);
     transform_.translate = transform_.scale / 2.0f; // 地面に接地するように調整
+    transform_.translate.x = params_.position.x;
+    transform_.translate.z = params_.position.z;
 }
 
 void EnemyRusher::InitializeBody()
@@ -214,8 +278,9 @@ void EnemyRusher::InitializeBody()
     pObjectSelfBody_->SetModel(params_.pModelSelfBody);
     pObjectSelfBody_->SetScale(transform_.scale);
     auto& option = pObjectSelfBody_->GetOption();
-    option.materialData->color = RGBA(0x40c4faff).to_Vector4();
+    option.materialData->color = kColorDefault_.to_Vector4();
     option.lightingData->enableLighting = false;
+    option.materialData->environmentCoefficient = 0.0f;
 }
 
 void EnemyRusher::InitializeCollider(EntityStats* pStats)
@@ -249,6 +314,7 @@ void EnemyRusher::InitializeMovement()
     pFollowMovement_ = std::make_unique<FollowMovement>(params_.pTargetPosition);
     pFollowMovement_->SetFollowSpeed(kFollowSpeed_);
     pDashMovement_ = std::make_unique<DashMovementLinear>();
+    pPhysicsMovement_ = std::make_unique<PhysicsMovement>();
 }
 
 void EnemyRusher::InitializeFocusOrientation()
@@ -262,5 +328,5 @@ void EnemyRusher::InitializeFocusOrientation()
 void EnemyRusher::InitializeStats()
 {
     pStats_ = std::make_unique<EntityStats>();
-    pStats_->Initialize(6.0f, 10.0f, 10.0f);
+    pStats_->Initialize(12.0f, 10.0f, 10.0f);
 }

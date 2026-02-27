@@ -1,22 +1,25 @@
 #include "EnemySpawner.h"
 
 #include <imgui.h>
-#include <DebugTools/DebugManager/DebugManager.h>
 #include <Utility/JSONIO/JSONIO.h>
+#include <Features/DeltaTimeManager/DeltaTimeManager.h>
+#include "entity/enemy/EnemyInitParams.h"
+#include <utility>
 
-void EnemySpawner::Initialize()
+void EnemySpawner::Initialize(EnemyRepository* pRepository, EnemyFactory* pFactory)
 {
     /// インスタンスの取得
     randomGenerator_ = RandomGenerator::GetInstance();
     jsonIO_ = JSONIO::GetInstance();
+    pEnemyRepository_ = pRepository;
+    pEnemyFactory_ = pFactory;
 
-    /// Jsonファイルの読み込み
+    /// JSONファイルの読み込み
     pathResolver_.Initialize();
     // 検索パスの追加
     pathResolver_.AddSearchPath("Resources/Json");
     // 読み込み
     jsonPopTimeTable_ = JSONIO::GetInstance()->Load(pathResolver_.GetFilePath(kJsonFileName_));
-
 
     /// ポップデータの初期化
     this->InitPopData();
@@ -47,7 +50,7 @@ void EnemySpawner::Update()
         return;
     }
 
-    UpdatePop();
+    this->UpdatePop();
 
     if (timerPop_.GetNow<float>() > popInterval_)
     {
@@ -69,6 +72,9 @@ void EnemySpawner::Update()
         }
     }
 
+    timerOverall_.Update(static_cast<uint32_t>(DeltaTimeChannelReserved::Game));
+    timerPop_.Update(static_cast<uint32_t>(DeltaTimeChannelReserved::Game));
+    timerPopDelay_.Update(static_cast<uint32_t>(DeltaTimeChannelReserved::Game));
 }
 
 void EnemySpawner::DrawArea()
@@ -79,14 +85,14 @@ void EnemySpawner::DrawArea()
     }
 
     /// エリア
-    (*linesArea_)[0] = popRangeBegin_;
-    (*linesArea_)[1] = { popRangeEnd_.x, popRangeBegin_.y, popRangeBegin_.z };
-    (*linesArea_)[2] = { popRangeEnd_.x, popRangeBegin_.y, popRangeBegin_.z };
-    (*linesArea_)[3] = popRangeEnd_;
-    (*linesArea_)[4] = popRangeEnd_;
-    (*linesArea_)[5] = { popRangeBegin_.x, popRangeEnd_.y, popRangeEnd_.z };
-    (*linesArea_)[6] = { popRangeBegin_.x, popRangeEnd_.y, popRangeEnd_.z };
-    (*linesArea_)[7] = popRangeBegin_;
+    (*linesArea_)[0] = popRange_.start;
+    (*linesArea_)[1] = { popRange_.end.x, popRange_.start.y, popRange_.start.z };
+    (*linesArea_)[2] = { popRange_.end.x, popRange_.start.y, popRange_.start.z };
+    (*linesArea_)[3] = popRange_.end;
+    (*linesArea_)[4] = popRange_.end;
+    (*linesArea_)[5] = { popRange_.start.x, popRange_.end.y, popRange_.end.z };
+    (*linesArea_)[6] = { popRange_.start.x, popRange_.end.y, popRange_.end.z };
+    (*linesArea_)[7] = popRange_.start;
 
     /// 除外エリア (ignoreRangeは半径) 16本の線で円を描く
     float theta = 0;
@@ -114,24 +120,6 @@ void EnemySpawner::DrawArea()
     linesIgnoreCircle_->Draw1F();
 }
 
-
-void EnemySpawner::ManualPop()
-{
-    this->PopRandom();
-}
-
-void EnemySpawner::ManualPop(const Vector3& _position)
-{
-    popPoints_.push(_position);
-}
-
-Vector3 EnemySpawner::GetPopPoint()
-{
-    Vector3 popPoint = popPoints_.front();
-    popPoints_.pop();
-    return popPoint;
-}
-
 void EnemySpawner::StartPop()
 {
     timerOverall_.Start();
@@ -144,7 +132,6 @@ void EnemySpawner::StopPop()
     timerOverall_.Reset();
     timerPop_.Reset();
     isEnablePop_ = false;
-    popPoints_ = {};
 }
 
 void EnemySpawner::PopRandom()
@@ -154,9 +141,9 @@ void EnemySpawner::PopRandom()
     while (true)
     {
         /// ランダム生成
-        randPosition.x = randomGenerator_->Generate(popRangeBegin_.x, popRangeEnd_.x);
-        randPosition.y = randomGenerator_->Generate(popRangeBegin_.y, popRangeEnd_.y);
-        randPosition.z = randomGenerator_->Generate(popRangeBegin_.z, popRangeEnd_.z);
+        randPosition.x = randomGenerator_->Generate(popRange_.start.x, popRange_.end.x);
+        randPosition.y = randomGenerator_->Generate(popRange_.start.y, popRange_.end.y);
+        randPosition.z = randomGenerator_->Generate(popRange_.start.z, popRange_.end.z);
 
         /// 除外位置との距離を計算
         if (ignoreRange_ > 0.0f)
@@ -169,8 +156,10 @@ void EnemySpawner::PopRandom()
         }
     }
 
-    // 生成位置をキューに追加
-    popPoints_.push(randPosition);
+    pEnemyFactory_->SetPosition(randPosition);
+    auto pEnemy = pEnemyFactory_->Create(EnemyTypeFromString(popData_[popDataIndex_].enemyType));
+    pEnemy->Initialize(false);
+    pEnemyRepository_->Push(std::move(pEnemy));
 }
 
 void EnemySpawner::ImGui()
@@ -192,8 +181,8 @@ void EnemySpawner::ImGui()
     ImGui::Checkbox("Display Area", &isDisplayArea_);
     ImGui::InputFloat("Pop Interval", &popInterval_);
     ImGui::InputInt("Pop Count", reinterpret_cast<int*>(&popCount_));
-    ImGui::DragFloat3("Pop Range Begin", &popRangeBegin_.x, 0.01f);
-    ImGui::DragFloat3("Pop Range End", &popRangeEnd_.x, 0.01f);
+    ImGui::DragFloat3("Pop Range Begin", &popRange_.start.x, 0.01f);
+    ImGui::DragFloat3("Pop Range End", &popRange_.end.x, 0.01f);
     ImGui::DragFloat3("Ignore Position", &ignorePosition_.x, 0.01f);
     ImGui::DragFloat("Ignore Range", &ignoreRange_, 0.01f);
 #endif
@@ -247,7 +236,7 @@ void EnemySpawner::UpdatePop()
         if (popDataIndex_ >= popData_.size())
         {
             /// TODO:   ループの場合とそうでない場合で処理を変える
-            ///         ルーチンが終了したらフラグを立ててゲームクリア等が可能
+            ///         全Waveが終了したらフラグを立ててゲームクリア等が可能
 
             popDataIndex_ = 0;
             timerOverall_.Reset();

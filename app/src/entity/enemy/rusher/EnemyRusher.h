@@ -9,23 +9,20 @@
 #include <Math/Transform.h>
 #include <component/FocusOrientation.h>
 #include <entity/enemy/Rusher/EnemyRusherState.h>
+#include <entity/enemy/EnemyInitParams.h>
 #include "nima_engine/src/Features/Primitive/Sphere.h"
 #include "../../Status/EntityStats.h"
+#include <nima_engine/modules/vectormatrix/math/Color.h>
 
 class EnemyRusher : public EntityBase
 {
 public:
-    struct Params
-    {
-        // 平行光源
-        DirectionalLight* pDirLight = nullptr;
-        // 追尾対象の位置
-        const Vector3*  pTargetPosition = nullptr;
-        // モデル
-        IModel*         pModelSelfBody  = nullptr;
-    };
+    static constexpr RGBA   kColorDefault_      = RGBA(0x17485cff);
+    static constexpr RGBA   kColorDashing_      = RGBA(0x40c4faff);
+    static constexpr float  kDashDistance_      = 15.0f;                // ダッシュ距離
+    static constexpr float  kDashDurationSec_   = 0.8f;                 // ダッシュ時間(秒)
 
-    EnemyRusher(const Params& params) : params_(params) {}
+    EnemyRusher(const EnemyRusherInitParams& params) : params_(params) {}
 
     void Initialize(bool enableDebugWindow = true) override;
     void Finalize() override;
@@ -65,6 +62,11 @@ public:
     void ToDashMovement();
 
     /// <summary>
+    /// 物理移動に切り替えます。
+    /// </summary>
+    void ToPhysicsMovement();
+
+    /// <summary>
     /// 移動を無効化します。
     /// </summary>
     void DisableMovement();
@@ -88,6 +90,13 @@ public:
     /// </summary>
     bool IsDashing() const;
 
+    bool IsStopped() const;
+
+    /// <summary>
+    /// ダッシュ中の経過時間を取得します。
+    /// </summary>
+    float GetDashElapsedTime() const;
+
 private:
     void InitializeState();
     void InitializeComponents();
@@ -99,15 +108,14 @@ private:
     void InitializeStats();
     void InitializeCollider(EntityStats* pStats);
 
-    static constexpr float  kDashDistance_      = 15.0f;    // ダッシュ距離
-    static constexpr float  kDashDurationSec_   = 0.8f;     // ダッシュ時間(秒)
-    static constexpr float  kFollowSpeed_       = 5.0f;     // 追尾速度(スカラー)
-    static constexpr float  kReflectionPower_   = 15.0f;
-    static constexpr float  kCameraShakePower_  = 0.1f;
+    static constexpr float  kFollowSpeed_                       = 5.0f;     // 追尾速度(スカラー)
+    static constexpr float  kReflectionPower_                   = 15.0f;
+    static constexpr float  kReflectionPowerPlayerExplosion_    = 10.0f;
+    static constexpr float  kCameraShakePower_                  = 0.1f;
 
     std::unique_ptr<EnemyRusherState> pCurrentState_ = nullptr;
 
-    Params                          params_;
+    EnemyRusherInitParams           params_;
     EulerTransform                  transform_          = {};
     std::unique_ptr<Collider>       pCollider_          = nullptr;
     std::unique_ptr<Object3d>       pObjectSelfBody_    = {};
@@ -117,6 +125,7 @@ private:
     // 移動コンポーネントを差し替えて使うためのポインタ
     IMovement* pCurrentMovement_ = nullptr;
     
+    std::unique_ptr<PhysicsMovement>    pPhysicsMovement_   = nullptr;
     std::unique_ptr<FollowMovement>     pFollowMovement_    = nullptr;
     std::unique_ptr<DashMovementLinear> pDashMovement_      = nullptr;
     std::unique_ptr<FocusOrientation>   pFocusOrientation_  = nullptr;

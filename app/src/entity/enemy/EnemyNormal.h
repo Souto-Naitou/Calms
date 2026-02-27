@@ -6,39 +6,23 @@
 #include <Features/Collision/Collider/Collider.h>
 #include <Features/Collision/Manager/CollisionManager.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
-#include <drawable/particle/Emitter/ParticleEmitter.h>
 #include <Features/Audio/AudioManager.h>
-#include <drawable/particle/Particle.h>
 #include <Features/Primitive/SphereLine.h>
 #include <Features/Primitive/Sphere.h>
-#include <Vector3.h>
-#include "./EnemyTypes.h"
+#include <entity/enemy/EnemyType.h>
 #include <component/FollowMovement.h>
 #include <memory>
 #include <component/FocusOrientation.h>
-#include <common/structs.h>
-#include <Features/Lighting/PointLight/PointLight.h>
 #include <entity/status/EntityStats.h>
+#include <entity/enemy/EnemyInitParams.h>
 
 /// <summary>
 /// 敵クラス(ノーマル)
 /// </summary>
-class Enemy : public EntityBase
+class EnemyNormal : public EntityBase
 {
 public:
-    struct Params
-    {
-        DirectionalLight*   pDirLight           = nullptr;
-        PointLight*         pPointLight         = nullptr;
-        Particle*           pParticleTriangle   = nullptr;      // デスパーティクル
-        Particle*           pParticleCircle     = nullptr;      // デスパーティクル
-        IModel*             pModelSelfBody      = nullptr;      // 本体モデル
-        Vector3             initPosition        = {};           // 初期位置
-        const Vector3*      pTargetPosition     = nullptr;      // 追尾対象位置
-    };
-
-public:
-    Enemy(const Params& _desc);
+    EnemyNormal(const EnemyNormalInitParams& param);
 
     /// <summary>
     /// 敵の初期化を行います。
@@ -88,11 +72,6 @@ private:
     void InitializeCollider();
 
     /// <summary>
-    /// パーティクルエミッターを初期化します。
-    /// </summary>
-    void InitializeParticleEmitters();
-
-    /// <summary>
     /// 当たり判定の更新を行います。
     /// </summary>
     void UpdateCollider();
@@ -115,14 +94,14 @@ private:
     void OnCollisionTrigger(const Collider* other);
 
 private:
-    static constexpr EnemyTypes kEnemyType_         = EnemyTypes::Normal;
+    static constexpr EnemyType  kEnemyType_         = EnemyType::Normal;
     static constexpr float      kFollowSpeed_       = 10.0f;
     static constexpr float      kFriction_          = 0.95f;
     static constexpr float      kReflectionPower_   = 15.0f;
     static constexpr float      kCameraShakePower_  = 0.1f;
 
     /// [ 初期化パラメータ ]
-    Params  params_ = {};
+    EnemyNormalInitParams params_ = {};
 
     /// [ コンポーネント ]
     EulerTransform                          transform_          = {};
@@ -141,10 +120,6 @@ private:
 
     /// [ SE ]
     Audio*  audioDeath_  = nullptr;
-
-    /// [ パーティクルエミッタ ]
-    std::unique_ptr<ParticleEmitter>    pParticleDeathShort_        = nullptr;
-    std::unique_ptr<ParticleEmitter>    pParticleDeathSplatter_     = nullptr;
 
     /// [ 他クラスの所有物 ]
     CollisionManager*   pCollisionManager_  = nullptr;
