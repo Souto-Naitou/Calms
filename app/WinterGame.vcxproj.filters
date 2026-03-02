@@ -118,6 +118,12 @@
     <Filter Include="Entity\Enemy\Rusher">
       <UniqueIdentifier>{83909d92-b5bf-4f81-9f79-0cece499ec6b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entity\Enemy\Normal">
+      <UniqueIdentifier>{d10ff5ff-52a9-4cce-9e7c-ae857e981dd1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Presentation\RadialBeat">
+      <UniqueIdentifier>{ee697180-199a-49c5-9550-cb346c795ef8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\framework\Calms.cpp">
@@ -144,9 +150,6 @@
     </ClCompile>
     <ClCompile Include="src\logic\score\ScoreCalculator.cpp">
       <Filter>Logic\Score</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Entity\Enemy\EnemyNormal.cpp">
-      <Filter>Entity\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="src\Entity\Player\Player.cpp">
       <Filter>Entity\Player</Filter>
@@ -262,8 +265,16 @@
     <ClCompile Include="src\component\PhysicsMovement.cpp">
       <Filter>Component</Filter>
     </ClCompile>
-    <ClCompile Include="src\entity\enemy\EnemyRepository.cpp" />
-    <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateKnockback.cpp" />
+    <ClCompile Include="src\entity\enemy\EnemyRepository.cpp">
+      <Filter>Entity\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Entity\Enemy\EnemyNormal.cpp">
+      <Filter>Entity\Enemy\Normal</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateKnockback.cpp">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClCompile>
+    <ClCompile Include="src\presentation\animation\RadialBeat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -289,9 +300,6 @@
     </ClInclude>
     <ClInclude Include="src\logic\score\ScoreCalculator.h">
       <Filter>Logic\Score</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Entity\Enemy\EnemyNormal.h">
-      <Filter>Entity\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="src\Entity\Player\Player.h">
       <Filter>Entity\Player</Filter>
@@ -389,12 +397,6 @@
     <ClInclude Include="src\scene\game\layer\PauseLayer.h">
       <Filter>Scene\Game\layer</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\enemy\rusher\EnemyRusher.h">
-      <Filter>Entity\Enemy</Filter>
-    </ClInclude>
-    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherState.h">
-      <Filter>Entity\Enemy</Filter>
-    </ClInclude>
     <ClInclude Include="src\component\DashMovementLinear.h">
       <Filter>Component</Filter>
     </ClInclude>
@@ -428,10 +430,28 @@
     <ClInclude Include="src\component\PhysicsMovement.h">
       <Filter>Component</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\enemy\EnemyRepository.h" />
-    <ClInclude Include="src\logic\event\ParticleEmitEvent.h" />
-    <ClInclude Include="src\presentation\ParticleType.h" />
-    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateKnockback.h" />
+    <ClInclude Include="src\logic\event\ParticleEmitEvent.h">
+      <Filter>Logic\Event</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\EnemyRepository.h">
+      <Filter>Entity\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Entity\Enemy\EnemyNormal.h">
+      <Filter>Entity\Enemy\Normal</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherState.h">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\rusher\EnemyRusher.h">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\enemy\rusher\EnemyRusherStateKnockback.h">
+      <Filter>Entity\Enemy\Rusher</Filter>
+    </ClInclude>
+    <ClInclude Include="src\presentation\ParticleType.h">
+      <Filter>Presentation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\presentation\animation\RadialBeat.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

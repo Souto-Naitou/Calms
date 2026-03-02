@@ -183,6 +183,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\entity\player\PlayerInput.cpp" />
     <ClCompile Include="src\entity\player\PlayerMovement.cpp" />
     <ClCompile Include="src\logic\slomo\SlomoLogic.cpp" />
+    <ClCompile Include="src\presentation\animation\RadialBeat.cpp" />
     <ClCompile Include="src\presentation\slomo\SlomoEffectController.cpp" />
     <ClCompile Include="src\scene\Edit\EditScene.cpp" />
     <ClCompile Include="src\scene\game\animation\GameClearAnimation.cpp" />
@@ -248,6 +249,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\logic\event\PauseMenuToggleEvent.h" />
     <ClInclude Include="src\logic\event\PlayerExplosionEvent.h" />
     <ClInclude Include="src\logic\slomo\SlomoLogic.h" />
+    <ClInclude Include="src\presentation\animation\RadialBeat.h" />
     <ClInclude Include="src\presentation\ParticleType.h" />
     <ClInclude Include="src\presentation\slomo\SlomoEffectController.h" />
     <ClInclude Include="src\scene\Edit\EditScene.h" />

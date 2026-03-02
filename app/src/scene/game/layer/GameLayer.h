@@ -55,6 +55,7 @@
 #include <vector>
 #include <memory>
 #include <optional>
+#include <presentation/animation/RadialBeat.h>
 
 /// <summary>
 /// ゲーム層 (他にポーズメニュー層やリザルト層などを実装予定)
@@ -151,6 +152,7 @@ private:
     std::unique_ptr<GameClearAnimation>             pGameClearAnimation_    = {};       // !< ゲームクリアアニメーション
     std::unique_ptr<SlomoLogic>                     pSlomoLogic_            = {};       // !< スロー移動ロジック
     std::unique_ptr<SlomoEffectController>          pSlomoEffect_           = {};       // !< スロー移動ロジック
+    std::unique_ptr<RadialBeat>                     pRadialBeat_            = nullptr;  // !< 放射状ブラービート
 
     PlayerBulletGenerator                           playerBulletGenerator_  = {};       // !< プレイヤー弾生成システム
     DirectionalLight                                directionalLight_       = {};       // !< ディレクショナルライト

@@ -2,6 +2,10 @@
 #include <Core/Window/Window.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <config/ResourcePath.h>
+#include <Core/DirectX12/TextureManager.h>
+#include <Math/ViewportUnits.hpp>
+
+using namespace Math::Viewport::Unit;
 
 void InGameTimer::Reset()
 {
@@ -40,33 +44,12 @@ void InGameTimer::CurrentTimeUpdate()
 void InGameTimer::SpriteUpdate()
 {
     double time = gameDuration_ - nowTime_;
-    indexTensPlace_ = static_cast<int>(time) / 10;
-    indexOnesPlace_ = static_cast<int>(time) % 10;
-
-    // インデックスの範囲内に収める
-    indexTensPlace_ = std::clamp(indexTensPlace_, 0u, 9u);
-    indexOnesPlace_ = std::clamp(indexOnesPlace_, 0u, 9u);
-
-    auto& spriteTensPlace = tensPlaceNums_[indexTensPlace_];
-    auto& spriteOnesPlace = onesPlaceNums_[indexOnesPlace_];
-
-    // Y座標（固定）
-    const float kSpritePositionY = static_cast<float>(Window::clientHeight / 4);
-
-    spriteTensPlace->SetPosition({
-        Window::clientWidth / 2 - spriteTensPlace->GetSize().x / 3.0f,
-        kSpritePositionY
-        }
-    );
-
-    spriteOnesPlace->SetPosition({
-        Window::clientWidth / 2 + spriteOnesPlace->GetSize().x / 3.0f,
-        kSpritePositionY
-        }
-    );
-
-    spriteTensPlace->Update();
-    spriteOnesPlace->Update();
+    if (time < 0.0)
+    {
+        time = 0.0;
+    }
+    pNumericView_->SetNumber(static_cast<uint32_t>(std::ceil(time)));
+    pNumericView_->Update();
 }
 
 void InGameTimer::Start()
@@ -83,22 +66,17 @@ void InGameTimer::Initialize(bool _useSystemClock, double _gameDuration)
 {
     gameDuration_ = _gameDuration;
 
-    for (int i = 0; i < 10; i++)
+    for (uint32_t i = 0; i < 10; ++i)
     {
-        tensPlaceNums_[i] = std::make_unique<Sprite>();
-        tensPlaceNums_[i]->Initialize(Path::Image::kNumbers[i]);
-        tensPlaceNums_[i]->SetName("tensPlaceNum_" + std::to_string(i));
-        tensPlaceNums_[i]->SetAnchorPoint({ 0.5f, 0.5f });
-        tensPlaceNums_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.2f });
-        tensPlaceNums_[i]->SetSizeWithFactor(0.25f);
-
-        onesPlaceNums_[i] = std::make_unique<Sprite>();
-        onesPlaceNums_[i]->Initialize(Path::Image::kNumbers[i]);
-        onesPlaceNums_[i]->SetName("onesPlaceNum_" + std::to_string(i));
-        onesPlaceNums_[i]->SetAnchorPoint({ 0.5f, 0.5f });
-        onesPlaceNums_[i]->SetColor({ 1.0f, 1.0f, 1.0f, 0.2f });
-        onesPlaceNums_[i]->SetSizeWithFactor(0.25f);
+        numberTextureHandles_[i] = TextureManager::GetInstance()->GetSrvHandleGPU(Path::Image::kNumbers[i]);
     }
+
+    pNumericView_ = std::make_unique<NumericView>();
+    pNumericView_->Initialize(numberTextureHandles_);
+    pNumericView_->SetFontSize(64.0f);
+    auto& prop = pNumericView_->GetFontLayoutProperties();
+    prop.leftTop = { 50_vw, 25_vh };
+    prop.anchorPoint = { 0.5f, 0.5f };
 
     if (_useSystemClock)
     {
@@ -111,7 +89,6 @@ void InGameTimer::Initialize(bool _useSystemClock, double _gameDuration)
 void InGameTimer::Update()
 {
     this->CurrentTimeUpdate();
-
     this->SpriteUpdate();
 }
 
@@ -121,16 +98,9 @@ void InGameTimer::Draw1F()
     {
         return;
     }
-
-    tensPlaceNums_[indexTensPlace_]->Draw1F();
-    onesPlaceNums_[indexOnesPlace_]->Draw1F();
+    pNumericView_->Draw1F();
 }
 
 void InGameTimer::Finalize()
 {
-    for (int i = 0; i < 10; i++)
-    {
-        tensPlaceNums_[i]->Finalize();
-        onesPlaceNums_[i]->Finalize();
-    }
 }

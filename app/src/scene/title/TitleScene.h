@@ -20,6 +20,7 @@
 #include "nima_engine/src/Features/Audio/Audio.h"
 #include <Math/ViewportUnits.hpp>
 #include <Effects/PostEffects/Mosaic/Mosaic.h>
+#include <presentation/animation/RadialBeat.h>
 
 /// <summary>
 /// タイトルシーン
@@ -83,10 +84,11 @@ private:
     std::unique_ptr<OpeningAnimation>   pOpeningAnimation_          = nullptr;      // !< オープニングアニメーション
     float                               opacityStartPrompt_         = 0.0f;         // !< スタートプロンプトの不透明度
     GaussianBloom*                      pGaussianBloom_             = nullptr;      // !< ガウスぼかし
-    SeparatedGaussianFilter*            pSeparatedGaussianFilter_   = nullptr;    // !< 分離ガウスフィルタ
+    SeparatedGaussianFilter*            pSeparatedGaussianFilter_   = nullptr;      // !< 分離ガウスフィルタ
     Mosaic*                             pMosaic_                    = nullptr;      // !< モザイク
     Audio*                              pSoundStartButton_          = nullptr;      // !< スタートボタン音声
     Audio*                              pSoundBGM_                  = nullptr;      // !< BGM音声
+    std::unique_ptr<RadialBeat>         pRadialBeat_                = nullptr;      // !< 放射状ブラービート
 
     /// 他クラスのインスタンス
     PostEffectExecutor*         pPostEffectExecutor_    = nullptr;      // !< ポストエフェクト実行クラス
