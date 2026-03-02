@@ -1,9 +1,9 @@
 #pragma once
 
+#include <drawable/font/NumericView.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <drawable/sprite/Sprite.h>
 #include <array>
-#include <Features/Layer/Canvas.h>
 
 /// <summary>
 /// ゲーム内タイマークラス
@@ -17,7 +17,7 @@ public:
     /// </summary>
     /// <param name="_useSystemClock">システムクロックを使用する場合は true。</param>
     /// <param name="_gameDuration">ゲームの制限時間（秒）。</param>
-    void Initialize(bool _useSystemClock, double _gameDuration);
+    void Initialize(bool useSystemClock, double gameDuration);
 
     /// <summary>
     /// タイマーの状態を更新します。
@@ -53,9 +53,9 @@ public: /// Getter
 
 
 public: /// Setter
-    void SetDisplay(bool _isDisplay) { isDisplay_ = _isDisplay; }
-    void SetNowTime(double _time) { nowTime_ = _time; }
-    bool SetIsEnd(bool _isEnd) { isEnd_ = _isEnd; }
+    void SetDisplay(bool isDisplay) { isDisplay_ = isDisplay; }
+    void SetNowTime(double time) { nowTime_ = time; }
+    bool SetIsEnd(bool isEnd) { isEnd_ = isEnd; }
 
 private:
     /// <summary>
@@ -83,10 +83,6 @@ private:
     bool isEnd_ = false;
     bool isNextScene_ = false;
 
-    std::array<std::unique_ptr<Sprite>, 10> tensPlaceNums_ = {};
-    std::array<std::unique_ptr<Sprite>, 10> onesPlaceNums_ = {};
-
-    // 表示するスプライトのインデックス
-    uint32_t indexTensPlace_ = 0;
-    uint32_t indexOnesPlace_ = 0;
+    std::array<D3D12_GPU_DESCRIPTOR_HANDLE, 10> numberTextureHandles_ = {};
+    std::unique_ptr<NumericView> pNumericView_ = nullptr;
 };

@@ -57,10 +57,17 @@ void TitleScene::Initialize()
         auto tempBloom = pCanvasBack_->GetPostEffectExecutor().AddEffect(PostEffectClassName::GaussianBloom);
         auto tempGaussian = pCanvasBack_->GetPostEffectExecutor().AddEffect(PostEffectClassName::SeparatedGaussianFilter);
         auto tempMosaic = pCanvasBack_->GetPostEffectExecutor().AddEffect(PostEffectClassName::Mosaic);
-        auto tempRadial = pCanvasSprite_->GetPostEffectExecutor().AddEffect(PostEffectClassName::RadialBlur);
+        auto tempRadial = pCanvasBack_->GetPostEffectExecutor().AddEffect(PostEffectClassName::RadialBlur);
+        tempRadial->Enable(true);
         pGaussianBloom_ = static_cast<GaussianBloom*>(tempBloom);
         pMosaic_ = static_cast<Mosaic*>(tempMosaic);
         pSeparatedGaussianFilter_ = static_cast<SeparatedGaussianFilter*>(tempGaussian);
+
+        auto radial = static_cast<RadialBlur*>(tempRadial);
+        radial->SetBlurWidth(0.0f);
+        pRadialBeat_ = std::make_unique<RadialBeat>();
+        pRadialBeat_->Initialize(radial);
+        pRadialBeat_->SetMaxWidth(0.02f);
     }
 
     this->InitializePostEffects();
@@ -112,6 +119,7 @@ void TitleScene::Update()
     if (pInput_->ReleaseKey(DIK_SPACE) && !isChangingScene_)
     {
         pSoundStartButton_->Play();
+        pRadialBeat_->Start(1.0f);
         pTransShutter_ = std::make_unique<TransShutter>();
         pSceneManager_->ReserveScene("GameScene", "LoadingScreen", std::move(pTransShutter_));
         isChangingScene_ = true;
@@ -130,6 +138,7 @@ void TitleScene::Update()
     pSpriteFrameScreen_->Update();
     pSpritePressStart_->Update();
     pOpeningAnimation_->Update();
+    pRadialBeat_->Update();
 }
 
 void TitleScene::Draw()
@@ -209,7 +218,6 @@ void TitleScene::InitializePostEffects()
     pGaussianBloom_->SetBloomIntensity(2.14f);
 
     pSeparatedGaussianFilter_->SetSigma(27.0f);
-
     pMosaic_->GetOption().power = 200.0f;
 }
 

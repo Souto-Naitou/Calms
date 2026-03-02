@@ -188,6 +188,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
             .pScoreCalculator = scoreCalculator_.get()
         }
     );
+    
 
     /// [ イベント登録 ]
     playerExplosionSub_ = EventListener::GetInstance()->Subscribe<PlayerExplosionEvent>(
@@ -366,6 +367,8 @@ void GameLayer::Update()
 
     UpdatePlayerExplosion();
 
+    pRadialBeat_->Update();
+
     /// [ エミッターの更新 ]
     pEmitterGroup_->UpdateEmitters();
 }
@@ -447,6 +450,7 @@ void GameLayer::Draw()
 
 void GameLayer::Preload(const PreloadContext& ctx, TaskExecutor& executor)
 {
+    pRadialBeat_ = std::make_unique<RadialBeat>();
     pLayer_ = ctx.pLayer;
     CanvasInitialize(executor, ctx.pSceneArgs);
 }
@@ -634,6 +638,14 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
             pOptionGrayscale_->power = 0.0f;
             grayscale->Enable(true);
         }
+        effect = canvasOverall_->GetPostEffectExecutor().AddEffect(PostEffectClassName::RadialBlur);
+        effect->Enable(true);
+
+        auto radialBlur = static_cast<RadialBlur*>(effect);
+        radialBlur->SetBlurWidth(0.0f);
+        pRadialBeat_->Initialize(radialBlur);
+        pRadialBeat_->SetMaxWidth(0.02f);
+
         pLayer_->AddCanvas(canvasOverall_.get());
     };
 
@@ -735,6 +747,7 @@ void GameLayer::AddPlayerExplosion(const PlayerExplosionEvent&)
     explosion->Initialize(false);
     explosion->SetPosition(pPlayer_->GetTransform().translate);
     playerExplosions_.emplace_back(std::move(explosion));
+    pRadialBeat_->Start(1.2f);
 }
 
 void GameLayer::UpdatePlayerExplosion()
