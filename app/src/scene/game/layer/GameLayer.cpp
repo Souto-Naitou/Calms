@@ -18,7 +18,7 @@
 #include <Presentation/ParticleType.h>
 #include <logic/event/ParticleEmitEvent.h>
 
-using namespace Math::Viewport;
+using namespace Math::Viewport::Unit;
 
 void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 {
@@ -135,7 +135,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     timer_.Start();
 
     /// [ ゲームタイマーの初期化 ]
-    ingameTimer_ = std::make_unique<InGameTimer>();
+    ingameTimer_ = std::make_unique<InGameCountDown>();
     ingameTimer_->Initialize(false, kGameLimitTime);
 
     /// [ 入力ガイド ]

@@ -2,7 +2,7 @@
 #include <Effects/PostEffects/RadialBlur/RadialBlur.h>
 #include <Features/Animation/AnimationTimeline.hpp>
 #include <memory>
-#include "nima_engine/src/DebugTools/DebugEntry/DebugEntry.h"
+#include <DebugTools/DebugEntry/DebugEntry.h>
 
 class RadialBeat
 {
@@ -11,6 +11,7 @@ public:
     void Finalize();
     void Start(float duration);
     void SetMaxWidth(float width) { maxWidth_ = width; }
+    void SetSamples(int samples) { pRadialBlur_->SetSamples(samples); }
     void Update();
     void ImGui();
 

@@ -183,6 +183,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\entity\player\PlayerInput.cpp" />
     <ClCompile Include="src\entity\player\PlayerMovement.cpp" />
     <ClCompile Include="src\logic\slomo\SlomoLogic.cpp" />
+    <ClCompile Include="src\presentation\animation\CountDownColorEmphasis.cpp" />
+    <ClCompile Include="src\presentation\animation\CountDownFontSizeEmphasis.cpp" />
     <ClCompile Include="src\presentation\animation\RadialBeat.cpp" />
     <ClCompile Include="src\presentation\slomo\SlomoEffectController.cpp" />
     <ClCompile Include="src\scene\Edit\EditScene.cpp" />
@@ -198,7 +200,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\Entity\Player\Player.cpp" />
     <ClCompile Include="src\Entity\ScreenToWorld\ScreenToWorld.cpp" />
     <ClCompile Include="src\Entity\Status\EntityStats.cpp" />
-    <ClCompile Include="src\logic\timer\InGameTimer.cpp" />
+    <ClCompile Include="src\logic\timer\InGameCountDown.cpp" />
     <ClCompile Include="src\scene\Title\Animation\OpeningAnimation.cpp" />
     <ClCompile Include="src\scene\Title\TitleScene.cpp" />
     <ClCompile Include="src\screen\factory\IntermediateScreenFactory.cpp" />
@@ -249,6 +251,8 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\logic\event\PauseMenuToggleEvent.h" />
     <ClInclude Include="src\logic\event\PlayerExplosionEvent.h" />
     <ClInclude Include="src\logic\slomo\SlomoLogic.h" />
+    <ClInclude Include="src\presentation\animation\CountDownColorEmphasis.h" />
+    <ClInclude Include="src\presentation\animation\CountDownFontSizeEmphasis.h" />
     <ClInclude Include="src\presentation\animation\RadialBeat.h" />
     <ClInclude Include="src\presentation\ParticleType.h" />
     <ClInclude Include="src\presentation\slomo\SlomoEffectController.h" />
@@ -264,7 +268,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\Entity\Player\Player.h" />
     <ClInclude Include="src\Entity\ScreenToWorld\ScreenToWorld.h" />
     <ClInclude Include="src\Entity\Status\EntityStats.h" />
-    <ClInclude Include="src\logic\timer\InGameTimer.h" />
+    <ClInclude Include="src\logic\timer\InGameCountDown.h" />
     <ClInclude Include="src\scene\Title\Animation\OpeningAnimation.h" />
     <ClInclude Include="src\scene\Title\TitleScene.h" />
     <ClInclude Include="src\screen\factory\IntermediateScreenFactory.h" />
