@@ -142,7 +142,7 @@
     <ClCompile Include="src\scene\Clear\ClearScene.cpp">
       <Filter>Scene\Clear</Filter>
     </ClCompile>
-    <ClCompile Include="src\logic\timer\InGameTimer.cpp">
+    <ClCompile Include="src\logic\timer\InGameCountDown.cpp">
       <Filter>Logic\Timer</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\guide\InputGuide.cpp">
@@ -275,6 +275,8 @@
       <Filter>Entity\Enemy\Rusher</Filter>
     </ClCompile>
     <ClCompile Include="src\presentation\animation\RadialBeat.cpp" />
+    <ClCompile Include="src\presentation\animation\CountDownFontSizeEmphasis.cpp" />
+    <ClCompile Include="src\presentation\animation\CountDownColorEmphasis.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -289,7 +291,7 @@
     <ClInclude Include="src\ui\CountDown\CountDown.h">
       <Filter>UI\CountDown</Filter>
     </ClInclude>
-    <ClInclude Include="src\logic\timer\InGameTimer.h">
+    <ClInclude Include="src\logic\timer\InGameCountDown.h">
       <Filter>Logic\Timer</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\guide\InputGuide.h">
@@ -452,6 +454,8 @@
       <Filter>Presentation</Filter>
     </ClInclude>
     <ClInclude Include="src\presentation\animation\RadialBeat.h" />
+    <ClInclude Include="src\presentation\animation\CountDownFontSizeEmphasis.h" />
+    <ClInclude Include="src\presentation\animation\CountDownColorEmphasis.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

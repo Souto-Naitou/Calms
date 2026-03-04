@@ -4,19 +4,19 @@
 #include <config/ResourcePath.h>
 #include <Core/DirectX12/TextureManager.h>
 #include <Math/ViewportUnits.hpp>
+#include <cmath>
 
 using namespace Math::Viewport::Unit;
 
-void InGameTimer::Reset()
+void InGameCountDown::Reset()
 {
     isEnd_ = false;
-    isNextScene_ = false;
     isStart_ = false;
     nowTime_ = 0.0;
     if (pTimer_) pTimer_->Reset();
 }
 
-void InGameTimer::CurrentTimeUpdate()
+void InGameCountDown::CurrentTimeUpdate()
 {
     /// タイマー更新
     if (isStart_)
@@ -35,13 +35,21 @@ void InGameTimer::CurrentTimeUpdate()
     {
         isEnd_ = true;
     }
-    if (nowTime_ > gameDuration_ + changeInterval_)
+}
+
+void InGameCountDown::VisualEffectUpdate()
+{
+    auto remainingTime = static_cast<float>(gameDuration_ - nowTime_);
+    pCountDownEmphasis_->Update(*pNumericView_, remainingTime);
+    pCountDownColorEmphasis_->Update(*pNumericView_, remainingTime);
+
+    if (std::ceil(remainingTime) == 0)
     {
-        isNextScene_ = true;
+        isDisplay_ = false;
     }
 }
 
-void InGameTimer::SpriteUpdate()
+void InGameCountDown::SpriteUpdate()
 {
     double time = gameDuration_ - nowTime_;
     if (time < 0.0)
@@ -52,7 +60,7 @@ void InGameTimer::SpriteUpdate()
     pNumericView_->Update();
 }
 
-void InGameTimer::Start()
+void InGameCountDown::Start()
 {
     isStart_ = true;
 
@@ -62,7 +70,7 @@ void InGameTimer::Start()
     }
 }
 
-void InGameTimer::Initialize(bool _useSystemClock, double _gameDuration)
+void InGameCountDown::Initialize(bool _useSystemClock, double _gameDuration)
 {
     gameDuration_ = _gameDuration;
 
@@ -73,7 +81,7 @@ void InGameTimer::Initialize(bool _useSystemClock, double _gameDuration)
 
     pNumericView_ = std::make_unique<NumericView>();
     pNumericView_->Initialize(numberTextureHandles_);
-    pNumericView_->SetFontSize(64.0f);
+    pNumericView_->SetFontSize(kFontSize_);
     auto& prop = pNumericView_->GetFontLayoutProperties();
     prop.leftTop = { 50_vw, 25_vh };
     prop.anchorPoint = { 0.5f, 0.5f };
@@ -84,15 +92,23 @@ void InGameTimer::Initialize(bool _useSystemClock, double _gameDuration)
     }
 
     isUseSystemClock_ = _useSystemClock;
+
+    /// 強調アニメーションの初期化
+    pCountDownEmphasis_ = std::make_unique<CountDownFontSizeEmphasis>();
+    pCountDownEmphasis_->Initialize({ 0.0f, 5.0f }, { kFontSize_, kEmphasisFontSize_});
+    pCountDownColorEmphasis_ = std::make_unique<CountDownColorEmphasis>();
+    pCountDownColorEmphasis_->Initilize(kEmphasisColor_.to_Vector4(), { 0.0f, 5.0f });
+    pCountDownColorEmphasis_->SetDefaultColor(kDefaultColor_.to_Vector4());
 }
 
-void InGameTimer::Update()
+void InGameCountDown::Update()
 {
     this->CurrentTimeUpdate();
+    this->VisualEffectUpdate();
     this->SpriteUpdate();
 }
 
-void InGameTimer::Draw1F()
+void InGameCountDown::Draw1F()
 {
     if (!isDisplay_)
     {
@@ -101,6 +117,6 @@ void InGameTimer::Draw1F()
     pNumericView_->Draw1F();
 }
 
-void InGameTimer::Finalize()
+void InGameCountDown::Finalize()
 {
 }

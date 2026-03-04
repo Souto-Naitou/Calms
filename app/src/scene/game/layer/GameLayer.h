@@ -38,7 +38,7 @@
 #include <entity/enemy/EnemyFactory.h>
 #include <entity/enemy/EnemyRepository.h>
 #include <logic/spawner/EnemySpawner.h>
-#include <logic/timer/InGameTimer.h>
+#include <logic/timer/InGameCountDown.h>
 #include <logic/event/PlayerExplosionEvent.h>
 #include <logic/score/ScoreCalculator.h>
 #include <logic/slomo/SlomoLogic.h>
@@ -112,7 +112,7 @@ private:
     static constexpr inline float  kTargetDirectionalLightFlashIntensity_ = 12.0f;
 
 #ifdef _DEBUG
-    static constexpr inline uint32_t kGameLimitTime = 60u;
+    static constexpr inline uint32_t kGameLimitTime = 7u;
 #else
     static constexpr inline uint32_t kGameLimitTime = 60u;
 #endif // _DEBUG
@@ -142,7 +142,7 @@ private:
     std::unique_ptr<ScoreCalculator>                scoreCalculator_        = {};       // !< スコア計算機
 
     /// UI
-    std::unique_ptr<InGameTimer>                    ingameTimer_            = {};       // !< ゲームタイマー
+    std::unique_ptr<InGameCountDown>                    ingameTimer_            = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                     inputGuide_             = {};       // !< 入力ガイド
     std::unique_ptr<Sprite>                         spriteClear_            = {};       // !< クリアスプライト
     std::unique_ptr<Sprite>                         spriteSpace_            = {};       // !< クリアスプライト

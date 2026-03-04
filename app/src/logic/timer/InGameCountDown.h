@@ -3,12 +3,15 @@
 #include <drawable/font/NumericView.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <drawable/sprite/Sprite.h>
+#include <presentation/animation/CountDownFontSizeEmphasis.h>
 #include <array>
+#include <presentation/animation/CountDownColorEmphasis.h>
+#include <Color.h>
 
 /// <summary>
 /// ゲーム内タイマークラス
 /// </summary>
-class InGameTimer
+class InGameCountDown
 {
 public:
     /// <summary>
@@ -47,7 +50,6 @@ public:
 
 public: /// Getter
     bool IsEnd() const { return isEnd_; }
-    bool IsNextScene() const { return isNextScene_; }
     double GetNowTime() const { return nowTime_; }
 
 
@@ -64,11 +66,21 @@ private:
     void CurrentTimeUpdate();
 
     /// <summary>
+    /// タイマーの視覚要素を更新します。
+    /// </summary>
+    void VisualEffectUpdate();
+
+    /// <summary>
     /// 表示用スプライトのインデックスや不透明度など視覚要素を更新します。
     /// </summary>
     void SpriteUpdate();
 
 private:
+    static constexpr RGBA   kDefaultColor_      = RGBA(0xFFFFFFFF); // 白色
+    static constexpr RGBA   kEmphasisColor_     = RGBA(0xEF3939FF); // 赤色
+    static constexpr float  kFontSize_          = 128.0f; // 通常時のフォントサイズ
+    static constexpr float  kEmphasisFontSize_  = 256.0f; // 強調時のフォントサイズ
+
     /// タイマー
     std::unique_ptr<TimeMeasurer> pTimer_ = nullptr;
     double nowTime_ = 0.0;
@@ -81,8 +93,11 @@ private:
     const double changeInterval_ = 2.0;
 
     bool isEnd_ = false;
-    bool isNextScene_ = false;
 
-    std::array<D3D12_GPU_DESCRIPTOR_HANDLE, 10> numberTextureHandles_ = {};
-    std::unique_ptr<NumericView> pNumericView_ = nullptr;
+    /// 残り時間が特定の範囲に入ったときの強調アニメーション
+    std::unique_ptr<CountDownFontSizeEmphasis>  pCountDownEmphasis_         = nullptr;
+    std::unique_ptr<CountDownColorEmphasis>     pCountDownColorEmphasis_    = nullptr;
+
+    std::array<D3D12_GPU_DESCRIPTOR_HANDLE, 10> numberTextureHandles_       = {};
+    std::unique_ptr<NumericView>                pNumericView_               = nullptr;
 };
