@@ -22,12 +22,12 @@ void PlayerInput::Update()
     // 射撃
     data_.isShotPressed = pInput_->PushMouse(Input::MouseNum::Left);
     // スロー(トリガー)
-    data_.isSlowTriggered = pInput_->TriggerKey(DIK_LSHIFT);
+    data_.isSlowTriggered = pInput_->TriggerKey(DIK_SPACE);
     // スロー(プレス)
-    data_.isSlowPressed = pInput_->PushKey(DIK_LSHIFT);
+    data_.isSlowPressed = pInput_->PushKey(DIK_SPACE);
     // スロー(リリース)
     data_.isSlowReleased = preData.isSlowPressed && !data_.isSlowPressed;
     // 爆発トリガー
-    data_.isExplosionTriggered |= pInput_->TriggerKey(DIK_SPACE);
+    data_.isExplosionTriggered |= pInput_->TriggerKey(DIK_LSHIFT);
     data_.isExplosionTriggered |= pInput_->TriggerMouse(Input::MouseNum::Right);
 }
