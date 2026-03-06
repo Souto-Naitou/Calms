@@ -13,6 +13,7 @@
 #include "nima_engine/src/Features/Primitive/Sphere.h"
 #include "../../Status/EntityStats.h"
 #include <nima_engine/modules/vectormatrix/math/Color.h>
+#include <Features/Audio/Audio.h>
 
 class EnemyRusher : public EntityBase
 {
@@ -125,6 +126,10 @@ private:
     // 移動コンポーネントを差し替えて使うためのポインタ
     IMovement* pCurrentMovement_ = nullptr;
     
+    /// [ SE ]
+    Audio* audioDeath_ = nullptr;
+
+    /// [ コンポーネント ]
     std::unique_ptr<PhysicsMovement>    pPhysicsMovement_   = nullptr;
     std::unique_ptr<FollowMovement>     pFollowMovement_    = nullptr;
     std::unique_ptr<DashMovementLinear> pDashMovement_      = nullptr;

@@ -1,4 +1,5 @@
 #include "EnemyRusher.h"
+
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include "EnemyRusherStateFollow.h"
 #include "EnemyRusherStateKnockback.h"
@@ -6,10 +7,11 @@
 #include <Features/Collision/Manager/CollisionManager.h>
 #include <functional>
 #include <logic/event/KillEnemyEvent.h>
-#include "nima_engine/src/Features/event/EventListener.h"
+#include <Features/event/EventListener.h>
 #include <logic/event/ParticleEmitEvent.h>
 #include <presentation/ParticleType.h>
-
+#include <config/ResourcePath.h>
+#include <Features/Audio/AudioManager.h>
 
 
 void EnemyRusher::Initialize(bool enableDebugWindow /*= true*/)
@@ -19,6 +21,10 @@ void EnemyRusher::Initialize(bool enableDebugWindow /*= true*/)
 
     this->InitializeComponents();
     this->InitializeState();
+
+    /// オーディオの初期化
+    audioDeath_ = AudioManager::GetInstance()->GetNewAudio("Effect", Path::Audio::kSeEnemyDeath);
+    audioDeath_->SetVolume(0.05f);
 }
 
 void EnemyRusher::Finalize()
@@ -106,6 +112,7 @@ void EnemyRusher::OnCollisionTrigger(const Collider* pOther)
         {
             // 死亡する
             EntityBase::Dead();
+            audioDeath_->Play();
 
             /// あたっている相手に応じてスコアイベントを発行
             if (isPlayerBullet)
