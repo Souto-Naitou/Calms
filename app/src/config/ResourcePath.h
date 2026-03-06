@@ -75,6 +75,7 @@ namespace Path::Audio
     inline constexpr const char* kSePlayerSlowOn = "se_player_slow_on.wav";
     inline constexpr const char* kSePlayerSlowOff = "se_player_slow_off.wav";
     inline constexpr const char* kSeEnemyDeath = "se_enemy_death.wav";
+    inline constexpr const char* kSeEnemyRusherAim = "se_enemyrusher_aim.wav";
 
     namespace UI
     {

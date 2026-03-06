@@ -39,43 +39,28 @@ public:
     /// </summary>
     void ChangeState(std::unique_ptr<EnemyRusherState> newState);
 
+public:
     /// [ 行動インターフェース ]
 
-    /// <summary>
-    /// ターゲットに向かって注視します。
-    /// </summary>
-    /// <param name="deltaTime"></param>
+    /// <summary>ターゲットに向かって注視します。</summary>
     void FocusOnTarget(float deltaTime);
 
-    /// <summary>
     /// ターゲットに向かってダッシュ移動を開始します。
-    /// </summary>
     void DashToTarget();
 
-    /// <summary>
     /// 追尾移動に切り替えます。
-    /// </summary>
     void ToFollowMovement();
 
-    /// <summary>
     /// ダッシュ移動に切り替えます。
-    /// </summary>
     void ToDashMovement();
 
-    /// <summary>
     /// 物理移動に切り替えます。
-    /// </summary>
     void ToPhysicsMovement();
 
-    /// <summary>
     /// 移動を無効化します。
-    /// </summary>
     void DisableMovement();
 
-    /// <summary>
     /// 色を変更します。
-    /// </summary>
-    /// <param name="color"></param>
     void ChangeColor(const Vector4& color);
     
     /// [ 判定インターフェース ]
@@ -86,17 +71,17 @@ public:
     /// <param name="thresholdDistance">近いと判定する距離の閾値。</param>
     bool IsCloseToTarget(float thresholdDistance) const;
 
-    /// <summary>
     /// ダッシュ中か判定します。
-    /// </summary>
     bool IsDashing() const;
 
+    /// 速度がほぼ0で停止しているか判定します。
     bool IsStopped() const;
 
-    /// <summary>
     /// ダッシュ中の経過時間を取得します。
-    /// </summary>
     float GetDashElapsedTime() const;
+
+    /// エイム時のSEを再生します。
+    void PlaySoundOnAim() const;
 
 private:
     void InitializeState();
@@ -128,6 +113,7 @@ private:
     
     /// [ SE ]
     Audio* audioDeath_ = nullptr;
+    Audio* audioAim_ = nullptr;
 
     /// [ コンポーネント ]
     std::unique_ptr<PhysicsMovement>    pPhysicsMovement_   = nullptr;
