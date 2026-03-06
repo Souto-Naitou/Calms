@@ -78,7 +78,7 @@ private:
 private:
     static constexpr RGBA   kDefaultColor_      = RGBA(0xFFFFFFFF);     // 白色
     static constexpr RGBA   kEmphasisColor_     = RGBA(0xEF3939FF);     // 赤色
-    static constexpr float  kFontSize_          = 128.0f;               // 通常時のフォントサイズ
+    static constexpr float  kFontSize_          = 96.0f;               // 通常時のフォントサイズ
     static constexpr float  kEmphasisFontSize_  = 256.0f;               // 強調時のフォントサイズ
     static constexpr float  kLetterSpacing_     = -kFontSize_ * 0.35f;  // 強調時のフォントサイズ
 
