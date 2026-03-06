@@ -76,23 +76,24 @@ private:
     void SpriteUpdate();
 
 private:
-    static constexpr RGBA   kDefaultColor_      = RGBA(0xFFFFFFFF); // 白色
-    static constexpr RGBA   kEmphasisColor_     = RGBA(0xEF3939FF); // 赤色
-    static constexpr float  kFontSize_          = 128.0f; // 通常時のフォントサイズ
-    static constexpr float  kEmphasisFontSize_  = 256.0f; // 強調時のフォントサイズ
+    static constexpr RGBA   kDefaultColor_      = RGBA(0xFFFFFFFF);     // 白色
+    static constexpr RGBA   kEmphasisColor_     = RGBA(0xEF3939FF);     // 赤色
+    static constexpr float  kFontSize_          = 96.0f;                // 通常時のフォントサイズ
+    static constexpr float  kEmphasisFontSize_  = 256.0f;               // 強調時のフォントサイズ
+    static constexpr float  kLetterSpacing_     = -kFontSize_ * 0.3f;   // 文字間隔
 
     /// タイマー
     std::unique_ptr<TimeMeasurer> pTimer_ = nullptr;
     double nowTime_ = 0.0;
-
-    bool isStart_ = false;
-    bool isDisplay_ = false;
-    bool isUseSystemClock_ = false;
-
     double gameDuration_ = 0.0;
-    const double changeInterval_ = 2.0;
 
-    bool isEnd_ = false;
+    /// フラグ
+    bool isStart_           = false;
+    bool isEnd_             = false;
+    bool isDisplay_         = false;
+    bool isUseSystemClock_  = false;
+
+
 
     /// 残り時間が特定の範囲に入ったときの強調アニメーション
     std::unique_ptr<CountDownFontSizeEmphasis>  pCountDownEmphasis_         = nullptr;

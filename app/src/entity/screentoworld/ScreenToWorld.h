@@ -34,7 +34,7 @@ public:
     void Draw1F();
 
     void SetGameEye(GameEye* _eye) { pGameEye_ = _eye; ModifyGameEye(_eye); }
-    Vector3 GetWorldPoint() const { return worldPoint_; }
+    const Vector3& GetWorldPoint() const { return worldPoint_; }
 
 private:
     /// ワールド上の座標

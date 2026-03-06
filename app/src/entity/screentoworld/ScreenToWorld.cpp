@@ -60,6 +60,7 @@ void ScreenToWorld::Update()
     }
 
     worldPoint_ = origin_ + direction_ * t;
+    worldPoint_.y = 0.5f;
 
     nearPos.y = 0;
     reticle_->SetPosition({ static_cast<float>(cursor.x), static_cast<float>(cursor.y) });

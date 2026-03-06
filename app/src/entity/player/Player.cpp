@@ -77,6 +77,12 @@ void Player::Update()
         pMovement_->Update(transform_, kDeltaTime);
     }
 
+    // 座標に基づく向きの更新
+    if (!(flags_ & static_cast<uint32_t>(Flags::DisableRotation)))
+    {
+        pFocusOrientation_->Update(transform_, kDeltaTime);
+    }
+
     // AABBリミッターの更新 (ここで座標補正が入る)
     if (pAABBLimitter_) pAABBLimitter_->Update(transform_);
 
@@ -96,6 +102,7 @@ void Player::Update()
 
     /// 3dモデルの更新
     pObject_->SetTranslate(transform_.translate);
+    pObject_->SetRotate(transform_.rotate);
     pObject_->Update();
 
     /// コライダーの更新
@@ -223,6 +230,9 @@ void Player::ComponentInitialize()
         pAABBLimitter_ = std::make_unique<MovementLimitterAABB>();
         pAABBLimitter_->SetBounds(params_.pMovableBounds);
     }
+    pFocusOrientation_ = std::make_unique<FocusOrientation>();
+    pFocusOrientation_->SetRotateRatio(50.0f);
+    pFocusOrientation_->SetTargetPosition(params_.pCursorPosition);
 }
 
 void Player::ImGui()

@@ -75,6 +75,11 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
         playableArea_.SetMinMax(min, max);
     }
 
+    /// [ 座標変換の初期化 ]
+    screenToWorld_ = std::make_unique<ScreenToWorld>();
+    screenToWorld_->Initialize();
+    screenToWorld_->SetGameEye(pGameEye_.get());
+
     /// [ プレイヤーの初期化 ]
     Player::Params playerParams = {};
     playerParams.particle = particles_[static_cast<size_t>(ParticleID::PlayerConstant)];
@@ -82,6 +87,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     playerParams.pDirLight = &directionalLight_;
     playerParams.pPointLight = &pointLight_;
     playerParams.pMovableBounds = &playableArea_;
+    playerParams.pCursorPosition = &screenToWorld_->GetWorldPoint();
     pPlayer_ = std::make_unique<Player>(playerParams);
     pPlayer_->Initialize();
 
@@ -125,11 +131,6 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     /// [ デルタタイムの設定 ]
     pDeltaTimeManager_->SetDeltaTime(0, 1.0f / 60.0f);
     pDeltaTimeManager_->SetDeltaTime(1, 1.0f / 60.0f);
-
-    /// [ 座標変換の初期化 ]
-    screenToWorld_ = std::make_unique<ScreenToWorld>();
-    screenToWorld_->Initialize();
-    screenToWorld_->SetGameEye(pGameEye_.get());
 
     /// [ タイマー ]
     timer_.Start();
