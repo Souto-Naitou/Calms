@@ -25,6 +25,8 @@ void EnemyRusher::Initialize(bool enableDebugWindow /*= true*/)
     /// オーディオの初期化
     audioDeath_ = AudioManager::GetInstance()->GetNewAudio("Effect", Path::Audio::kSeEnemyDeath);
     audioDeath_->SetVolume(0.05f);
+    audioAim_ = AudioManager::GetInstance()->GetNewAudio("Effect", Path::Audio::kSeEnemyRusherAim);
+    audioAim_->SetVolume(0.05f);
 }
 
 void EnemyRusher::Finalize()
@@ -250,6 +252,14 @@ float EnemyRusher::GetDashElapsedTime() const
 {
     if (!pDashMovement_) return 0.0f;
     return pDashMovement_->GetElapsedTime();
+}
+
+void EnemyRusher::PlaySoundOnAim() const
+{
+    if (audioAim_)
+    {
+        audioAim_->Play();
+    }
 }
 
 void EnemyRusher::InitializeState()

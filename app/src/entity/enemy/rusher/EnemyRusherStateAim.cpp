@@ -5,6 +5,7 @@
 void EnemyRusherStateAim::Enter(EnemyRusher& enemy)
 {
     enemy.DisableMovement();
+    enemy.PlaySoundOnAim();
 }
 
 void EnemyRusherStateAim::Update(EnemyRusher& enemy, float deltaTime)
