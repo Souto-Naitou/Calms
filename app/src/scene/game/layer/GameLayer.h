@@ -112,7 +112,7 @@ private:
     static constexpr inline float  kTargetDirectionalLightFlashIntensity_ = 12.0f;
 
 #ifdef _DEBUG
-    static constexpr inline uint32_t kGameLimitTime = 7u;
+    static constexpr inline uint32_t kGameLimitTime = 60u;
 #else
     static constexpr inline uint32_t kGameLimitTime = 60u;
 #endif // _DEBUG

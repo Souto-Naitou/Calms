@@ -22,6 +22,7 @@
 #include <Common/structs.h>
 #include <Features/Primitive/AABB.h>
 #include <component/MovementLimitterAABB.h>
+#include <component/FocusOrientation.h>
 
 
 /// <summary>
@@ -37,6 +38,7 @@ public:
         DirectionalLight*   pDirLight       = nullptr;
         PointLight*         pPointLight     = nullptr;
         AABB*               pMovableBounds  = nullptr;
+        const Vector3*      pCursorPosition = nullptr;
     };
 
     enum class Flags : uint32_t
@@ -44,6 +46,7 @@ public:
         None            = 0x00000000,
         DisableMovement = 0x00000001,
         DisableInput    = 0x00000002,
+        DisableRotation = 0x00000004,
     };
 
     Player(const Params& params);
@@ -146,8 +149,9 @@ private:
     std::unique_ptr<PlayerContext>              pContext_           = nullptr;
     std::unique_ptr<PlayerMovement>             pMovement_          = nullptr;
     std::unique_ptr<PlayerExplosionTrigger>     pExplosionTrigger_  = nullptr;
+    std::unique_ptr<FocusOrientation>           pFocusOrientation_  = nullptr;
     std::unique_ptr<EntityStats>                pStats_             = nullptr;
-    std::unique_ptr<MovementLimitterAABB> pAABBLimitter_      = nullptr;
+    std::unique_ptr<MovementLimitterAABB>       pAABBLimitter_      = nullptr;
     std::unique_ptr<IModel>                     pModelSelfBody_     = nullptr;
     std::unique_ptr<Object3d>                   pObject_            = nullptr;
     std::unique_ptr<Collider>                   pCollider_          = nullptr;
