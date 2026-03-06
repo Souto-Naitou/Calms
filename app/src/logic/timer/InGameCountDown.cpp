@@ -85,7 +85,7 @@ void InGameCountDown::Initialize(bool _useSystemClock, double _gameDuration)
     auto& prop = pNumericView_->GetFontLayoutProperties();
     prop.leftTop = { 50_vw, 25_vh };
     prop.anchorPoint = { 0.5f, 0.5f };
-    prop.letterSpacing = -kFontSize_ * 0.3f;
+    prop.letterSpacing = kLetterSpacing_;
 
     if (_useSystemClock)
     {
