@@ -5,7 +5,7 @@
 #include <Features/GameEye/GameEye.h>
 #include <unordered_map>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
-#include <Features/Lighting/PointLight/PointLight.h>
+#include <Features/Lighting/PointLight.h>
 #include <drawable/sprite/Sprite.h>
 #include <logic/score/ScoreCalculator.h>
 

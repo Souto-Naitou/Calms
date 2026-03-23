@@ -14,6 +14,8 @@
 #include <Effects/PostEffects/SeparatedGaussianFilter/SeparatedGaussianFilter.h>
 #include <optional>
 #include <memory>
+#include <Features/Lighting/DirectionalLight.h>
+#include <Features/Lighting/PointLight.h>
 
 /// <summary>
 /// ゲームシーン
@@ -66,12 +68,14 @@ private:
     static constexpr inline float kPauseBlurSigmaLerpFactorDecrease_ = 0.2f;
     static constexpr inline float kPauseBlurSigmaMax_ = 30.0f;
 
-    std::unique_ptr<GameLayer>  pGameLayer_         = nullptr;
-    std::unique_ptr<PauseLayer> pPauseLayer_        = nullptr;
-    Audio*                      pBGM_               = nullptr;  // !< BGMポインタ
-    bool                        isPauseMenuActive_  = false;
-    bool                        isChangingScene_    = false;
-    SeparatedGaussianFilter*    pGaussianFilter_    = nullptr;  // !< ガウシアンフィルタ (ポーズ用)
+    std::unique_ptr<GameLayer>          pGameLayer_         = nullptr;
+    std::unique_ptr<PauseLayer>         pPauseLayer_        = nullptr;
+    std::unique_ptr<DirectionalLight>   pDirectionalLight_  = nullptr;
+    std::unique_ptr<PointLight>         pPointLight_        = nullptr;
+    Audio*                              pBGM_               = nullptr;  // !< BGMポインタ
+    bool                                isPauseMenuActive_  = false;
+    bool                                isChangingScene_    = false;
+    SeparatedGaussianFilter*            pGaussianFilter_    = nullptr;  // !< ガウシアンフィルタ (ポーズ用)
 
     std::optional<EventSubscription> subscriptionPauseMenuToggle_ = std::nullopt;
 

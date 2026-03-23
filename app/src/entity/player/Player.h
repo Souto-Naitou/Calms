@@ -18,7 +18,7 @@
 #include "PlayerExplosionTrigger.h"
 #include <Math/Transform.h>
 #include <entity/status/EntityStats.h>
-#include <Features/Lighting/PointLight/PointLight.h>
+#include <Features/Lighting/PointLight.h>
 #include <Common/structs.h>
 #include <Features/Primitive/AABB.h>
 #include <component/MovementLimitterAABB.h>
@@ -33,7 +33,6 @@ class Player : public EntityBase
 public:
     struct Params
     {
-        Particle*           particle        = nullptr;
         ModelManager*       pModelManager   = nullptr;
         DirectionalLight*   pDirLight       = nullptr;
         PointLight*         pPointLight     = nullptr;
@@ -117,11 +116,6 @@ private:
     void ColliderInitialize();
 
     /// <summary>
-    /// パーティクルエミッターの初期化を行います。
-    /// </summary>
-    void ParticleEmittersInitialize();
-
-    /// <summary>
     /// 入力状態から移動や射撃などのコマンドを更新します。
     /// </summary>
     void UpdateInputCommands();
@@ -161,9 +155,6 @@ private:
 
     /// コライダー用
     OBB obb_ = {};
-
-    /// [ パーティクルエミッター ]
-    std::unique_ptr<ParticleEmitter>        pEmitterConstant_   = nullptr;    // 常時発生エミッター
 
     /// [ オーディオ ]
     Audio*  pAudioShot_     = nullptr;

@@ -9,7 +9,6 @@
 
 EnemyNormal::EnemyNormal(const EnemyNormalInitParams& param)
 {
-    pModelSelfBody_ = param.pModelSelfBody->Cloned();
     params_ = param;
 }
 
@@ -29,9 +28,6 @@ void EnemyNormal::Initialize(bool enableDebugWindow)
     pStats_ = std::make_unique<EntityStats>();
     pStats_->Initialize(1.0f, 10.0f, 10.0f);
 
-    // オブジェクトの初期化
-    this->InitializeObjects();
-
     // コライダーの初期化
     this->InitializeCollider();
 
@@ -49,8 +45,6 @@ void EnemyNormal::Finalize()
     /// コライダーの削除
     pCollisionManager_->UnregisterCollider(pCollider_.get());
 
-    pObjectSelfBody_->Finalize();
-
     EventListener* pEventListener = EventListener::GetInstance();
 
     ParticleEmitEvent emitEvent;
@@ -63,10 +57,11 @@ void EnemyNormal::Finalize()
 
     if (params_.pDirLight) 
     {
-        params_.pDirLight->intensity += 0.5f;
-        if (params_.pDirLight->intensity > 8.0f)
+        auto& data = params_.pDirLight->GetData();
+        data.intensity += 0.5f;
+        if (data.intensity > 8.0f)
         {
-            params_.pDirLight->intensity = 8.0f;
+            data.intensity = 8.0f;
         }
     }
 }
@@ -76,9 +71,6 @@ void EnemyNormal::Update()
     const auto  dtChannel = static_cast<uint32_t>(DeltaTimeChannelReserved::Game);
     const float deltaTime = pDeltaTimeManager_->GetDeltaTime(dtChannel);
 
-    /// オブジェクトの更新
-    this->UpdateObjects();
-
     /// コライダーの更新
     this->UpdateCollider();
 
@@ -86,11 +78,17 @@ void EnemyNormal::Update()
     pMovement_->ApplyFriction(kFriction_);
     pMovement_->Update(transform_, deltaTime);
     pFocusOrientation_->Update(transform_, deltaTime);
+
+    Object3dInstanceData drawData;
+    drawData.scale = transform_.scale;
+    drawData.rotate = transform_.rotate;
+    drawData.translate = transform_.translate;
+    drawData.color = kColorBody_;
+    params_.pObject3dInstanced->emplace_back(drawData);
 }
 
 void EnemyNormal::Draw1F()
 {
-    if (pObjectSelfBody_) pObjectSelfBody_->Draw1F();
     if (isDrawCollisionArea_) sphereLine_.Draw1F();
 }
 
@@ -101,26 +99,7 @@ void EnemyNormal::InitializeComponents()
     pFocusOrientation_ = std::make_unique<FocusOrientation>();
     pFocusOrientation_->SetTargetPosition(params_.pTargetPosition);
     pFocusOrientation_->SetRotateRatio(0.95f);
-}
-
-void EnemyNormal::InitializeObjects()
-{
-    if (pModelSelfBody_ == nullptr)
-    {
-        Logger::GetInstance()->LogError(__FILE__, __FUNCTION__, "pModelSelfBody_ がnullptrです");
-    }
-
-    /// オブジェクトの初期化
-    pObjectSelfBody_ = std::make_unique<Object3d>();
-    pObjectSelfBody_->Initialize(false);
-    pObjectSelfBody_->SetName("enemy");
-    pObjectSelfBody_->SetTranslate(Vector3(0, 0.5f, 0));
-    pObjectSelfBody_->SetRotate(Vector3(0, 0, 0));
-    pObjectSelfBody_->SetModel(pModelSelfBody_.get());
-    auto& option = pObjectSelfBody_->GetOption();
-    option.materialData->environmentCoefficient = 0.0f;
-    option.materialData->color = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-    option.lightingData->enableLighting = false;
+    transform_.scale = Vector3(1.0f, 1.0f, 1.0f);
 }
 
 void EnemyNormal::InitializeCollider()
@@ -149,13 +128,6 @@ void EnemyNormal::UpdateCollider()
     sphereLine_.Update();
 
     pCollider_->SetShapeData(&sphere_);
-}
-
-void EnemyNormal::UpdateObjects()
-{
-    pObjectSelfBody_->SetTranslate(transform_.translate);
-    pObjectSelfBody_->SetRotate(transform_.rotate);
-    pObjectSelfBody_->Update();
 }
 
 void EnemyNormal::OnCollision(const Collider* other)

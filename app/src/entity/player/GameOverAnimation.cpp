@@ -44,7 +44,7 @@ void GameOverAnimation::Play()
     timer_.Start();
     original_.playerScale = initParams_.pPlayer->GetObject3d()->GetScale();
     original_.cameraPosition = initParams_.pGameEye->GetTransform().translate;
-    original_.pointLightIntensity = initParams_.pPointLight->GetIntensity();
+    original_.pointLightIntensity = initParams_.pPointLight->GetData().intensity;
     pEmitter_->Emit();
     pEmitter_->Emit();
 }
@@ -58,7 +58,7 @@ void GameOverAnimation::Reset()
     auto obj = initParams_.pPlayer->GetObject3d();
     obj->SetScale(original_.playerScale);
     initParams_.pGameEye->SetTranslate(original_.cameraPosition);
-    initParams_.pPointLight->GetIntensity() = original_.pointLightIntensity;
+    initParams_.pPointLight->GetData().intensity = original_.pointLightIntensity;
 }
 
 void GameOverAnimation::ShakeCameraUpdate()
@@ -97,11 +97,11 @@ void GameOverAnimation::LightIntensityUpdate()
     if (timer_.GetNow<float>() > stateDurations_.at(State::SmallScaling))
     {
         // 時間経過したら終了
-        initParams_.pPointLight->GetIntensity() = 0.0f;
+        initParams_.pPointLight->GetData().intensity = 0.0f;
         return;
     }
 
     float t = timer_.GetNow<float>() / stateDurations_.at(State::SmallScaling);
     float easedT = Math::Easing::EaseInOutQuad(t);
-    initParams_.pPointLight->GetIntensity() = std::lerp(original_.pointLightIntensity, 0.0f, easedT);
+    initParams_.pPointLight->GetData().intensity = std::lerp(original_.pointLightIntensity, 0.0f, easedT);
 }

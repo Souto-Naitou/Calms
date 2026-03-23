@@ -34,12 +34,12 @@ void RingGauge::Update()
     if (params_.colorTarget.has_value() && rawValue_ >= 1.0f)
     {
         auto& option = objectRingFill_->GetOption();
-        option.materialData->color = params_.colorTarget->to_Vector4();
+        *option.colorData = params_.colorTarget->to_Vector4();
     }
     else // 元の色に戻す
     {
         auto& option = objectRingFill_->GetOption();
-        option.materialData->color = params_.colorFill.to_Vector4();
+        *option.colorData = params_.colorFill.to_Vector4();
     }
 
     objectRingBackground_->Update();
@@ -111,8 +111,8 @@ void RingGauge::InitializeObjects()
     {
         // object3dの設定
         auto& option = objectRingBackground_->GetOption();
-        option.materialData->color = params_.colorBackground.to_Vector4();
-        option.lightingData->enableLighting = false;
+        *option.colorData = params_.colorBackground.to_Vector4();
+        option.lightSettingData->enableDirectionalLight = false;
         option.materialData->environmentCoefficient = 0.0f;
     }
 
@@ -122,8 +122,8 @@ void RingGauge::InitializeObjects()
     {
         // object3dの設定
         auto& option = objectRingFill_->GetOption();
-        option.materialData->color = params_.colorFill.to_Vector4();
-        option.lightingData->enableLighting = false;
+        *option.colorData = params_.colorFill.to_Vector4();
+        option.lightSettingData->enableDirectionalLight = false;
         option.materialData->environmentCoefficient = 0.0f;
     }
 

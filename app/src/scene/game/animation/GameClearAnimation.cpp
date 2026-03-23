@@ -72,7 +72,7 @@ void GameClearAnimation::Play()
     timer_.Start();
     original_.playerScale = initParams_.pPlayer->GetObject3d()->GetScale();
     original_.cameraPosition = initParams_.pGameEye->GetTransform().translate;
-    original_.pointLightIntensity = initParams_.pPointLight->GetIntensity();
+    original_.pointLightIntensity = initParams_.pPointLight->GetData().intensity;
     original_.playerPosition = initParams_.pPlayer->GetObject3d()->GetTranslate();
     original_.cameraRotate = initParams_.pGameEye->GetTransform().rotate;
     original_.score = initParams_.pScoreCalculator->GetScore();
@@ -89,7 +89,7 @@ void GameClearAnimation::Reset()
     auto obj = initParams_.pPlayer->GetObject3d();
     obj->SetScale(original_.playerScale);
     initParams_.pGameEye->SetTranslate(original_.cameraPosition);
-    initParams_.pPointLight->GetIntensity() = original_.pointLightIntensity;
+    initParams_.pPointLight->GetData().intensity = original_.pointLightIntensity;
 }
 
 void GameClearAnimation::ShakeCameraUpdate()
@@ -125,16 +125,18 @@ void GameClearAnimation::CameraApproach()
 
 void GameClearAnimation::LightIntensityUpdate()
 {
+    auto& data = initParams_.pPointLight->GetData();
+
     if (timer_.GetNow<float>() > stateDurations_.at(State::plIntensity))
     {
         // 時間経過したら終了
-        initParams_.pPointLight->GetIntensity() = 5.0f;
+        data.intensity= 5.0f;
         return;
     }
 
     float t = timer_.GetNow<float>() / stateDurations_.at(State::plIntensity);
     float easedT = Math::Easing::EaseInQuad(t);
-    initParams_.pPointLight->GetIntensity() = std::lerp(original_.pointLightIntensity, 5.0f, easedT);
+    data.intensity = std::lerp(original_.pointLightIntensity, 5.0f, easedT);
 }
 
 void GameClearAnimation::SpriteClearUpdate()

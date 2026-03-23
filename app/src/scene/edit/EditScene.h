@@ -11,12 +11,12 @@
 #include <drawable/particle/Emitter/ParticleEmitter.h>
 #include <DebugTools/DebugEntry/DebugEntry.h>
 #include <Features/TimeMeasurer/TimeMeasurer.h>
-#include <Common/structs.h>
 #include <ui/gauge/RingGauge.h>
 #include <drawable/font/NumericView.h>
 #include <entity/enemy/Rusher/EnemyRusher.h>
 #include <entity/player/Player.h>
 #include <entity/enemy/EnemyNormal.h>
+#include <Features/Lighting/DirectionalLight.h>
 
 class EditScene : public SceneBase
 {
@@ -61,11 +61,11 @@ private:
     std::unique_ptr<RingGauge>              pRing_              = nullptr;
     std::unique_ptr<GameEye>                pGameEye_           = nullptr;
     std::unique_ptr<ParticleEmitter>        pParticleEmitter_   = nullptr;
-    std::unique_ptr<EnemyNormal>                  pEnemyNormal_       = nullptr;
+    std::unique_ptr<EnemyNormal>            pEnemyNormal_       = nullptr;
     std::unique_ptr<EnemyRusher>            pEnemyRusher_       = nullptr;
     std::unique_ptr<NumericView>            pNumeric_           = nullptr;
     std::unique_ptr<Player>                 pPlayer_            = nullptr;
-    DirectionalLight                        directionalLight_   = {};
+    std::unique_ptr<DirectionalLight>       pDirectionalLight_  = nullptr;
 
     bool                                    isKillEnemy_        = false;
 

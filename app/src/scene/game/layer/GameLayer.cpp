@@ -23,24 +23,25 @@ using namespace Math::Viewport::Unit;
 void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 {
     /// [ インスタンスの取得 ]
+    pLayer_ = pLayer;
     pDx12_ = std::any_cast<DirectX12*>(pArgs->Get("DirectX12"));
     pDeltaTimeManager_ = DeltaTimeManager::GetInstance();
     randomGenerator_ = RandomGenerator::GetInstance();
     pTextureManager_ = TextureManager::GetInstance();
     pModelManager_ = std::any_cast<ModelManager*>(pArgs->Get("ModelManager"));
     pLineSystem_ = std::any_cast<LineSystem*>(pArgs->Get("LineSystem"));
-    pLayer_ = pLayer;
+    pDirectionalLight_ = std::any_cast<DirectionalLight*>(pArgs->Get("DirectionalLight"));
+    pPointLight_ = std::any_cast<PointLight*>(pArgs->Get("PointLight"));
 
     /// [ デバッグエントリの初期化 ]
     pDebugEntry_ = std::make_unique<DebugEntry<GameLayer>>("Scene", "GameLayer", this);
 
     /// [ グリッドの初期化 ]
     pGrid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
-    pGrid_->GetOption().lightingData->enableLighting = true;
-    pGrid_->SetPointLight(&pointLight_);
-    pGrid_->SetDirectionalLight(&directionalLight_);
+    pGrid_->GetOption().lightSettingData->enablePointLight = true;
+    pGrid_->GetOption().lightSettingData->enableDirectionalLight = true;
     pGrid_->SetScale(Vector3(0.5f, 30.0f, 0.5f));
-    pGrid_->GetOption().tilingData->tilingMultiply = Vector2(10.0f, 10.0f);
+    pGrid_->GetOption().materialData->tilingMultiply = Vector2(10.0f, 10.0f);
 
     /// [ ゲームアイの初期化 ]
     pGameEye_ = std::make_unique<GameEye>();
@@ -49,21 +50,23 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     pGameEye_->SetName("main");
 
     /// [ ゲームアイをセット ]
+    Object3dInstancedSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     Object3dSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     SpriteSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     LineSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     ParticleSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
 
     /// [ 平行光源の初期化 ]
-    directionalLight_.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
-    directionalLight_.direction = Vector3(0.0f, -1.0f, -0.0f);
-    directionalLight_.intensity = 1.0f;
+    auto& dirLightData = pDirectionalLight_->GetData();
+    dirLightData.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
+    dirLightData.direction = Vector3(0.0f, -1.0f, -0.0f);
+    dirLightData.intensity = 1.0f;
 
     /// [ ポイントライトの初期化 ]
-    pointLight_.IsEnable() = true;
-    pointLight_.GetColor() = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-    pointLight_.GetIntensity() = 7.5f;
-    pointLight_.GetPosition() = Vector3(0.0f, 0.0f, 2.0f);
+    auto& pointLightData = pPointLight_->GetData();
+    pointLightData.color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    pointLightData.intensity = 7.5f;
+    pointLightData.position = Vector3(0.0f, 0.0f, 2.0f);
 
     /// [ パーティクルの初期化 ]
     this->ParticlesInitialize();
@@ -75,17 +78,16 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
         playableArea_.SetMinMax(min, max);
     }
 
-    /// [ 座標変換の初期化 ]
+    /// [ 座標変換の初期化 ]6
     screenToWorld_ = std::make_unique<ScreenToWorld>();
     screenToWorld_->Initialize();
     screenToWorld_->SetGameEye(pGameEye_.get());
 
     /// [ プレイヤーの初期化 ]
     Player::Params playerParams = {};
-    playerParams.particle = particles_[static_cast<size_t>(ParticleID::PlayerConstant)];
     playerParams.pModelManager = pModelManager_;
-    playerParams.pDirLight = &directionalLight_;
-    playerParams.pPointLight = &pointLight_;
+    playerParams.pDirLight = pDirectionalLight_;
+    playerParams.pPointLight = pPointLight_;
     playerParams.pMovableBounds = &playableArea_;
     playerParams.pCursorPosition = &screenToWorld_->GetWorldPoint();
     pPlayer_ = std::make_unique<Player>(playerParams);
@@ -95,17 +97,25 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     pPlayerUI3d_ = std::make_unique<PlayerUI3d>();
     pPlayerUI3d_->Initialize(pDx12_);
 
+    pObject3dEnemy_ = std::make_unique<Object3dInstanced>();
+    pObject3dEnemy_->Initialize();
+    pObject3dEnemy_->SetModel(pModelManager_->Load("Cube/Cube.obj"));
+    pObject3dEnemy_->GetOption().pMaterialData->environmentCoefficient = 0.0f;
+    pObject3dEnemy_->GetOption().pLightSettingData->enableDirectionalLight = false;
+    pObject3dEnemy_->GetOption().pLightSettingData->enablePointLight = false;
+
     /// [ 敵リポジトリの初期化 ]
     pEnemyRepository_ = std::make_unique<EnemyRepository>();
 
     /// [ 敵ファクトリの初期化 ]
     pEnemyFactory_ = std::make_unique<EnemyFactory>();
     EnemyContext enemyCtx = {};
-    enemyCtx.pDirLight = &directionalLight_;
-    enemyCtx.pModelSelfBody = pModelManager_->Load("Cube/Cube.obj");
+    enemyCtx.pDirLight = pDirectionalLight_;
+    enemyCtx.pObject3dInstanced = pObject3dEnemy_.get();
     enemyCtx.pTargetPosition = &pPlayer_->GetTransform().translate;
     pEnemyFactory_->SetContext(enemyCtx);
 
+    
     /// [ 敵生成システムの初期化 ]
     pEnemyPopSystem_ = std::make_unique<EnemySpawner>();
     pEnemyPopSystem_->Initialize(pEnemyRepository_.get(), pEnemyFactory_.get());
@@ -172,7 +182,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
         {
             .pGameEye = pGameEye_.get(),
             .pPlayer = pPlayer_.get(),
-            .pPointLight = &pointLight_,
+            .pPointLight = pPointLight_,
             .pParticle = particles_[static_cast<size_t>(ParticleID::PlayerDeath)]
         }
     );
@@ -182,7 +192,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
         {
             .pGameEye = pGameEye_.get(),
             .pPlayer = pPlayer_.get(),
-            .pPointLight = &pointLight_,
+            .pPointLight = pPointLight_,
             .pParticle = particles_[static_cast<size_t>(ParticleID::PlayerDeath)],
             .pSpriteClear = spriteClear_.get(),
             .pSpriteSpace = spriteSpace_.get(),
@@ -250,7 +260,8 @@ void GameLayer::Update()
     /// [ ディレクショナルライトを毎フレーム目標値に近づける ]
     if (!isEnding_)
     {
-        directionalLight_.intensity = std::lerp(directionalLight_.intensity, kDirectionalLightTargetIntensity, 0.0125f);
+        auto& dirLightData = pDirectionalLight_->GetData();
+        dirLightData.intensity = std::lerp(dirLightData.intensity, kDirectionalLightTargetIntensity, 0.0125f);
     }
 
     /// [ プレイヤーの更新 ]
@@ -284,7 +295,9 @@ void GameLayer::Update()
     this->CreateEnemy();
 
     /// [ 敵の更新 ]
+    pObject3dEnemy_->clear();
     pEnemyRepository_->Update();
+    pObject3dEnemy_->Update();
 
     /// [ プレイヤー弾の生成 ]
     if (pPlayer_->IsShot())
@@ -307,7 +320,7 @@ void GameLayer::Update()
     /// [ ゲーム開始時のフラッシュ演出 ]
     if (pStartCountDown_->GetState() == CountDown::State::Start && !isGameStartFlashed_)
     {
-        directionalLight_.intensity = kTargetDirectionalLightFlashIntensity_;
+        pDirectionalLight_->GetData().intensity = kTargetDirectionalLightFlashIntensity_;
         isGameStartFlashed_ = true;
     }
 
@@ -320,7 +333,7 @@ void GameLayer::Update()
 
     /// [ ポイントライトの更新 ]
     {
-        auto& position = pointLight_.GetPosition();
+        auto& position = pPointLight_->GetData().position;
         position = pPlayer_->GetTransform().translate;
         position.y = 5.0f;
     }
@@ -391,6 +404,7 @@ void GameLayer::Draw()
 
         /// [ 敵の描画 ]
         pEnemyRepository_->Draw1F();
+        pObject3dEnemy_->Draw1F();
 
         for (auto& bullet : playerBullets_)
         {
@@ -459,6 +473,16 @@ void GameLayer::Preload(const PreloadContext& ctx, TaskExecutor& executor)
 void GameLayer::ImGui()
 {
     #ifdef _DEBUG
+
+    if (ImGui::CollapsingHeader("InGame"))
+    {
+        bool isRunning = ingameTimer_->IsRunning();
+        if (ImGui::Checkbox("GameTimer", &isRunning))
+        {
+            if (isRunning) ingameTimer_->Start();
+            else ingameTimer_->Pause();
+        }
+    }
 
     #endif // _DEBUG
 }

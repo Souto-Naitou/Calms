@@ -39,10 +39,9 @@ public:
     /// </summary>
     void ChangeState(std::unique_ptr<EnemyRusherState> newState);
 
-public:
     /// [ 行動インターフェース ]
 
-    /// <summary>ターゲットに向かって注視します。</summary>
+    /// ターゲットに向かって注視します。
     void FocusOnTarget(float deltaTime);
 
     /// ターゲットに向かってダッシュ移動を開始します。
@@ -88,7 +87,6 @@ private:
     void InitializeComponents();
     // コンポーネントの初期化
     void InitializeTransform();
-    void InitializeBody();
     void InitializeMovement();
     void InitializeFocusOrientation();
     void InitializeStats();
@@ -103,8 +101,8 @@ private:
 
     EnemyRusherInitParams           params_;
     EulerTransform                  transform_          = {};
+    Vector4                         color_              = {};
     std::unique_ptr<Collider>       pCollider_          = nullptr;
-    std::unique_ptr<Object3d>       pObjectSelfBody_    = {};
     std::unique_ptr<Sphere>         pSphere_            = {};
     std::unique_ptr<EntityStats>    pStats_             = nullptr;
 
@@ -112,8 +110,8 @@ private:
     IMovement* pCurrentMovement_ = nullptr;
     
     /// [ SE ]
-    Audio* audioDeath_ = nullptr;
-    Audio* audioAim_ = nullptr;
+    Audio*  audioDeath_  = nullptr;
+    Audio*  audioAim_    = nullptr;
 
     /// [ コンポーネント ]
     std::unique_ptr<PhysicsMovement>    pPhysicsMovement_   = nullptr;
