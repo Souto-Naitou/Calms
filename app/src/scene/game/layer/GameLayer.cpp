@@ -78,7 +78,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
         playableArea_.SetMinMax(min, max);
     }
 
-    /// [ 座標変換の初期化 ]6
+    /// [ 座標変換の初期化 ]
     screenToWorld_ = std::make_unique<ScreenToWorld>();
     screenToWorld_->Initialize();
     screenToWorld_->SetGameEye(pGameEye_.get());
