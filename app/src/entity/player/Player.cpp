@@ -1,8 +1,9 @@
 #include "Player.h"
 
-#include <imgui.h>
 #include <Features/Model/ObjModel.h>
 #include <config/ResourcePath.h>
+#include <imgui.h>
+
 
 Player::Player(const Params& params) : pModelManager_(params.pModelManager)
 {
@@ -29,9 +30,6 @@ void Player::Initialize(bool enableDebugWindow)
     pTimerShot_ = std::make_unique<TimeMeasurer>();
     pTimerShot_->Start();
 
-    /// [ パーティクルエミッターの初期化 ]
-    this->ParticleEmittersInitialize();
-
     // オブジェクトの初期化
     this->ObjectsInitialize();
 
@@ -44,20 +42,22 @@ void Player::Initialize(bool enableDebugWindow)
     // オーディオハンドルの初期化
     this->AudioHandleInitialize();
 
-    if (params_.pDirLight) pObject_->SetDirectionalLight(params_.pDirLight);
-    if (params_.pPointLight) pObject_->SetPointLight(params_.pPointLight);
+    if (params_.pDirLight)
+        pObject_->SetDirectionalLight(params_.pDirLight);
+    if (params_.pPointLight)
+        pObject_->SetPointLight(params_.pPointLight);
 }
 
 void Player::Finalize()
 {
     pObject_->Finalize();
     pCollisionManager_->UnregisterCollider(pCollider_.get());
-    if (pEmitterConstant_) pEmitterConstant_->Finalize();
 }
 
 void Player::Update()
 {
-    const auto  kDeltaTimeChannel = static_cast<uint32_t>(DeltaTimeChannelReserved::Game);
+    const auto kDeltaTimeChannel =
+        static_cast<uint32_t>(DeltaTimeChannelReserved::Game);
     const float kDeltaTime = pDeltaTimeManager_->GetDeltaTime(kDeltaTimeChannel);
 
     isShot_ = false;
@@ -84,19 +84,8 @@ void Player::Update()
     }
 
     // AABBリミッターの更新 (ここで座標補正が入る)
-    if (pAABBLimitter_) pAABBLimitter_->Update(transform_);
-
-    // パーティクルエミッターの更新 (動いている or 動きが無効化されている場合にパーティクルをエミット)
-    if (pEmitterConstant_)
-    {
-        if ((pMovement_->IsMove(0.2f)) || flags_ & static_cast<uint32_t>(Flags::DisableMovement))
-        {
-
-            pEmitterConstant_->SetPosition(transform_.translate);
-            pEmitterConstant_->Emit();
-        }
-        pEmitterConstant_->Update();
-    }
+    if (pAABBLimitter_)
+        pAABBLimitter_->Update(transform_);
 
     pExplosionTrigger_->Update();
 
@@ -116,7 +105,6 @@ void Player::Draw1F()
 {
     // オブジェクトの描画
     pObject_->Draw1F();
-    if (pEmitterConstant_) pEmitterConstant_->Draw1F();
 }
 
 void Player::ObjectsInitialize()
@@ -132,7 +120,9 @@ void Player::ObjectsInitialize()
     pObject_->SetModel(pModelSelfBody_.get());
     auto& option = pObject_->GetOption();
     option.materialData->environmentCoefficient = 0.0f;
-    option.materialData->color = Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+    *option.colorData = Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+    option.lightSettingData->enableDirectionalLight = true;
+    option.lightSettingData->enablePointLight = true;
 }
 
 void Player::ColliderInitialize()
@@ -144,29 +134,20 @@ void Player::ColliderInitialize()
     pCollider_->SetOwner(this);
     pCollider_->SetShape(Shape::OBB);
     pCollider_->SetMask(pCollisionManager_->GetNewMask("player"));
-    pCollider_->SetOnCollision(std::bind(&Player::OnCollision, this, std::placeholders::_1));
-    pCollider_->SetOnCollisionTrigger(std::bind(&Player::OnCollisionTrigger, this, std::placeholders::_1));
+    pCollider_->SetOnCollision(
+        std::bind(&Player::OnCollision, this, std::placeholders::_1));
+    pCollider_->SetOnCollisionTrigger(
+        std::bind(&Player::OnCollisionTrigger, this, std::placeholders::_1));
     pCollider_->SetOwnerTransform(&transform_);
     pCollider_->SetEntityStats(pStats_.get());
     // コライダーの登録
     pCollisionManager_->RegisterCollider(pCollider_.get());
 }
 
-void Player::ParticleEmittersInitialize()
-{
-    if (!params_.particle) return;
-    ParticleEmitter::Params emitterParams = {};
-    emitterParams.particle = params_.particle;
-    emitterParams.jsonPath = Path::ParticleEmitter::kPlayerConstantTrail;
-    pEmitterConstant_ = std::make_unique<ParticleEmitter>();
-    pEmitterConstant_->Initialize(emitterParams);
-    pEmitterConstant_->EnableManualMode();
-    pEmitterConstant_->SetEnableBillboard(true);
-}
-
 void Player::UpdateInputCommands()
 {
-    if (this->IsAlive() == false) return;
+    if (this->IsAlive() == false)
+        return;
 
     const auto& inputData = pInput_->GetData();
 
@@ -193,22 +174,26 @@ void Player::UpdateInputCommands()
 
 void Player::AudioHandleInitialize()
 {
-    pAudioShot_ = pAudioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerShoot);
+    pAudioShot_ =
+        pAudioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerShoot);
     pAudioShot_->SetVolume(0.1f);
-    pAudioDeath_ = pAudioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerDeath);
+    pAudioDeath_ =
+        pAudioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerDeath);
     pAudioDeath_->SetVolume(0.15f);
-    pAudioSlowOn_ = pAudioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerSlowOn);
+    pAudioSlowOn_ =
+        pAudioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerSlowOn);
     pAudioSlowOn_->SetVolume(0.1f);
-    pAudioSlowOff_ = pAudioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerSlowOff);
+    pAudioSlowOff_ =
+        pAudioManager_->GetNewAudio("Effect", Path::Audio::kSePlayerSlowOff);
     pAudioSlowOff_->SetVolume(0.1f);
 }
 
 void Player::ComponentInitialize()
 {
     // トランスフォーム
-    transform_.scale        = Vector3(1.0f, 1.0f, 1.0f);
-    transform_.rotate       = Vector3(0.0f, 0.0f, 0.0f);
-    transform_.translate    = Vector3(0, 0.5f, 0);
+    transform_.scale = Vector3(1.0f, 1.0f, 1.0f);
+    transform_.rotate = Vector3(0.0f, 0.0f, 0.0f);
+    transform_.translate = Vector3(0, 0.5f, 0);
     // ステータス
     pStats_ = std::make_unique<EntityStats>();
     pStats_->Initialize(100.0f, 0.0f, 20.0f);
@@ -237,10 +222,10 @@ void Player::ComponentInitialize()
 
 void Player::ImGui()
 {
-#ifdef _DEBUG
+    #ifdef _DEBUG
     EntityBase::ImGui();
     pExplosionTrigger_->ImGui();
-#endif
+    #endif
 }
 
 void Player::DisableMovement()
@@ -260,7 +245,8 @@ void Player::OnCollisionTrigger(const Collider* other)
         auto pOtherEntityStats = other->GetEntityStats();
         assert(pOtherEntityStats);
         pStats_->OnCollision(pOtherEntityStats);
-        if (params_.pDirLight) params_.pDirLight->intensity -= kLightIntensityDecreaseAmount_;
+        if (params_.pDirLight)
+            params_.pDirLight->GetData().intensity -= kLightIntensityDecreaseAmount_;
         EntityBase::ShakeCamera(kGameEyeShakePowerWhenDamage_);
         if (pStats_->GetHp() <= 0.0f)
         {
@@ -277,7 +263,8 @@ void Player::OnCollision(const Collider* other)
 
     if (other->GetColliderID() == "enemy")
     {
-        assert(other->GetOwnerTransform() && "衝突相手のTransformが設定されていません。");
+        assert(other->GetOwnerTransform() &&
+            "衝突相手のTransformが設定されていません。");
         /// 反発を速度に適用
         Vector3 otherPos = other->GetOwnerTransform()->translate;
         otherPos.y = transform_.translate.y; // Y軸は無視する

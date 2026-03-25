@@ -77,8 +77,8 @@ void PlayerExplosion::InitializeRing()
     pObjectRing_->SetName("Player Explosion Object3d");
     pObjectRing_->SetModel(pModelRing_.get());
     auto& option = pObjectRing_->GetOption();
-    option.materialData->color = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-    option.lightingData->enableLighting = false;
+    *option.colorData = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+    option.lightSettingData->enableDirectionalLight = false;
     option.materialData->environmentCoefficient = 0.0f;
 }
 
@@ -119,7 +119,7 @@ void PlayerExplosion::UpdateOpacity()
     const float opacity = 1.0f - Math::Easing::EaseInCubic(t);
 
     auto& option = pObjectRing_->GetOption();
-    option.materialData->color.w = opacity;
+    option.colorData->w = opacity;
 }
 
 void PlayerExplosion::UpdateCollider()

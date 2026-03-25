@@ -62,11 +62,6 @@ private:
     void InitializeComponents();
 
     /// <summary>
-    /// モデルや表示オブジェクトを初期化します。
-    /// </summary>
-    void InitializeObjects();
-
-    /// <summary>
     /// コライダーを初期化します。
     /// </summary>
     void InitializeCollider();
@@ -75,11 +70,6 @@ private:
     /// 当たり判定の更新を行います。
     /// </summary>
     void UpdateCollider();
-
-    /// <summary>
-    /// 表示オブジェクトの更新を行います。
-    /// </summary>
-    void UpdateObjects();
 
     /// <summary>
     /// 物理衝突時に呼ばれます。
@@ -99,14 +89,13 @@ private:
     static constexpr float      kFriction_          = 0.95f;
     static constexpr float      kReflectionPower_   = 15.0f;
     static constexpr float      kCameraShakePower_  = 0.1f;
+    static constexpr Vector4    kColorBody_         = Vector4(1.0f, 0.0f, 0.0f, 1.0f);
 
     /// [ 初期化パラメータ ]
     EnemyNormalInitParams params_ = {};
 
     /// [ コンポーネント ]
     EulerTransform                          transform_          = {};
-    std::unique_ptr<Object3d>               pObjectSelfBody_    = {};
-    std::unique_ptr<IModel>                 pModelSelfBody_     = nullptr;
     std::unique_ptr<TimeMeasurer>           pTimeMeasurer_      = {};
     std::unique_ptr<EntityStats>            pStats_             = nullptr;
     std::unique_ptr<FollowMovement>         pMovement_          = nullptr;

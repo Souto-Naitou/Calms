@@ -70,6 +70,12 @@ void InGameCountDown::Start()
     }
 }
 
+void InGameCountDown::Pause()
+{
+    if (pTimer_) pTimer_->Stop();
+    isStart_ = false;
+}
+
 void InGameCountDown::Initialize(bool _useSystemClock, double _gameDuration)
 {
     gameDuration_ = _gameDuration;

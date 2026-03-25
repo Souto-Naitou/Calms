@@ -19,6 +19,22 @@ void EditScene::Initialize()
     /// [ デバッグウィンドウを登録 ]
     pDebugEntry_ = std::make_unique<DebugEntry<EditScene>>("Scene", "EditScene", this);
 
+    /// [ ライトの初期化 ]
+    pDirectionalLight_ = std::make_unique<DirectionalLight>(pDx12_->GetDevice());
+    pDirectionalLight_->Initialize();
+    auto& data = pDirectionalLight_->GetData();
+    data.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
+    data.direction = Vector3(0.0f, -1.0f, -0.0f);
+    data.intensity = 3.0f;
+    pPointLight_ = std::make_unique<PointLight>(pDx12_->GetDevice());
+    pPointLight_->Initialize();
+
+    /// [ デフォルトで使用する光源を登録 ]
+    Object3dSystem::GetInstance()->SetDirectionalLight(pDirectionalLight_.get());
+    Object3dSystem::GetInstance()->SetPointLight(pPointLight_.get());
+    Object3dInstancedSystem::GetInstance()->SetDirectionalLight(pDirectionalLight_.get());
+    Object3dInstancedSystem::GetInstance()->SetPointLight(pPointLight_.get());
+
     /// [ キャンバスの初期化 ]
     this->InitializeCanvas();
 
@@ -26,10 +42,14 @@ void EditScene::Initialize()
     pGameEye_ = std::make_unique<FreeLookEye>();
     pGameEye_->SetTranslate(Vector3(0, 65.0f, 0));
     pGameEye_->SetRotate(Vector3(1.57f, 0, 0));
+
+    Object3dInstancedSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     Object3dSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     SpriteSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
-    ParticleSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     LineSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
+    ParticleSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
+
+    Object3dSystem::GetInstance()->SetDirectionalLight(pDirectionalLight_.get());
 
     /// [ パーティクルの初期化 ]
     this->InitializeParticle();
@@ -47,11 +67,6 @@ void EditScene::Initialize()
 
     /// [ 数値表示の初期化 ]
     this->InitializeNumeric();
-
-    /// [ 平行光源の初期化 ]
-    directionalLight_.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
-    directionalLight_.direction = Vector3(0.0f, -1.0f, -0.0f);
-    directionalLight_.intensity = 3.0f;
 
     /// [ エンティティの初期化 ]
     pTime_ = std::make_unique<TimeMeasurer>();
@@ -85,7 +100,7 @@ void EditScene::Finalize()
 
 void EditScene::Update()
 {
-    directionalLight_.intensity = std::lerp(directionalLight_.intensity, 6.0f, 0.1f);
+    pDirectionalLight_->GetData().intensity = std::lerp(pDirectionalLight_->GetData().intensity, 6.0f, 0.1f);
 
     pGameEye_->Update();
     pGrid_->Update();
@@ -183,9 +198,8 @@ void EditScene::InitializeEnemy(Player* pPlayer)
 void EditScene::InitializePlayer()
 {
     Player::Params params = {};
-    params.particle = nullptr;
     params.pModelManager = pModelManager_;
-    params.pDirLight = &directionalLight_;
+    params.pDirLight = pDirectionalLight_.get();
     params.pPointLight = nullptr;
     params.pMovableBounds = nullptr;
     pPlayer_ = std::make_unique<Player>(params);
@@ -195,9 +209,8 @@ void EditScene::InitializePlayer()
 void EditScene::InitializeObject3d()
 {
     pGrid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
-    pGrid_->GetOption().lightingData->enableLighting = true;
-    pGrid_->SetDirectionalLight(&directionalLight_);
-    pGrid_->GetOption().tilingData->tilingMultiply = Vector2(10.0f, 10.0f);
+    pGrid_->GetOption().lightSettingData->enableDirectionalLight= true;
+    pGrid_->GetOption().materialData->tilingMultiply = Vector2(10.0f, 10.0f);
 
     RingModel::Params ringParams = {};
     ringParams.pDx12 = pDx12_;

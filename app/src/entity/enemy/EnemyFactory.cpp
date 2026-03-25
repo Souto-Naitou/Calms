@@ -18,7 +18,7 @@ std::unique_ptr<EntityBase> EnemyFactory::Create(const EnemyType enemyType)
 std::unique_ptr<EntityBase> EnemyFactory::CreateNormal() const
 {
     EnemyNormalInitParams param;
-    param.pModelSelfBody = context_.pModelSelfBody;
+    param.pObject3dInstanced = context_.pObject3dInstanced;
     param.position = context_.position;
     param.pDirLight = context_.pDirLight;
     param.pTargetPosition = context_.pTargetPosition;
@@ -28,7 +28,7 @@ std::unique_ptr<EntityBase> EnemyFactory::CreateNormal() const
 std::unique_ptr<EntityBase> EnemyFactory::CreateRusher() const
 {
     EnemyRusherInitParams param;
-    param.pModelSelfBody = context_.pModelSelfBody;
+    param.pObject3dInstanced = context_.pObject3dInstanced;
     param.position = context_.position;
     param.pDirLight = context_.pDirLight;
     param.pTargetPosition = context_.pTargetPosition;

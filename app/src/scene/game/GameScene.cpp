@@ -16,6 +16,23 @@ void GameScene::Initialize()
             std::placeholders::_1
         )
     );
+   
+    /// [ ライトの初期化 ]
+    DirectX12* pDx12 = std::any_cast<DirectX12*>(pArgs_->Get("DirectX12"));
+    pDirectionalLight_ = std::make_unique<DirectionalLight>(pDx12->GetDevice());
+    pDirectionalLight_->Initialize();
+    pPointLight_ = std::make_unique<PointLight>(pDx12->GetDevice());
+    pPointLight_->Initialize();
+
+    /// [ デフォルトで使用する光源を登録 ]
+    Object3dSystem::GetInstance()->SetDirectionalLight(pDirectionalLight_.get());
+    Object3dSystem::GetInstance()->SetPointLight(pPointLight_.get());
+    Object3dInstancedSystem::GetInstance()->SetDirectionalLight(pDirectionalLight_.get());
+    Object3dInstancedSystem::GetInstance()->SetPointLight(pPointLight_.get());
+
+    /// [ シーンからレイヤーに渡したいデータはここでSceneArgsに追加 ]
+    pArgs_->Set("DirectionalLight", pDirectionalLight_.get());
+    pArgs_->Set("PointLight", pPointLight_.get());
 
     /// [ 各レイヤーの初期化 ]
     if (!pPauseLayer_) pPauseLayer_ = std::make_unique<PauseLayer>();
@@ -23,6 +40,7 @@ void GameScene::Initialize()
     if (!pGameLayer_) pGameLayer_ = std::make_unique<GameLayer>();
     pGameLayer_->Initialize(pArgs_, pLayer_);
 
+    /// [ ポーズ用のブラーエフェクトの初期化 ]
     auto effect = pGameLayer_->GetOverallCanvas()->GetPostEffectExecutor().AddEffect(PostEffectClassName::SeparatedGaussianFilter);
     pGaussianFilter_ = static_cast<SeparatedGaussianFilter*>(effect);
     {
@@ -50,8 +68,11 @@ void GameScene::Update()
     if (pInput_->TriggerKey(DIK_ESCAPE)) this->TogglePauseMenu();
 
     if (!isPauseMenuActive_) pGameLayer_->Update();
-    
     pPauseLayer_->Update();
+
+    /// [ ライトの更新 ]
+    pDirectionalLight_->Update();
+    pPointLight_->Update();
 
     /// [ BGMのフェードアウト ]
     if (isChangingScene_)

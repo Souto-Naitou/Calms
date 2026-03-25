@@ -30,9 +30,10 @@
         "enableCollisionFloor": true,
         "enableRandomEmit": true,
         "enableRandomRotation": false,
-        "enableRandomScale": true,
+        "enableRandomScale": false,
         "enableRandomVelocity": true,
         "enableScaleTransition": true,
+        "enableSmoothNoise": false,
         "velocityDistribution": 1
     },
     "name": "Spark",
@@ -47,7 +48,8 @@
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
-        }
+        },
+        "smoothNoisePower": 0.0
     },
     "ranges": {
         "color": {
@@ -95,8 +97,8 @@
                 "z": 1.0
             },
             "start": {
-                "x": 0.25,
-                "y": 0.25,
+                "x": 0.5,
+                "y": 0.5,
                 "z": 1.0
             }
         },

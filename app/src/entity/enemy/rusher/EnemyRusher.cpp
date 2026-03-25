@@ -43,14 +43,13 @@ void EnemyRusher::Finalize()
 
     CollisionManager::GetInstance()->UnregisterCollider(pCollider_.get());
 
-    pObjectSelfBody_->Finalize();
-
     if (params_.pDirLight)
     {
-        params_.pDirLight->intensity += 0.5f;
-        if (params_.pDirLight->intensity > 8.0f)
+        auto& data = params_.pDirLight->GetData();
+        data.intensity += 0.5f;
+        if (data.intensity > 8.0f)
         {
-            params_.pDirLight->intensity = 8.0f;
+            data.intensity = 8.0f;
         }
     }
 }
@@ -74,21 +73,20 @@ void EnemyRusher::Update()
         pCurrentMovement_->Update(transform_, deltaTime);
     }
 
-    /// オブジェクト更新
-    if (pObjectSelfBody_)
-    {
-        pObjectSelfBody_->SetRotate(transform_.rotate);
-        pObjectSelfBody_->SetTranslate(transform_.translate);
-        pObjectSelfBody_->Update();
-    }
-
     /// コライダー更新
     pSphere_->center_ = transform_.translate;
+
+    /// 描画データを積む
+    Object3dInstanceData drawData = {};
+    drawData.scale = transform_.scale;
+    drawData.rotate = transform_.rotate;
+    drawData.translate = transform_.translate;
+    drawData.color = color_;
+    params_.pObject3dInstanced->emplace_back(drawData);
 }
 
 void EnemyRusher::Draw1F()
 {
-    if (pObjectSelfBody_) pObjectSelfBody_->Draw1F();
 }
 
 void EnemyRusher::ImGui()
@@ -215,8 +213,7 @@ void EnemyRusher::DisableMovement()
 
 void EnemyRusher::ChangeColor(const Vector4& color)
 {
-    if (!pObjectSelfBody_) return;
-    pObjectSelfBody_->GetOption().materialData->color = color;
+    color_ = color;
 }
 
 bool EnemyRusher::IsCloseToTarget(float thresholdDistance) const
@@ -271,7 +268,7 @@ void EnemyRusher::InitializeState()
 void EnemyRusher::InitializeComponents()
 {
     this->InitializeTransform();
-    this->InitializeBody();
+    color_ = kColorDefault_.to_Vector4();
     this->InitializeMovement();
     this->InitializeFocusOrientation();
     this->InitializeStats();
@@ -287,23 +284,9 @@ void EnemyRusher::InitializeTransform()
     transform_.translate.z = params_.position.z;
 }
 
-void EnemyRusher::InitializeBody()
-{
-    if (!params_.pModelSelfBody) return;
-    pObjectSelfBody_ = std::make_unique<Object3d>();
-    pObjectSelfBody_->Initialize(false);
-    pObjectSelfBody_->SetModel(params_.pModelSelfBody);
-    pObjectSelfBody_->SetScale(transform_.scale);
-    auto& option = pObjectSelfBody_->GetOption();
-    option.materialData->color = kColorDefault_.to_Vector4();
-    option.lightingData->enableLighting = false;
-    option.materialData->environmentCoefficient = 0.0f;
-}
-
 void EnemyRusher::InitializeCollider(EntityStats* pStats)
 {
     auto pCollisionManager = CollisionManager::GetInstance();
-    if (!params_.pModelSelfBody) return;
 
     /// コライダー形状の初期化
     pSphere_ = std::make_unique<Sphere>();

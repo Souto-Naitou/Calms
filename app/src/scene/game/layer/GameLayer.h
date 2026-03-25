@@ -10,10 +10,12 @@
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <Features/GameEye/GameEye.h>
 #include <Features/Layer/Canvas.h>
-#include <Features/Lighting/PointLight/PointLight.h>
+#include <Features/Lighting/PointLight.h>
+#include <Features/Lighting/DirectionalLight.h>
 #include <drawable/line/Line.h>
 #include <drawable/line/LineSystem.h>
 #include <drawable/object3d/Object3d.h>
+#include <drawable/object3d/Object3dInstanced.h>
 #include <drawable/particle/Particle.h>
 #include <drawable/particle/Emitter/ParticleEmitter.h>
 #include <drawable/particle/emitter/ParticleEmitterGroup.h>
@@ -132,6 +134,7 @@ private:
     std::unique_ptr<EnemyRepository>                pEnemyRepository_       = {};       // !< 敵リポジトリ
     std::unique_ptr<EnemySpawner>                   pEnemyPopSystem_        = {};       // !< 敵生成システム
     std::unique_ptr<EnemyFactory>                   pEnemyFactory_          = {};       // !< 敵生成ファクトリ
+    std::unique_ptr<Object3dInstanced>              pObject3dEnemy_         = {};       // !< 敵用インスタンスObject3d
 
     std::unique_ptr<Object3d>                       pGrid_                  = {};       // !< グリッド
     std::unique_ptr<GameEye>                        pGameEye_               = {};       // !< ゲームアイ
@@ -142,7 +145,7 @@ private:
     std::unique_ptr<ScoreCalculator>                scoreCalculator_        = {};       // !< スコア計算機
 
     /// UI
-    std::unique_ptr<InGameCountDown>                    ingameTimer_            = {};       // !< ゲームタイマー
+    std::unique_ptr<InGameCountDown>                ingameTimer_            = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                     inputGuide_             = {};       // !< 入力ガイド
     std::unique_ptr<Sprite>                         spriteClear_            = {};       // !< クリアスプライト
     std::unique_ptr<Sprite>                         spriteSpace_            = {};       // !< クリアスプライト
@@ -155,8 +158,6 @@ private:
     std::unique_ptr<RadialBeat>                     pRadialBeat_            = nullptr;  // !< 放射状ブラービート
 
     PlayerBulletGenerator                           playerBulletGenerator_  = {};       // !< プレイヤー弾生成システム
-    DirectionalLight                                directionalLight_       = {};       // !< ディレクショナルライト
-    PointLight                                      pointLight_             = {};       // !< ポイントライト
     std::unique_ptr<CountDown>                      pStartCountDown_        = {};       // !< カウントダウン
     TimeMeasurer                                    timer_                  = {};       // !< タイマー
     double                                          countDownOffset_        = 2.0;      // !< カウントダウンのオフセット
@@ -183,6 +184,8 @@ private:
     TextureManager*     pTextureManager_    = nullptr;
     OrderedCanvasLayer* pLayer_             = nullptr;
     GrayscaleOption*    pOptionGrayscale_   = nullptr;
+    DirectionalLight*   pDirectionalLight_  = nullptr;
+    PointLight*         pPointLight_        = nullptr;
 
     /// [ デバッグ ]
     bool isDisplayColliderEnemy_        = false;

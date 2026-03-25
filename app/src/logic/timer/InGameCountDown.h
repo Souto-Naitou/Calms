@@ -44,6 +44,11 @@ public:
     void Start();
 
     /// <summary>
+    /// タイマーを一時停止します。
+    /// </summary>
+    void Pause();
+
+    /// <summary>
     /// タイマーをリセットします。
     /// </summary>
     void Reset();
@@ -51,7 +56,7 @@ public:
 public: /// Getter
     bool IsEnd() const { return isEnd_; }
     double GetNowTime() const { return nowTime_; }
-
+    bool IsRunning() const { return isStart_; }
 
 
 public: /// Setter
