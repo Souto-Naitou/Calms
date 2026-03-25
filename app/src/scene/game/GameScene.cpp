@@ -27,8 +27,8 @@ void GameScene::Initialize()
     /// [ デフォルトで使用する光源を登録 ]
     Object3dSystem::GetInstance()->SetDirectionalLight(pDirectionalLight_.get());
     Object3dSystem::GetInstance()->SetPointLight(pPointLight_.get());
-    Object3dInstancedSystem::GetInstance()->SetDefaultLight(pDirectionalLight_.get());
-    Object3dInstancedSystem::GetInstance()->SetDefaultLight(pPointLight_.get());
+    Object3dInstancedSystem::GetInstance()->SetDirectionalLight(pDirectionalLight_.get());
+    Object3dInstancedSystem::GetInstance()->SetPointLight(pPointLight_.get());
 
     /// [ シーンからレイヤーに渡したいデータはここでSceneArgsに追加 ]
     pArgs_->Set("DirectionalLight", pDirectionalLight_.get());

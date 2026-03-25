@@ -17,6 +17,7 @@
 #include <entity/player/Player.h>
 #include <entity/enemy/EnemyNormal.h>
 #include <Features/Lighting/DirectionalLight.h>
+#include <Features/Lighting/PointLight.h>
 
 class EditScene : public SceneBase
 {
@@ -66,6 +67,7 @@ private:
     std::unique_ptr<NumericView>            pNumeric_           = nullptr;
     std::unique_ptr<Player>                 pPlayer_            = nullptr;
     std::unique_ptr<DirectionalLight>       pDirectionalLight_  = nullptr;
+    std::unique_ptr<PointLight>             pPointLight_        = nullptr;
 
     bool                                    isKillEnemy_        = false;
 

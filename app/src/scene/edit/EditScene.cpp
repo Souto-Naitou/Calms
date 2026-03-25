@@ -19,6 +19,22 @@ void EditScene::Initialize()
     /// [ デバッグウィンドウを登録 ]
     pDebugEntry_ = std::make_unique<DebugEntry<EditScene>>("Scene", "EditScene", this);
 
+    /// [ ライトの初期化 ]
+    pDirectionalLight_ = std::make_unique<DirectionalLight>(pDx12_->GetDevice());
+    pDirectionalLight_->Initialize();
+    auto& data = pDirectionalLight_->GetData();
+    data.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
+    data.direction = Vector3(0.0f, -1.0f, -0.0f);
+    data.intensity = 3.0f;
+    pPointLight_ = std::make_unique<PointLight>(pDx12_->GetDevice());
+    pPointLight_->Initialize();
+
+    /// [ デフォルトで使用する光源を登録 ]
+    Object3dSystem::GetInstance()->SetDirectionalLight(pDirectionalLight_.get());
+    Object3dSystem::GetInstance()->SetPointLight(pPointLight_.get());
+    Object3dInstancedSystem::GetInstance()->SetDirectionalLight(pDirectionalLight_.get());
+    Object3dInstancedSystem::GetInstance()->SetPointLight(pPointLight_.get());
+
     /// [ キャンバスの初期化 ]
     this->InitializeCanvas();
 
@@ -26,18 +42,12 @@ void EditScene::Initialize()
     pGameEye_ = std::make_unique<FreeLookEye>();
     pGameEye_->SetTranslate(Vector3(0, 65.0f, 0));
     pGameEye_->SetRotate(Vector3(1.57f, 0, 0));
+
+    Object3dInstancedSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     Object3dSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     SpriteSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
-    ParticleSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
     LineSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
-
-    /// [ 平行光源の初期化 ]
-    pDirectionalLight_ = std::make_unique<DirectionalLight>(pDx12_->GetDevice());
-    pDirectionalLight_->Initialize();
-    auto& data = pDirectionalLight_->GetData();
-    data.color = Vector4(0.065f, 0.058f, 0.058f, 1.0f);
-    data.direction = Vector3(0.0f, -1.0f, -0.0f);
-    data.intensity = 3.0f;
+    ParticleSystem::GetInstance()->SetGlobalEye(pGameEye_.get());
 
     Object3dSystem::GetInstance()->SetDirectionalLight(pDirectionalLight_.get());
 
