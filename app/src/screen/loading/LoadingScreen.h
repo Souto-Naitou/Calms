@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Features/Input/Input.h>
 #include <Features/screen/IntermediateScreenBase.h>
 #include <Core/DirectX12/TextureManager.h>
 #include <drawable/sprite/Sprite.h>
@@ -52,12 +53,6 @@ private:
     /// </summary>
     /// <param name="directoryPath">探索するルートディレクトリのパス。</param>
     void AggregateTexturePaths(const std::string& directoryPath);
-
-    /// <summary>
-    /// 指定ディレクトリ以下のモデルパスを収集します。
-    /// </summary>
-    /// <param name="directoryPath">探索するルートディレクトリのパス。</param>
-    void AggregateModelPaths(const std::string& directoryPath);
 
     void InitializeDrawables();
     void InitializeCanvas(DirectX12*, CubemapSystem*);

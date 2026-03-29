@@ -1,5 +1,6 @@
 #pragma once
 #include <core/ISceneLayer.h>
+#include <Features/Input/Input.h>
 
 class PauseLayer : public ISceneLayer
 {

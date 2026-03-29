@@ -741,7 +741,13 @@ void GameLayer::SpritesInitialize()
 
 void GameLayer::AddPlayerBullet()
 {
+    Input* pInput = Input::GetInstance();
     Vector3 direction = screenToWorld_->GetWorldPoint() - pPlayer_->GetTransform().translate;
+    if (pInput->IsPadConnected())
+    {
+        auto& iAnalog = pInput->GetGamepadAnalogInput();
+        direction = { iAnalog.thumbR.x, 0.0f, iAnalog.thumbR.y };
+    }
     Vector3 position = pPlayer_->GetTransform().translate;
     auto bulletsGenerated = playerBulletGenerator_.Generate(position, direction);
     playerBullets_.insert(
