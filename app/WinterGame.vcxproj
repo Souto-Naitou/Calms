@@ -250,6 +250,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\logic\event\ParticleEmitEvent.h" />
     <ClInclude Include="src\logic\event\PauseMenuToggleEvent.h" />
     <ClInclude Include="src\logic\event\PlayerExplosionEvent.h" />
+    <ClInclude Include="src\logic\input\InputAction.h" />
     <ClInclude Include="src\logic\slomo\SlomoLogic.h" />
     <ClInclude Include="src\presentation\animation\CountDownColorEmphasis.h" />
     <ClInclude Include="src\presentation\animation\CountDownFontSizeEmphasis.h" />

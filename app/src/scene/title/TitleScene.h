@@ -1,26 +1,28 @@
 #pragma once
 
 #include <scene/SceneBase.h>
+#include <Core/Window/Window.h>
+#include <Core/DirectX12/DirectX12.h>
+#include <Core/DirectX12/PostEffectExecutor.h>
 #include <Features/GameEye/GameEye.h>
 #include <Features/Input/Input.h>
 #include <Features/SceneManager/SceneManager.h>
-#include <drawable/sprite/Sprite.h>
-#include <memory>
 #include <Features/Cubemap/Skybox.h>
 #include <Features/Cubemap/CubemapSystem.h>
-#include <Core/Window/Window.h>
-#include <Effects/PostEffects/RandomFilter/RandomFilter.h>
-#include <Core/DirectX12/DirectX12.h>
-#include <Core/DirectX12/PostEffectExecutor.h>
-#include "./Animation/OpeningAnimation.h"
 #include <Features/Layer/Canvas.h>
+#include <Features/Input/InputMapper.hpp>
+#include <Features/Audio/Audio.h>
+#include <Effects/PostEffects/RandomFilter/RandomFilter.h>
 #include <Effects/PostEffects/GaussianBloom/GaussianBloom.h>
 #include <Effects/PostEffects/RadialBlur/RadialBlur.h>
 #include <Effects/SceneTransition/TransShutter.h>
-#include "nima_engine/src/Features/Audio/Audio.h"
-#include <Math/ViewportUnits.hpp>
 #include <Effects/PostEffects/Mosaic/Mosaic.h>
+#include <Math/ViewportUnits.hpp>
+#include <drawable/sprite/Sprite.h>
 #include <presentation/animation/RadialBeat.h>
+#include "./Animation/OpeningAnimation.h"
+#include <logic/input/InputAction.h>
+#include <memory>
 
 /// <summary>
 /// タイトルシーン
@@ -66,6 +68,11 @@ private:
     /// 「Press Start」等の開始プロンプトのアニメーション更新を行います。
     /// </summary>
     void UpdateStartPromptAnimation();
+
+    /// <summary>
+    /// ゲームシーンに切り替える処理を行います。
+    /// </summary>
+    void ChangeToGameScene();
     
     static constexpr float              kEyePosZMin_                = -120.0f;      // !< カメラのZ座標の最小値
     static constexpr float              kEyePosZMax_                = 120.0f;       // !< カメラのZ座標の最大値
@@ -96,4 +103,5 @@ private:
     Input*                      pInput_                 = nullptr;      // !< 入力
     SceneManager*               pSceneManager_          = nullptr;      // !< シーン遷移
     CubemapSystem*              pCubemapSystem_         = nullptr;      // !< キューブマップシステム
+    InputMapper<InputActionUI>* pInputMapperUI_         = nullptr;      // !< 入力マッパー
 };

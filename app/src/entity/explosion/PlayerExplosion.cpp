@@ -73,7 +73,7 @@ void PlayerExplosion::InitializeRing()
     pModelRing_->SetName("Player Explosion Model");
 
     pObjectRing_ = std::make_unique<Object3d>();
-    pObjectRing_->Initialize(false);
+    pObjectRing_->Initialize(true);
     pObjectRing_->SetName("Player Explosion Object3d");
     pObjectRing_->SetModel(pModelRing_.get());
     auto& option = pObjectRing_->GetOption();

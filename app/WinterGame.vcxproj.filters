@@ -456,6 +456,7 @@
     <ClInclude Include="src\presentation\animation\RadialBeat.h" />
     <ClInclude Include="src\presentation\animation\CountDownFontSizeEmphasis.h" />
     <ClInclude Include="src\presentation\animation\CountDownColorEmphasis.h" />
+    <ClInclude Include="src\logic\input\InputAction.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

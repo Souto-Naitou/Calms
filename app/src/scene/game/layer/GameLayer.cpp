@@ -32,6 +32,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     pLineSystem_ = std::any_cast<LineSystem*>(pArgs->Get("LineSystem"));
     pDirectionalLight_ = std::any_cast<DirectionalLight*>(pArgs->Get("DirectionalLight"));
     pPointLight_ = std::any_cast<PointLight*>(pArgs->Get("PointLight"));
+    pInputMapperUI_ = std::any_cast<InputMapper<InputActionUI>*>(pArgs->Get("InputMapperUI"));
 
     /// [ デバッグエントリの初期化 ]
     pDebugEntry_ = std::make_unique<DebugEntry<GameLayer>>("Scene", "GameLayer", this);
@@ -350,7 +351,7 @@ void GameLayer::Update()
     ingameTimer_->Update();
 
     /// [ ゲームクリア後 / ゲームオーバー後のシーン遷移 ]
-    if (pGameClearAnimation_->IsFinished() && !isChangingScene_ && Input::GetInstance()->TriggerKey(DIK_SPACE))
+    if (pGameClearAnimation_->IsFinished() && !isChangingScene_ && pInputMapperUI_->IsTrigger(InputActionUI::Confirm))
     {
         SceneManager::GetInstance()->ReserveScene("TitleScene", std::make_unique<TransShutter>());
         isChangingScene_ = true;
