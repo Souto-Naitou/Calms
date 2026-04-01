@@ -33,6 +33,7 @@ private:
 
     bool isGamepadMode_ = false;
     bool isTriggerRightPressed_ = false;
+    bool isTriggerLeftPressed_ = false;
     Input* pInput_ = nullptr;
     Data data_ = {};
 };

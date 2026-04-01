@@ -247,7 +247,7 @@ void Player::OnCollisionTrigger(const Collider* other)
         pStats_->OnCollision(pOtherEntityStats);
         if (params_.pDirLight)
             params_.pDirLight->GetData().intensity -= kLightIntensityDecreaseAmount_;
-        EntityBase::ShakeCamera(kGameEyeShakePowerWhenDamage_);
+
         if (pStats_->GetHp() <= 0.0f)
         {
             EntityBase::Dead();
@@ -265,6 +265,11 @@ void Player::OnCollision(const Collider* other)
     {
         assert(other->GetOwnerTransform() &&
             "衝突相手のTransformが設定されていません。");
+
+        Input::GetInstance()->Vibrate(kVibrationValueWhenDamage_, kVibrationValueWhenDamage_);
+
+        EntityBase::ShakeCamera(kGameEyeShakePowerWhenDamage_);
+
         /// 反発を速度に適用
         Vector3 otherPos = other->GetOwnerTransform()->translate;
         otherPos.y = transform_.translate.y; // Y軸は無視する

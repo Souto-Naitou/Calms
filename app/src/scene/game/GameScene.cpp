@@ -2,11 +2,16 @@
 #include <Features/event/EventListener.h>
 #include <functional>
 #include <config/ResourcePath.h>
+#include <any>
 
+
+GameScene::GameScene(ISceneArgs* pArgs) : ILoadableScene(pArgs)
+{
+    pInputMapperUI_ = std::any_cast<InputMapper<InputActionUI>*>(pArgs_->Get("InputMapperUI"));
+}
 
 void GameScene::Initialize()
 {
-    pInput_ = Input::GetInstance();
     auto pEventListener = EventListener::GetInstance();
 
     subscriptionPauseMenuToggle_ = pEventListener->Subscribe<PauseMenuToggleEvent>(
@@ -65,7 +70,7 @@ void GameScene::Finalize()
 
 void GameScene::Update()
 {
-    if (pInput_->TriggerKey(DIK_ESCAPE)) this->TogglePauseMenu();
+    if (pInputMapperUI_->IsTrigger(InputActionUI::Pause)) this->TogglePauseMenu();
 
     if (!isPauseMenuActive_) pGameLayer_->Update();
     pPauseLayer_->Update();

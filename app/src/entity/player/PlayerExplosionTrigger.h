@@ -23,9 +23,9 @@ private:
     void UpdateTriggerIf();
 
     static constexpr float kScorePerEnemy = 20.0f;
-    static constexpr float kDecreaseBeginTime = 1.0f;
+    static constexpr float kDecreaseBeginTime = 3.0f;
     static constexpr float kDecreasePerSec = 20.0f; // 20 points per second
-    static constexpr float kTargetTriggerScore_ = 100.0f;
+    static constexpr float kTargetTriggerScore_ = PlayerContext::kMaxExplosionScore;
 
     PlayerInput*                        pInput_         = nullptr;
     PlayerContext*                      pContext_         = nullptr;

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.2.11415.280 d18.0
+VisualStudioVersion = 18.2.11415.280
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "externals", "externals", "{3BC02507-77C0-40A8-9E3B-2FA4A06BE9B2}"
 EndProject
@@ -27,6 +27,7 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AddressSanitizer|x64 = AddressSanitizer|x64
 		Debug|x64 = Debug|x64
+		Release_DynamicDebug|x64 = Release_DynamicDebug|x64
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
@@ -34,42 +35,56 @@ Global
 		{A0ECBC58-FE34-477C-B275-299ED2583C53}.AddressSanitizer|x64.Build.0 = AddressSanitizer|x64
 		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Debug|x64.ActiveCfg = Debug|x64
 		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Debug|x64.Build.0 = Debug|x64
+		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Release_DynamicDebug|x64.ActiveCfg = Release_DynamicDebug|x64
+		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Release_DynamicDebug|x64.Build.0 = Release_DynamicDebug|x64
 		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Release|x64.ActiveCfg = Release|x64
 		{A0ECBC58-FE34-477C-B275-299ED2583C53}.Release|x64.Build.0 = Release|x64
 		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.AddressSanitizer|x64.ActiveCfg = AddressSanitizer|x64
 		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.AddressSanitizer|x64.Build.0 = AddressSanitizer|x64
 		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Debug|x64.ActiveCfg = Debug|x64
 		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Debug|x64.Build.0 = Debug|x64
+		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Release_DynamicDebug|x64.ActiveCfg = Release_DynamicDebug|x64
+		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Release_DynamicDebug|x64.Build.0 = Release_DynamicDebug|x64
 		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Release|x64.ActiveCfg = Release|x64
 		{9FD2D32D-DAB0-40A1-B430-CBC12517B87C}.Release|x64.Build.0 = Release|x64
 		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.AddressSanitizer|x64.ActiveCfg = AddressSanitizer|x64
 		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.AddressSanitizer|x64.Build.0 = AddressSanitizer|x64
 		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Debug|x64.ActiveCfg = Debug|x64
 		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Debug|x64.Build.0 = Debug|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release_DynamicDebug|x64.ActiveCfg = Release_DynamicDebug|x64
+		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release_DynamicDebug|x64.Build.0 = Release_DynamicDebug|x64
 		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release|x64.ActiveCfg = Release|x64
 		{371B9FA9-4C90-4AC6-A123-ACED756D6C77}.Release|x64.Build.0 = Release|x64
 		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.AddressSanitizer|x64.ActiveCfg = AddressSanitizer|x64
 		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.AddressSanitizer|x64.Build.0 = AddressSanitizer|x64
 		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Debug|x64.ActiveCfg = Debug|x64
 		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Debug|x64.Build.0 = Debug|x64
+		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Release_DynamicDebug|x64.ActiveCfg = Release_DynamicDebug|x64
+		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Release_DynamicDebug|x64.Build.0 = Release_DynamicDebug|x64
 		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Release|x64.ActiveCfg = Release|x64
 		{F83F6C46-AEE0-480C-95FC-2319E6FEB02B}.Release|x64.Build.0 = Release|x64
 		{E3E0F431-57AB-47BD-9CAD-DB622644B99C}.AddressSanitizer|x64.ActiveCfg = AddressSanitizer|x64
 		{E3E0F431-57AB-47BD-9CAD-DB622644B99C}.AddressSanitizer|x64.Build.0 = AddressSanitizer|x64
 		{E3E0F431-57AB-47BD-9CAD-DB622644B99C}.Debug|x64.ActiveCfg = Debug|x64
 		{E3E0F431-57AB-47BD-9CAD-DB622644B99C}.Debug|x64.Build.0 = Debug|x64
+		{E3E0F431-57AB-47BD-9CAD-DB622644B99C}.Release_DynamicDebug|x64.ActiveCfg = Release_DynamicDebug|x64
+		{E3E0F431-57AB-47BD-9CAD-DB622644B99C}.Release_DynamicDebug|x64.Build.0 = Release_DynamicDebug|x64
 		{E3E0F431-57AB-47BD-9CAD-DB622644B99C}.Release|x64.ActiveCfg = Release|x64
 		{E3E0F431-57AB-47BD-9CAD-DB622644B99C}.Release|x64.Build.0 = Release|x64
 		{A87AD77F-CC08-4788-8630-68470354FCD3}.AddressSanitizer|x64.ActiveCfg = AddressSanitizer|x64
 		{A87AD77F-CC08-4788-8630-68470354FCD3}.AddressSanitizer|x64.Build.0 = AddressSanitizer|x64
 		{A87AD77F-CC08-4788-8630-68470354FCD3}.Debug|x64.ActiveCfg = Debug|x64
 		{A87AD77F-CC08-4788-8630-68470354FCD3}.Debug|x64.Build.0 = Debug|x64
+		{A87AD77F-CC08-4788-8630-68470354FCD3}.Release_DynamicDebug|x64.ActiveCfg = Release_DynamicDebug|x64
+		{A87AD77F-CC08-4788-8630-68470354FCD3}.Release_DynamicDebug|x64.Build.0 = Release_DynamicDebug|x64
 		{A87AD77F-CC08-4788-8630-68470354FCD3}.Release|x64.ActiveCfg = Release|x64
 		{A87AD77F-CC08-4788-8630-68470354FCD3}.Release|x64.Build.0 = Release|x64
 		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.AddressSanitizer|x64.ActiveCfg = Debug|x64
 		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.AddressSanitizer|x64.Build.0 = Debug|x64
 		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.Debug|x64.ActiveCfg = Debug|x64
 		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.Debug|x64.Build.0 = Debug|x64
+		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.Release_DynamicDebug|x64.ActiveCfg = Release_DynamicDebug|x64
+		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.Release_DynamicDebug|x64.Build.0 = Release_DynamicDebug|x64
 		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.Release|x64.ActiveCfg = Release|x64
 		{05AB97A5-44CD-444D-A6FF-BB04401C0536}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection

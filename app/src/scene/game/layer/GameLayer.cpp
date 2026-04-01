@@ -26,7 +26,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     pLayer_ = pLayer;
     pDx12_ = std::any_cast<DirectX12*>(pArgs->Get("DirectX12"));
     pDeltaTimeManager_ = DeltaTimeManager::GetInstance();
-    randomGenerator_ = RandomGenerator::GetInstance();
+    pRandomGenerator_ = RandomGenerator::GetInstance();
     pTextureManager_ = TextureManager::GetInstance();
     pModelManager_ = std::any_cast<ModelManager*>(pArgs->Get("ModelManager"));
     pLineSystem_ = std::any_cast<LineSystem*>(pArgs->Get("LineSystem"));
@@ -743,6 +743,7 @@ void GameLayer::SpritesInitialize()
 void GameLayer::AddPlayerBullet()
 {
     Input* pInput = Input::GetInstance();
+    pInput->SetGamepadVibrationRight(0.3f);
     Vector3 direction = screenToWorld_->GetWorldPoint() - pPlayer_->GetTransform().translate;
     if (pInput->IsPadConnected())
     {

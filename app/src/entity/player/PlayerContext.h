@@ -11,7 +11,7 @@ public:
         float explosionScore = 0.0f;
     };
 
-    static constexpr float kMaxExplosionScore = 100.0f;
+    static constexpr float kMaxExplosionScore = 160.0f;
 
     void Initialize() {};
     void Finalize() {};

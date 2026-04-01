@@ -6,7 +6,7 @@
                 "beginTime" : 0.000,
                 "endTime" : 15.000,
                 "enemyType" : "Normal",
-                "enemyCount" : 3,
+                "enemyCount" : 15,
                 "interval" : 3.000
             },
             {
@@ -14,7 +14,7 @@
                 "beginTime" : 15.000,
                 "endTime" : 25.000,
                 "enemyType" : "Normal",
-                "enemyCount" : 8,
+                "enemyCount" : 40,
                 "interval" : 3.000
             },
             {
@@ -22,7 +22,7 @@
                 "beginTime" : 25.000,
                 "endTime" : 40.000,
                 "enemyType" : "Rusher",
-                "enemyCount" : 1,
+                "enemyCount" : 5,
                 "interval" : 0.250
             },
             {
@@ -38,7 +38,7 @@
                 "beginTime" : 50.000,
                 "endTime" : 60.000,
                 "enemyType" : "Rusher",
-                "enemyCount" : 12,
+                "enemyCount" : 15,
                 "interval" : 2.000
             }
         ]

@@ -28,14 +28,17 @@ void PlayerInput::Update()
     {
         auto& iAnalog = pInput_->GetGamepadAnalogInput();
         data_.move = Vector3(iAnalog.thumbL.x, 0.0f, iAnalog.thumbL.y);
-        data_.isShotPressed = iAnalog.thumbR.Length() > kShootThreshold_;
-        bool isTriggerRightPressed = iAnalog.triggerR > 0.01f;
-        bool isTriggerRightPressedPrev = isTriggerRightPressed_;
-        data_.isSlowTriggered = isTriggerRightPressed && !isTriggerRightPressedPrev;
-        data_.isSlowPressed = isTriggerRightPressed;
-        data_.isSlowReleased = isTriggerRightPressedPrev && !isTriggerRightPressed;
-        isTriggerRightPressed_ = isTriggerRightPressed;
-        data_.isExplosionTriggered = iAnalog.triggerL > 0.01f;
+        data_.isShotPressed = iAnalog.thumbR.LengthWithoutRoot() > kShootThreshold_ * kShootThreshold_;
+        const bool currTriggerR = iAnalog.triggerR > 0.01f;
+        const bool prevTriggerR = isTriggerRightPressed_;
+        const bool currTriggerL = iAnalog.triggerL > 0.01f;
+        const bool prevTriggerL = isTriggerLeftPressed_;
+        data_.isSlowTriggered = currTriggerR && !prevTriggerR;
+        data_.isSlowPressed = currTriggerR;
+        data_.isSlowReleased = prevTriggerR && !currTriggerR;
+        data_.isExplosionTriggered = currTriggerL && !prevTriggerL;
+        isTriggerRightPressed_ = currTriggerR;
+        isTriggerLeftPressed_ = currTriggerL;
     }
     else
     {

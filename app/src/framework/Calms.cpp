@@ -83,6 +83,10 @@ void Calms::InitializeInputMapper()
     pInputMapperUI_ = std::make_unique<InputMapper<InputActionUI>>();
     pInputMapperUI_->MapAction(InputActionUI::Confirm, { InputMapper<InputActionUI>::KeyCode{ DIK_SPACE } });
     pInputMapperUI_->MapAction(InputActionUI::Confirm, { InputMapper<InputActionUI>::PadButton{ XINPUT_GAMEPAD_A } });
+    pInputMapperUI_->MapAction(InputActionUI::Cancel, { InputMapper<InputActionUI>::KeyCode{ DIK_ESCAPE } });
+    pInputMapperUI_->MapAction(InputActionUI::Cancel, { InputMapper<InputActionUI>::PadButton{ XINPUT_GAMEPAD_B } });
+    pInputMapperUI_->MapAction(InputActionUI::Pause, { InputMapper<InputActionUI>::KeyCode{ DIK_ESCAPE } });
+    pInputMapperUI_->MapAction(InputActionUI::Pause, { InputMapper<InputActionUI>::PadButton{ XINPUT_GAMEPAD_START } });
 
     pSceneManager_->AddInitialArg("InputMapperUI", pInputMapperUI_.get());
 }

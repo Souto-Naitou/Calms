@@ -180,7 +180,7 @@ private:
     // Pointers
     DirectX12*                  pDx12_              = nullptr;
     DeltaTimeManager*           pDeltaTimeManager_  = nullptr;
-    RandomGenerator*            randomGenerator_    = nullptr;
+    RandomGenerator*            pRandomGenerator_    = nullptr;
     ModelManager*               pModelManager_      = nullptr;
     LineSystem*                 pLineSystem_        = nullptr;
     TextureManager*             pTextureManager_    = nullptr;

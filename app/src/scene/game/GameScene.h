@@ -6,16 +6,17 @@
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <Features/RandomGenerator/RandomGenerator.h>
 #include <Features/Model/ModelManager.h>
-#include "layer/GameLayer.h"
-#include "layer/PauseLayer.h"
-#include <Features/Input/Input.h>
-#include <logic/event/PauseMenuToggleEvent.h>
-#include <Features/event/EventSubscription.h>
-#include <Effects/PostEffects/SeparatedGaussianFilter/SeparatedGaussianFilter.h>
-#include <optional>
-#include <memory>
 #include <Features/Lighting/DirectionalLight.h>
 #include <Features/Lighting/PointLight.h>
+#include <Features/Input/InputMapper.hpp>
+#include <Features/event/EventSubscription.h>
+#include <Effects/PostEffects/SeparatedGaussianFilter/SeparatedGaussianFilter.h>
+#include <logic/event/PauseMenuToggleEvent.h>
+#include <logic/input/InputAction.h>
+#include "layer/GameLayer.h"
+#include "layer/PauseLayer.h"
+#include <optional>
+#include <memory>
 
 /// <summary>
 /// ゲームシーン
@@ -23,7 +24,7 @@
 class GameScene : public ILoadableScene
 {
 public:
-    GameScene(ISceneArgs* pArgs) : ILoadableScene(pArgs) {};
+    GameScene(ISceneArgs* pArgs);
 
     /// <summary>
     /// 初期化
@@ -79,7 +80,7 @@ private:
 
     std::optional<EventSubscription> subscriptionPauseMenuToggle_ = std::nullopt;
 
-    Input* pInput_ = nullptr;
+    InputMapper<InputActionUI>* pInputMapperUI_ = nullptr;
     DeltaTimeManager* deltaTimeManager_ = nullptr;
     RandomGenerator* randomGenerator_ = nullptr;
     ModelManager* pModelManager_ = nullptr;

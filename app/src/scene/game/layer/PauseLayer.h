@@ -26,6 +26,4 @@ private:
     bool isPaused_ = false;
     static constexpr float kButtonSpacingVh_ = 4.0f; // vh単位
     static constexpr float kMarginCenterOffsetVh_ = 20.0f; // vh単位
-
-    Input* pInput_ = nullptr;
 };

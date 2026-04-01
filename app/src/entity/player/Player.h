@@ -133,6 +133,8 @@ private:
     static constexpr float  kReflectionPower_               = 70.0f;
     static constexpr float  kShotInterval_                  = 0.05f;
     static constexpr float  kLightIntensityDecreaseAmount_  = 1.0f;
+    static constexpr float  kVibrationValueWhenDamage_      = 0.75f;
+
     // 初期化パラメータ
     Params      params_;
     uint32_t    flags_      = static_cast<uint32_t>(Flags::None);
@@ -151,7 +153,7 @@ private:
     std::unique_ptr<Collider>                   pCollider_          = nullptr;
     std::unique_ptr<TimeMeasurer>               pTimerShot_         = nullptr;
 
-    bool  isShot_   = false;
+    bool    isShot_   = false;
 
     /// コライダー用
     OBB obb_ = {};
