@@ -49,6 +49,7 @@
 #include <ui/PlayerUI3d.h>
 #include <scene/game/animation/GameClearAnimation.h>
 #include <presentation/slomo/SlomoEffectController.h>
+#include <presentation/animation/RadialBeat.h>
 
 // STL
 #include <cstdint>
@@ -57,7 +58,6 @@
 #include <vector>
 #include <memory>
 #include <optional>
-#include <presentation/animation/RadialBeat.h>
 
 /// <summary>
 /// ゲーム層 (他にポーズメニュー層やリザルト層などを実装予定)

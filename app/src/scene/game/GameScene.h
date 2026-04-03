@@ -2,10 +2,6 @@
 
 // engine
 #include <scene/SceneBase.h>
-#include <Core/DirectX12/TextureManager.h>
-#include <Features/DeltaTimeManager/DeltaTimeManager.h>
-#include <Features/RandomGenerator/RandomGenerator.h>
-#include <Features/Model/ModelManager.h>
 #include "layer/GameLayer.h"
 #include "layer/PauseLayer.h"
 #include <Features/Input/Input.h>
@@ -80,9 +76,4 @@ private:
     std::optional<EventSubscription> subscriptionPauseMenuToggle_ = std::nullopt;
 
     Input* pInput_ = nullptr;
-    DeltaTimeManager* deltaTimeManager_ = nullptr;
-    RandomGenerator* randomGenerator_ = nullptr;
-    ModelManager* pModelManager_ = nullptr;
-    LineSystem* pLineSystem_ = nullptr;
-    TextureManager* pTextureManager_ = nullptr;
 };
