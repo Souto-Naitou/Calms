@@ -23,6 +23,7 @@
 #include "./Animation/OpeningAnimation.h"
 #include <logic/input/InputAction.h>
 #include <memory>
+#include <wrapper/InputAwareSprite.h>
 
 /// <summary>
 /// タイトルシーン
@@ -96,11 +97,12 @@ private:
     Audio*                              pSoundStartButton_          = nullptr;      // !< スタートボタン音声
     Audio*                              pSoundBGM_                  = nullptr;      // !< BGM音声
     std::unique_ptr<RadialBeat>         pRadialBeat_                = nullptr;      // !< 放射状ブラービート
+    std::unique_ptr<InputAwareSprite>   pInputAwareSprite_          = nullptr;      // !< 入力デバイスによって自動切り替え可能なスプライト
 
     /// 他クラスのインスタンス
     PostEffectExecutor*         pPostEffectExecutor_    = nullptr;      // !< ポストエフェクト実行クラス
     DirectX12*                  pDx12_                  = nullptr;      // !< DirectX12
-    Input*                      pInput_                 = nullptr;      // !< 入力
+    Input*                      pInput_                 = nullptr;      // !< 入力w
     SceneManager*               pSceneManager_          = nullptr;      // !< シーン遷移
     CubemapSystem*              pCubemapSystem_         = nullptr;      // !< キューブマップシステム
     InputMapper<InputActionUI>* pInputMapperUI_         = nullptr;      // !< 入力マッパー

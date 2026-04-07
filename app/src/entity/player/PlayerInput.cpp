@@ -13,30 +13,35 @@ void PlayerInput::Update()
     PlayerInput::Data preData = data_;
     data_ = {};
     
-    if (pInput_->IsPadConnected() && pInput_->IsPadUpdated())
-    {
-        isGamepadMode_ = true;
-    }
-    
-    if (pInput_->IsAnyKeyChanged())
-    {
-        isGamepadMode_ = false;
-    }
+    /// [ ゲームパッドモードの切り替え ]
+
 
     /// [ プレイヤーの入力用に変換 ]
-    if (isGamepadMode_)
+    if (pInput_->IsPadMode())
     {
+        // アナログスティックの入力が小さい場合は0とみなすための閾値
+        constexpr float minAnalogLength = 0.01f;
+
+        // 移動
         auto& iAnalog = pInput_->GetGamepadAnalogInput();
         data_.move = Vector3(iAnalog.thumbL.x, 0.0f, iAnalog.thumbL.y);
-        data_.isShotPressed = iAnalog.thumbR.LengthWithoutRoot() > kShootThreshold_ * kShootThreshold_;
-        const bool currTriggerR = iAnalog.triggerR > 0.01f;
+
+        // 射撃
+        const float shootInputMagnitude = iAnalog.thumbR.LengthWithoutRoot();
+        const float shootThresholdSquared = kShootThreshold_ * kShootThreshold_;
+        data_.isShotPressed = shootInputMagnitude > shootThresholdSquared;
+
+        // スロー(トリガー/プレス/リリース)と爆発トリガー
+        const bool currTriggerR = iAnalog.triggerR > minAnalogLength;
         const bool prevTriggerR = isTriggerRightPressed_;
-        const bool currTriggerL = iAnalog.triggerL > 0.01f;
+        const bool currTriggerL = iAnalog.triggerL > minAnalogLength;
         const bool prevTriggerL = isTriggerLeftPressed_;
         data_.isSlowTriggered = currTriggerR && !prevTriggerR;
         data_.isSlowPressed = currTriggerR;
         data_.isSlowReleased = prevTriggerR && !currTriggerR;
-        data_.isExplosionTriggered = currTriggerL && !prevTriggerL;
+        data_.isExplosionTriggered= currTriggerL && !prevTriggerL;
+
+        // 現在のトリガーの状態を保存 (次フレームで比較するため)
         isTriggerRightPressed_ = currTriggerR;
         isTriggerLeftPressed_ = currTriggerL;
     }

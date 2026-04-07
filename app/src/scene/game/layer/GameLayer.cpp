@@ -17,6 +17,7 @@
 #include "Entity/Status/EntityStats.h"
 #include <Presentation/ParticleType.h>
 #include <logic/event/ParticleEmitEvent.h>
+#include <event/InputCallbackEvent.h>
 
 using namespace Math::Viewport::Unit;
 
@@ -170,7 +171,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 
     /// [ エミッターグループの初期化 ]
     pEmitterGroup_ = std::make_unique<ParticleEmitterGroup>();
-    particleEmitSub_ = EventListener::GetInstance()->Subscribe<ParticleEmitEvent>(
+    eventSubscriptions_.emplace_back() = EventListener::GetInstance()->Subscribe<ParticleEmitEvent>(
             [this](const ParticleEmitEvent& e) {
         pEmitterGroup_->Emit(static_cast<uint32_t>(e.type), e.position);
     });
@@ -203,7 +204,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     
 
     /// [ イベント登録 ]
-    playerExplosionSub_ = EventListener::GetInstance()->Subscribe<PlayerExplosionEvent>(
+    eventSubscriptions_.emplace_back() = EventListener::GetInstance()->Subscribe<PlayerExplosionEvent>(
         std::bind(&GameLayer::AddPlayerExplosion, this, std::placeholders::_1)
     );
 }
@@ -604,17 +605,6 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
         pLayer_->AddCanvas(canvasParticle_.get());
     };
 
-    /// [ UI用キャンバス ]
-    auto create_ui_canvas = [=]()
-    {
-        Canvas::Params canvasParams = commonParams;
-        canvasParams.name = "UI_Canvas";
-        canvasUI_ = std::make_unique<Canvas>();
-        canvasUI_->Initialize(canvasParams);
-        canvasUI_->SetEnableManualDraw(true);
-        pLayer_->AddCanvas(canvasUI_.get());
-    };
-
     /// [ UI用キャンバス(エフェクトあり) ]
     auto create_ui_effected_canvas = [=]()
     {
@@ -639,6 +629,17 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
         }
 
         pLayer_->AddCanvas(canvasUIEffected_.get());
+    };
+
+    /// [ UI用キャンバス ]
+    auto create_ui_canvas = [=]()
+    {
+        Canvas::Params canvasParams = commonParams;
+        canvasParams.name = "UI_Canvas";
+        canvasUI_ = std::make_unique<Canvas>();
+        canvasUI_->Initialize(canvasParams);
+        canvasUI_->SetEnableManualDraw(true);
+        pLayer_->AddCanvas(canvasUI_.get());
     };
 
     /// [ 全体用キャンバス ]
@@ -680,8 +681,8 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
     executor.AddTask(create_grid_canvas);
     executor.AddTask(create_3dobject_canvas);
     executor.AddTask(create_particle_canvas);
-    executor.AddTask(create_ui_canvas);
     executor.AddTask(create_ui_effected_canvas);
+    executor.AddTask(create_ui_canvas);
     executor.AddTask(create_overall_canvas);
 }
 
@@ -733,8 +734,14 @@ void GameLayer::SpritesInitialize()
     spriteClear_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
 
     spriteSpace_ = std::make_unique<Sprite>();
-    pTextureManager_->LoadTexture(Path::Image::kTitleStartPrompt);
-    spriteSpace_->Initialize(Path::Image::kTitleStartPrompt);
+    if (Input::GetInstance()->IsPadConnected())
+    {
+        spriteSpace_->Initialize(Path::Image::kTitleStartPromptButtonA);
+    }
+    else
+    {
+        spriteSpace_->Initialize(Path::Image::kTitleStartPromptSpaceKey);
+    }
     spriteSpace_->SetAnchorPoint({ 0.5f, 0.5f });
     spriteSpace_->SetPosition({ 25.0_vw, 62.5_vh });
     spriteSpace_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
@@ -742,16 +749,20 @@ void GameLayer::SpritesInitialize()
 
 void GameLayer::AddPlayerBullet()
 {
-    Input* pInput = Input::GetInstance();
-    pInput->SetGamepadVibrationRight(0.3f);
-    Vector3 direction = screenToWorld_->GetWorldPoint() - pPlayer_->GetTransform().translate;
-    if (pInput->IsPadConnected())
+    Vector3 direction = {};
+    Vector3 playerPosition = pPlayer_->GetTransform().translate;
+    auto pInput = Input::GetInstance();
+    if (pInput->IsPadMode())
     {
         auto& iAnalog = pInput->GetGamepadAnalogInput();
         direction = { iAnalog.thumbR.x, 0.0f, iAnalog.thumbR.y };
     }
-    Vector3 position = pPlayer_->GetTransform().translate;
-    auto bulletsGenerated = playerBulletGenerator_.Generate(position, direction);
+    else
+    {
+        direction = screenToWorld_->GetWorldPoint() - playerPosition;
+    }
+
+    auto bulletsGenerated = playerBulletGenerator_.Generate(playerPosition, direction);
     playerBullets_.insert(
         playerBullets_.end(),
         std::make_move_iterator(bulletsGenerated.begin()),

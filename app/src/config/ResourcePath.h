@@ -30,7 +30,8 @@ namespace Path::Image
     /// [ タイトルシーン ]
     inline constexpr const char* kTitle = "title/title.dds";
     inline constexpr const char* kTitleSkybox = "title/skybox.v2.dds";
-    inline constexpr const char* kTitleStartPrompt = "title/start_prompt.dds";
+    inline constexpr const char* kTitleStartPromptSpaceKey = "title/press_space.dds";
+    inline constexpr const char* kTitleStartPromptButtonA = "title/press_a_button.dds";
     inline constexpr const char* kFrameScreen = "title/frame_screen.dds";
 
     /// [ ローディング画面 ]

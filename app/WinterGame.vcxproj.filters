@@ -277,6 +277,8 @@
     <ClCompile Include="src\presentation\animation\RadialBeat.cpp" />
     <ClCompile Include="src\presentation\animation\CountDownFontSizeEmphasis.cpp" />
     <ClCompile Include="src\presentation\animation\CountDownColorEmphasis.cpp" />
+    <ClCompile Include="src\wrapper\InputAwareSprite.cpp" />
+    <ClCompile Include="src\entity\player\PlayerDebug.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -457,6 +459,8 @@
     <ClInclude Include="src\presentation\animation\CountDownFontSizeEmphasis.h" />
     <ClInclude Include="src\presentation\animation\CountDownColorEmphasis.h" />
     <ClInclude Include="src\logic\input\InputAction.h" />
+    <ClInclude Include="src\wrapper\InputAwareSprite.h" />
+    <ClInclude Include="src\entity\player\PlayerDebug.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

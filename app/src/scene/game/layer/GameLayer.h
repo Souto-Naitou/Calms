@@ -171,9 +171,7 @@ private:
     float                                           areaWidth_              = 25.0f;    // !< エリアの幅
 
     AABB                                            playableArea_           = {};       // !< プレイヤーの移動可能範囲
-
-    std::optional<EventSubscription>                playerExplosionSub_     = std::nullopt;
-    std::optional<EventSubscription>                particleEmitSub_        = std::nullopt;
+    std::vector<std::optional<EventSubscription>>   eventSubscriptions_     = {};       // !< 敵の死亡イベント購読
     std::array<Particle*, kMaxParticleIDs_>         particles_              = {};       // !< パーティクル
     std::unique_ptr<ParticleEmitterGroup>           pEmitterGroup_          = nullptr;  // !< エミッターグループ
 

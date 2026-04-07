@@ -10,13 +10,14 @@
 class PlayerExplosionTrigger
 {
 public:
-    PlayerExplosionTrigger() = default;
+    PlayerExplosionTrigger(PlayerInput& input, PlayerContext& context) : input_(input), context_(context) {}
     ~PlayerExplosionTrigger() = default;
 
-    void Initialize(PlayerInput* pInput, PlayerContext* pContext);
+    void Initialize();
     void Update();
-    void ImGui();
     void OnKillEnemyEvent(const KillEnemyEvent&);
+
+    float GetDecreaseProgress();
 
 private:
     void DecreaseScore();
@@ -27,8 +28,8 @@ private:
     static constexpr float kDecreasePerSec = 20.0f; // 20 points per second
     static constexpr float kTargetTriggerScore_ = PlayerContext::kMaxExplosionScore;
 
-    PlayerInput*                        pInput_         = nullptr;
-    PlayerContext*                      pContext_         = nullptr;
-    std::unique_ptr<TimeMeasurerByDt>   decreaseTimer_  = {};
+    PlayerInput&                        input_;
+    PlayerContext&                      context_;
+    TimeMeasurerByDt                    decreaseTimer_ = {};
     std::optional<EventSubscription>    subscription_   = std::nullopt;
 };

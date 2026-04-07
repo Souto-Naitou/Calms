@@ -167,6 +167,10 @@ void TitleScene::InitializeGameEye()
 
 void TitleScene::InitializeSprites()
 {
+    /// AwareSpriteの方を先に初期化
+    pInputAwareSprite_ = std::make_unique<InputAwareSprite>();
+    pInputAwareSprite_->Initialize();
+
     /// タイトルテキストの初期化
     pSpriteTitle_ = std::make_unique<Sprite>();
     pSpriteTitle_->Initialize(Path::Image::kTitle);
@@ -186,11 +190,22 @@ void TitleScene::InitializeSprites()
 
     /// 開始プロンプトの初期化
     pSpritePressStart_ = std::make_unique<Sprite>();
-    pSpritePressStart_->Initialize(Path::Image::kTitleStartPrompt);
+    pSpritePressStart_->Initialize(Path::Image::kTitleStartPromptSpaceKey);
     pSpritePressStart_->SetName("PressStart");
     pSpritePressStart_->SetAnchorPoint({ 0.5f, 0.5f });
     pSpritePressStart_->SetPosition({ 50.0_vw, 50.0_vh + 200.0f });
     pSpritePressStart_->SetSizeWithFactor(1.05f);
+
+    TextureManager* tm = TextureManager::GetInstance();
+    tm->LoadTexture(Path::Image::kTitleStartPromptSpaceKey);
+    tm->LoadTexture(Path::Image::kTitleStartPromptButtonA);
+
+    InputAwareSprite::Entry entry = {};
+    entry.pSprite_ = pSpritePressStart_.get();
+    entry.handleKeyboard_ = TextureManager::GetInstance()->GetSrvHandleGPU(Path::Image::kTitleStartPromptSpaceKey);
+    entry.handleGamepad_ = TextureManager::GetInstance()->GetSrvHandleGPU(Path::Image::kTitleStartPromptButtonA);
+
+    pInputAwareSprite_->AddEntry(entry);
 }
 
 void TitleScene::InitializeSkybox()

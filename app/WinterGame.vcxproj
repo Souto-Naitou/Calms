@@ -176,8 +176,8 @@ powershell -ExecutionPolicy RemoteSigned -File $(SolutionDir)automation\copy_eng
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>false</EnableCOMDATFolding>
-        <OptimizeReferences>false</OptimizeReferences>
-        <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+      <OptimizeReferences>false</OptimizeReferences>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
@@ -233,6 +233,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\entity\generator\PlayerBulletGenerator.cpp" />
     <ClCompile Include="src\entity\player\GameOverAnimation.cpp" />
     <ClCompile Include="src\entity\player\PlayerContext.cpp" />
+    <ClCompile Include="src\entity\player\PlayerDebug.cpp" />
     <ClCompile Include="src\entity\player\PlayerExplosionTrigger.cpp" />
     <ClCompile Include="src\entity\player\PlayerInput.cpp" />
     <ClCompile Include="src\entity\player\PlayerMovement.cpp" />
@@ -275,6 +276,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\ui\CountDown\CountDown.cpp" />
     <ClCompile Include="src\framework\Calms.cpp" />
     <ClCompile Include="src\ui\PlayerUI3d.cpp" />
+    <ClCompile Include="src\wrapper\InputAwareSprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\component\IMovement.h" />
@@ -298,6 +300,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\entity\generator\PlayerBulletGenerator.h" />
     <ClInclude Include="src\entity\player\GameOverAnimation.h" />
     <ClInclude Include="src\entity\player\PlayerContext.h" />
+    <ClInclude Include="src\entity\player\PlayerDebug.h" />
     <ClInclude Include="src\entity\player\PlayerExplosionTrigger.h" />
     <ClInclude Include="src\entity\player\PlayerInput.h" />
     <ClInclude Include="src\entity\player\PlayerMovement.h" />
@@ -339,6 +342,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\ui\CountDown\CountDown.h" />
     <ClInclude Include="src\framework\Calms.h" />
     <ClInclude Include="src\ui\PlayerUI3d.h" />
+    <ClInclude Include="src\wrapper\InputAwareSprite.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\modules\nima_engine\externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">
@@ -367,4 +371,3 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>
-

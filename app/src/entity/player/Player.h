@@ -23,6 +23,7 @@
 #include <Features/Primitive/AABB.h>
 #include <component/MovementLimitterAABB.h>
 #include <component/FocusOrientation.h>
+#include "PlayerDebug.h"
 
 
 /// <summary>
@@ -141,6 +142,7 @@ private:
 
     /// [ コンポーネント ]
     EulerTransform                              transform_          = {};
+    std::unique_ptr<PlayerDebug>                pDebug_             = nullptr;
     std::unique_ptr<PlayerInput>                pInput_             = nullptr;
     std::unique_ptr<PlayerContext>              pContext_           = nullptr;
     std::unique_ptr<PlayerMovement>             pMovement_          = nullptr;

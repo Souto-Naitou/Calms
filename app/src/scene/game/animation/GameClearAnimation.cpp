@@ -33,6 +33,14 @@ void GameClearAnimation::Initialize(Params params)
     layoutProp.leftTop = { static_cast<float>(Window::clientWidth) / 4.0f, static_cast<float>(Window::clientHeight) / 2.0f };
     layoutProp.anchorPoint = { 0.5f, 0.5f };
     layoutProp.letterSpacing = 32.0f;
+
+    pInputAwareSprite_ = std::make_unique<InputAwareSprite>();
+    InputAwareSprite::Entry entry = {};
+    entry.pSprite_ = initParams_.pSpriteSpace;
+    entry.handleKeyboard_= TextureManager::GetInstance()->GetSrvHandleGPU(Path::Image::kTitleStartPromptSpaceKey);
+    entry.handleGamepad_  = TextureManager::GetInstance()->GetSrvHandleGPU(Path::Image::kTitleStartPromptButtonA);
+    pInputAwareSprite_->Initialize();
+    pInputAwareSprite_->AddEntry(entry);
 }
 
 void GameClearAnimation::Update()
