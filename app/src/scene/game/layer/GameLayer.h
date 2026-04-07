@@ -31,33 +31,33 @@
 #include <Effects/PostEffects/Grayscale/Grayscale.h>
 
 // Game
-#include <entity/player/GameOverAnimation.h>
-#include <entity/player/Player.h>
-#include <entity/generator/PlayerBulletGenerator.h>
-#include <entity/playerbullet/PlayerBullet.h>
-#include <entity/screentoworld/ScreenToWorld.h>
-#include <entity/explosion/PlayerExplosion.h>
 #include <entity/enemy/EnemyFactory.h>
 #include <entity/enemy/EnemyRepository.h>
-#include <logic/spawner/EnemySpawner.h>
-#include <logic/timer/InGameCountDown.h>
+#include <entity/explosion/PlayerExplosion.h>
+#include <entity/generator/PlayerBulletGenerator.h>
+#include <entity/player/GameOverAnimation.h>
+#include <entity/player/Player.h>
+#include <entity/playerbullet/PlayerBullet.h>
+#include <entity/screentoworld/ScreenToWorld.h>
 #include <logic/event/PlayerExplosionEvent.h>
 #include <logic/score/ScoreCalculator.h>
 #include <logic/slomo/SlomoLogic.h>
+#include <logic/spawner/EnemySpawner.h>
+#include <logic/timer/InGameCountDown.h>
+#include <presentation/animation/RadialBeat.h>
+#include <presentation/slomo/SlomoEffectController.h>
+#include <scene/game/animation/GameClearAnimation.h>
 #include <ui/countdown/CountDown.h>
 #include <ui/guide/InputGuide.h>
 #include <ui/PlayerUI3d.h>
-#include <scene/game/animation/GameClearAnimation.h>
-#include <presentation/slomo/SlomoEffectController.h>
 
 // STL
+#include <array>
 #include <cstdint>
 #include <list>
-#include <array>
-#include <vector>
 #include <memory>
 #include <optional>
-#include <presentation/animation/RadialBeat.h>
+#include <vector>
 
 /// <summary>
 /// ゲーム層 (他にポーズメニュー層やリザルト層などを実装予定)
@@ -85,6 +85,7 @@ private:
     void RegisterParticleEmitters();
 
     /// <summary>
+    /// 敵の生成システムを更新します。
     /// </summary>
     void CreateEnemy();
 
@@ -119,63 +120,71 @@ private:
     static constexpr inline uint32_t kGameLimitTime = 60u;
 #endif // _DEBUG
 
-    std::unique_ptr<DebugEntry<GameLayer>>          pDebugEntry_            = nullptr;  // !< デバッグエントリ
+    std::unique_ptr<DebugEntry<GameLayer>>          pDebugEntry_            = {};       // !< デバッグエントリ
 
     /// Canvases
     std::unique_ptr<Canvas>                         canvasBackground_       = {};       // !< 背景キャンバス
-    std::unique_ptr<Canvas>                         canvasUI_               = {};       // !< UIキャンバス
-    std::unique_ptr<Canvas>                         canvasGrid_             = {};       // !< Gridキャンバス
-    std::unique_ptr<Canvas>                         canvas3dObject_         = {};       // !< MainCharactorキャンバス
+    std::unique_ptr<Canvas>                         canvasGrid_             = {};       // !< グリッドキャンバス
+    std::unique_ptr<Canvas>                         canvas3dObject_         = {};       // !< 3Dオブジェクトキャンバス
     std::unique_ptr<Canvas>                         canvasParticle_         = {};       // !< パーティクルキャンバス
+    std::unique_ptr<Canvas>                         canvasUI_               = {};       // !< UIキャンバス
+    std::unique_ptr<Canvas>                         canvasUIEffected_       = {};       // !< UIエフェクトキャンバス
     std::unique_ptr<Canvas>                         canvasOverall_          = {};       // !< 全体キャンバス
-    std::unique_ptr<Canvas>                         canvasUIEffected_       = {};       // !< ラインキャンバス
-    
+
+    /// World
+    std::unique_ptr<Object3d>                       pGrid_                  = {};       // !< グリッド
+    std::unique_ptr<GameEye>                        pGameEye_               = {};       // !< ゲームアイ
+    AABB                                            playableArea_           = {};       // !< プレイヤーの移動可能範囲
+    float                                           areaWidth_              = 25.0f;    // !< エリアの幅
+    std::unique_ptr<Line>                           lines_                  = {};       // !< エリア用ライン
+
+    /// Player
+    std::unique_ptr<Player>                             pPlayer_               = {};   // !< プレイヤー
+    std::unique_ptr<ScreenToWorld>                      screenToWorld_         = {};   // !< 座標変換
+    std::vector<std::unique_ptr<PlayerBullet>>          playerBullets_         = {};   // !< プレイヤー弾
+    std::vector<std::unique_ptr<PlayerExplosion>>       playerExplosions_      = {};   // !< プレイヤー爆発エフェクト
+    PlayerBulletGenerator                               playerBulletGenerator_ = {};   // !< プレイヤー弾生成システム
+
     /// Enemy
     std::unique_ptr<EnemyRepository>                pEnemyRepository_       = {};       // !< 敵リポジトリ
     std::unique_ptr<EnemySpawner>                   pEnemyPopSystem_        = {};       // !< 敵生成システム
     std::unique_ptr<EnemyFactory>                   pEnemyFactory_          = {};       // !< 敵生成ファクトリ
     std::unique_ptr<Object3dInstanced>              pObject3dEnemy_         = {};       // !< 敵用インスタンスObject3d
 
-    std::unique_ptr<Object3d>                       pGrid_                  = {};       // !< グリッド
-    std::unique_ptr<GameEye>                        pGameEye_               = {};       // !< ゲームアイ
-    std::unique_ptr<Player>                         pPlayer_                = {};       // !< プレイヤー
-    std::vector<std::unique_ptr<PlayerBullet>>      playerBullets_          = {};       // !< プレイヤー弾s
-    std::unique_ptr<ScreenToWorld>                  screenToWorld_          = {};       // !< 座標変換
-    std::vector<std::unique_ptr<PlayerExplosion>>   playerExplosions_       = {};       // !< プレイヤー爆発エフェクト
-    std::unique_ptr<ScoreCalculator>                scoreCalculator_        = {};       // !< スコア計算機
-
     /// UI
     std::unique_ptr<InGameCountDown>                ingameTimer_            = {};       // !< ゲームタイマー
     std::unique_ptr<InputGuide>                     inputGuide_             = {};       // !< 入力ガイド
     std::unique_ptr<Sprite>                         spriteClear_            = {};       // !< クリアスプライト
-    std::unique_ptr<Sprite>                         spriteSpace_            = {};       // !< クリアスプライト
+    std::unique_ptr<Sprite>                         spriteSpace_            = {};       // !< スペースプロンプトスプライト
     std::unique_ptr<PlayerUI3d>                     pPlayerUI3d_            = {};       // !< プレイヤー3DUI
+    std::unique_ptr<ScoreCalculator>                scoreCalculator_        = {};       // !< スコア計算機
 
+    /// Animation
     std::unique_ptr<GameOverAnimation>              gameOverAnimation_      = {};       // !< ゲームオーバーアニメーション
     std::unique_ptr<GameClearAnimation>             pGameClearAnimation_    = {};       // !< ゲームクリアアニメーション
-    std::unique_ptr<SlomoLogic>                     pSlomoLogic_            = {};       // !< スロー移動ロジック
-    std::unique_ptr<SlomoEffectController>          pSlomoEffect_           = {};       // !< スロー移動ロジック
-    std::unique_ptr<RadialBeat>                     pRadialBeat_            = nullptr;  // !< 放射状ブラービート
 
-    PlayerBulletGenerator                           playerBulletGenerator_  = {};       // !< プレイヤー弾生成システム
+    /// Slow motion
+    std::unique_ptr<SlomoLogic>                     pSlomoLogic_            = {};       // !< スロー移動ロジック
+    std::unique_ptr<SlomoEffectController>          pSlomoEffect_           = {};       // !< スロー移動エフェクト
+
+    /// Effects
+    std::unique_ptr<RadialBeat>                     pRadialBeat_            = {};       // !< 放射状ブラービート
+    std::unique_ptr<ParticleEmitterGroup>           pEmitterGroup_          = {};       // !< エミッターグループ
+    std::array<Particle*, kMaxParticleIDs_>         particles_              = {};       // !< パーティクル
+
+    /// Game state
     std::unique_ptr<CountDown>                      pStartCountDown_        = {};       // !< カウントダウン
     TimeMeasurer                                    timer_                  = {};       // !< タイマー
     double                                          countDownOffset_        = 2.0;      // !< カウントダウンのオフセット
-
     bool                                            isGameStartFlashed_     = false;    // !< ゲーム開始フラッシュ完了フラグ
     bool                                            isEnding_               = false;    // !< ゲーム終了フラグ
     bool                                            isChangingScene_        = false;    // !< シーン遷移中かどうか
-    std::unique_ptr<Line>                           lines_                  = nullptr;  // !< エリア用ライン
-    float                                           areaWidth_              = 25.0f;    // !< エリアの幅
 
-    AABB                                            playableArea_           = {};       // !< プレイヤーの移動可能範囲
-
+    /// Events
     std::optional<EventSubscription>                playerExplosionSub_     = std::nullopt;
     std::optional<EventSubscription>                particleEmitSub_        = std::nullopt;
-    std::array<Particle*, kMaxParticleIDs_>         particles_              = {};       // !< パーティクル
-    std::unique_ptr<ParticleEmitterGroup>           pEmitterGroup_          = nullptr;  // !< エミッターグループ
 
-    // Pointers
+    // External pointers
     DirectX12*          pDx12_              = nullptr;
     DeltaTimeManager*   pDeltaTimeManager_  = nullptr;
     RandomGenerator*    randomGenerator_    = nullptr;

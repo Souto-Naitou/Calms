@@ -115,7 +115,6 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     enemyCtx.pTargetPosition = &pPlayer_->GetTransform().translate;
     pEnemyFactory_->SetContext(enemyCtx);
 
-    
     /// [ 敵生成システムの初期化 ]
     pEnemyPopSystem_ = std::make_unique<EnemySpawner>();
     pEnemyPopSystem_->Initialize(pEnemyRepository_.get(), pEnemyFactory_.get());
@@ -199,7 +198,6 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
             .pScoreCalculator = scoreCalculator_.get()
         }
     );
-    
 
     /// [ イベント登録 ]
     playerExplosionSub_ = EventListener::GetInstance()->Subscribe<PlayerExplosionEvent>(
