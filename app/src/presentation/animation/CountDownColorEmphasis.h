@@ -4,6 +4,8 @@
 #include <Vector4.h>
 #include <drawable/font/NumericView.h>
 
+/// NumericViewのコンポーネント
+/// カウントダウンの残り時間が指定の範囲内のときに、色を強調するアニメーション
 class CountDownColorEmphasis
 {
 public:

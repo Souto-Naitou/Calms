@@ -4,9 +4,6 @@
 #include <filesystem>
 #include <Core/ConfigManager/ConfigManager.h>
 #include <cctype>
-#include <vector>
-#include <Effects/SceneTransition/TransShutter.h>
-#include <Features/SceneManager/SceneManager.h>
 #include <Features/Layer/CanvasScope.h>
 #include <Effects/PostEffects/ScanLine/Scanline.h>
 
@@ -115,7 +112,7 @@ void LoadingScreen::InitializeDrawables()
 
     /// ローディング背景スプライトの初期化
     pSpriteLBackground_ = std::make_unique<Sprite>();
-    pSpriteLBackground_->Initialize("white1x1.png");
+    pSpriteLBackground_->Initialize(Path::Image::kWhite);
     pSpriteLBackground_->SetName("LoadingBackground");
     pSpriteLBackground_->SetColor({ 0.8f, 0.8f, 0.8f, 1.0f });
     pSpriteLBackground_->SetSize({ Window::clientWidth, Window::clientHeight });

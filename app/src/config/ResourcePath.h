@@ -1,5 +1,14 @@
 #pragma once
 
+namespace Path::Resource
+{
+    inline constexpr const char* kJsonDir = "resources/json/";
+    inline constexpr const char* kTextureDir = "resources/textures/";
+    inline constexpr const char* kModelDir = "resources/model/";
+    inline constexpr const char* kAudioDir = "resources/sounds/";
+    inline constexpr const char* kParticleEmitterDir = "resources/json/particles/";
+}
+
 /// <summary>
 /// 画像リソースのパスを定義する名前空間
 /// </summary>
@@ -30,7 +39,8 @@ namespace Path::Image
     /// [ タイトルシーン ]
     inline constexpr const char* kTitle = "title/title.dds";
     inline constexpr const char* kTitleSkybox = "title/skybox.v2.dds";
-    inline constexpr const char* kTitleStartPrompt = "title/start_prompt.dds";
+    inline constexpr const char* kTitleStartPromptSpaceKey = "title/press_space.dds";
+    inline constexpr const char* kTitleStartPromptButtonA = "title/press_a_button.dds";
     inline constexpr const char* kFrameScreen = "title/frame_screen.dds";
 
     /// [ ローディング画面 ]
@@ -86,10 +96,10 @@ namespace Path::Audio
 
 namespace Path::Model
 {
+    inline constexpr const char* kGrid = "Grid_v3/Grid_v3.obj";
     inline constexpr const char* kParticlePlane = "particle/ParticlePlane.obj";
     inline constexpr const char* kPlayer = "Cube/Cube.obj";
-    inline constexpr const char* kEnemyNormal = "Cube/Cube.obj";
-    inline constexpr const char* kEnemyRusher = "Cube/Cube.obj";
+    inline constexpr const char* kEnemy = "Cube/Cube.obj";
 }
 
 namespace Path::ParticleEmitter
@@ -100,4 +110,9 @@ namespace Path::ParticleEmitter
     inline constexpr const char* kGameClearExplosion = "Scene_GameClear_Explosion.json";
     inline constexpr const char* kEnemyNormalDeathExplosion = "EnemyNormal_Death_Explosion.json";
     inline constexpr const char* kEnemyNormalDeathSpark = "EnemyNormal_Death_Spark.json";
+}
+
+namespace Path::Json
+{
+    inline constexpr const char* kPopTimeTable = "PopTimeTable.json";
 }

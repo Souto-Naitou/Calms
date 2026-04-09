@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="AddressSanitizer|x64">
@@ -7,6 +7,10 @@
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_DynamicDebug|x64">
+      <Configuration>Release_DynamicDebug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
@@ -36,6 +40,14 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DynamicDebug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v145</PlatformToolset>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseDynamicDebugging>true</UseDynamicDebugging>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AddressSanitizer|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -54,6 +66,9 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_DynamicDebug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='AddressSanitizer|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -63,6 +78,10 @@
     <IntDir>$(SolutionDir)bin\$(Configuration)\Int\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\$(Configuration)\Int\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_DynamicDebug|x64'">
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)bin\$(Configuration)\Int\</IntDir>
   </PropertyGroup>
@@ -131,6 +150,41 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
 powershell -ExecutionPolicy RemoteSigned -File $(SolutionDir)automation\copy_engine_resources.ps1</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_DynamicDebug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions);_AMD64_</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)../externals;$(ProjectDir)../modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <OptimizeReferences>false</OptimizeReferences>
+      <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxcompiler.dll" "$(TargetDir)dxcompiler.dll"
+copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dxil.dll"
+powershell -ExecutionPolicy RemoteSigned -File $(SolutionDir)automation\copy_engine_resources.ps1</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AddressSanitizer|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -179,6 +233,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\entity\generator\PlayerBulletGenerator.cpp" />
     <ClCompile Include="src\entity\player\GameOverAnimation.cpp" />
     <ClCompile Include="src\entity\player\PlayerContext.cpp" />
+    <ClCompile Include="src\entity\player\PlayerDebug.cpp" />
     <ClCompile Include="src\entity\player\PlayerExplosionTrigger.cpp" />
     <ClCompile Include="src\entity\player\PlayerInput.cpp" />
     <ClCompile Include="src\entity\player\PlayerMovement.cpp" />
@@ -211,6 +266,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\main.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_DynamicDebug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AddressSanitizer|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\scene\Clear\ClearScene.cpp" />
@@ -220,6 +276,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\ui\CountDown\CountDown.cpp" />
     <ClCompile Include="src\framework\Calms.cpp" />
     <ClCompile Include="src\ui\PlayerUI3d.cpp" />
+    <ClCompile Include="src\wrapper\InputAwareSprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\component\IMovement.h" />
@@ -243,6 +300,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\entity\generator\PlayerBulletGenerator.h" />
     <ClInclude Include="src\entity\player\GameOverAnimation.h" />
     <ClInclude Include="src\entity\player\PlayerContext.h" />
+    <ClInclude Include="src\entity\player\PlayerDebug.h" />
     <ClInclude Include="src\entity\player\PlayerExplosionTrigger.h" />
     <ClInclude Include="src\entity\player\PlayerInput.h" />
     <ClInclude Include="src\entity\player\PlayerMovement.h" />
@@ -250,6 +308,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\logic\event\ParticleEmitEvent.h" />
     <ClInclude Include="src\logic\event\PauseMenuToggleEvent.h" />
     <ClInclude Include="src\logic\event\PlayerExplosionEvent.h" />
+    <ClInclude Include="src\logic\input\InputAction.h" />
     <ClInclude Include="src\logic\slomo\SlomoLogic.h" />
     <ClInclude Include="src\presentation\animation\CountDownColorEmphasis.h" />
     <ClInclude Include="src\presentation\animation\CountDownFontSizeEmphasis.h" />
@@ -283,6 +342,7 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\ui\CountDown\CountDown.h" />
     <ClInclude Include="src\framework\Calms.h" />
     <ClInclude Include="src\ui\PlayerUI3d.h" />
+    <ClInclude Include="src\wrapper\InputAwareSprite.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\modules\nima_engine\externals\DirectXTex\DirectXTex_Desktop_2022_Win10.vcxproj">

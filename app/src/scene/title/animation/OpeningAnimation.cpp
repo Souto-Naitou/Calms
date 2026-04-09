@@ -1,6 +1,7 @@
 #include "OpeningAnimation.h"
 #include <Core/Window/Window.h>
 #include <Vector2.h>
+#include <config/ResourcePath.h>
 
 
 OpeningAnimation::OpeningAnimation()
@@ -22,7 +23,7 @@ void OpeningAnimation::Initialize()
 
     // Spriteの初期化
     spriteBackground_ = std::make_unique<Sprite>();
-    spriteBackground_->Initialize("white1x1.png");
+    spriteBackground_->Initialize(Path::Image::kWhite);
     spriteBackground_->SetSize(clientSize);
     spriteBackground_->SetColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 

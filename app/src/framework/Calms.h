@@ -7,6 +7,8 @@
 #include <Features/Model/ModelStorage.h>
 #include <Features/Model/ModelManager.h>
 #include <screen/factory/IntermediateScreenFactory.h>
+#include <Features/Input/InputMapper.hpp>
+#include <logic/input/InputAction.h>
 
 
 /// <summary>
@@ -40,10 +42,13 @@ public:
 
 
 private: /// ゲーム内オブジェクト
+    void InitializeInputMapper();
+
     std::unique_ptr<IModelLoader> pModelLoader_ = nullptr; // !< モデルローダー
     std::unique_ptr<ModelStorage> pModelStorage_ = nullptr; // !< モデルストレージ
     std::unique_ptr<ModelManager> pModelManager_ = nullptr; // !< モデルマネージャー
     std::unique_ptr<IntermediateScreenFactory> pIntermediateScreenFactory_ = nullptr; // !< 中間スクリーンファクトリー
+    std::unique_ptr<InputMapper<InputActionUI>> pInputMapperUI_ = nullptr; // !< UI用の入力マッパー
 
     CollisionManager* pCollisionManager_ = nullptr;
 };

@@ -25,9 +25,15 @@ public:
     void Initialize();
     void Update();
 
-    const Data& GetData() const { return data_; }
+    bool            IsGamepadMode() const { return isGamepadMode_; }
+    const Data&     GetData() const { return data_; }
 
 private:
+    static constexpr float kShootThreshold_ = 0.75f; // 射撃とみなすスティックの傾きの閾値
+
+    bool isGamepadMode_ = false;
+    bool isTriggerRightPressed_ = false;
+    bool isTriggerLeftPressed_ = false;
     Input* pInput_ = nullptr;
     Data data_ = {};
 };

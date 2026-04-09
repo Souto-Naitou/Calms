@@ -1,10 +1,13 @@
 #include "EnemySpawner.h"
 
-#include <imgui.h>
 #include <Utility/JSONIO/JSONIO.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
-#include "entity/enemy/EnemyInitParams.h"
 #include <utility>
+#include <config/ResourcePath.h>
+
+#ifdef _DEBUG
+#include <imgui.h>
+#endif // _DEBUG
 
 void EnemySpawner::Initialize(EnemyRepository* pRepository, EnemyFactory* pFactory)
 {
@@ -17,9 +20,9 @@ void EnemySpawner::Initialize(EnemyRepository* pRepository, EnemyFactory* pFacto
     /// JSONファイルの読み込み
     pathResolver_.Initialize();
     // 検索パスの追加
-    pathResolver_.AddSearchPath("Resources/Json");
+    pathResolver_.AddSearchPath(Path::Resource::kJsonDir);
     // 読み込み
-    jsonPopTimeTable_ = JSONIO::GetInstance()->Load(pathResolver_.GetFilePath(kJsonFileName_));
+    jsonPopTimeTable_ = JSONIO::GetInstance()->Load(pathResolver_.GetFilePath(Path::Json::kPopTimeTable));
 
     /// ポップデータの初期化
     this->InitPopData();
@@ -250,7 +253,7 @@ void EnemySpawner::UpdatePop()
 
 void EnemySpawner::ReloadJsonData()
 {
-    auto path = pathResolver_.GetFilePath(kJsonFileName_);
+    auto path = pathResolver_.GetFilePath(Path::Json::kPopTimeTable);
     jsonPopTimeTable_ = jsonIO_->Unload(path);
     jsonPopTimeTable_ = jsonIO_->Load(path);
     this->InitPopData();

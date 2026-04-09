@@ -6,10 +6,8 @@
 #include <imgui.h>
 #include <logic/event/PlayerExplosionEvent.h>
 
-void PlayerExplosionTrigger::Initialize(PlayerInput* pInput, PlayerContext* pContext)
+void PlayerExplosionTrigger::Initialize()
 {
-    pInput_ = pInput;
-    pContext_ = pContext;
     subscription_ = EventListener::GetInstance()->Subscribe<KillEnemyEvent>(
         std::bind(
             &PlayerExplosionTrigger::OnKillEnemyEvent,
@@ -17,15 +15,13 @@ void PlayerExplosionTrigger::Initialize(PlayerInput* pInput, PlayerContext* pCon
             std::placeholders::_1
         )
     );
-
-    decreaseTimer_ = std::make_unique<TimeMeasurerByDt>();
 }
 
 void PlayerExplosionTrigger::Update()
 {
-    decreaseTimer_->Update(static_cast<uint32_t>(DeltaTimeChannelReserved::Game));
+    decreaseTimer_.Update(static_cast<uint32_t>(DeltaTimeChannelReserved::Game));
 
-    if (decreaseTimer_->GetNow<float>() > kDecreaseBeginTime)
+    if (decreaseTimer_.GetNow<float>() > kDecreaseBeginTime)
     {
         this->DecreaseScore();
     }
@@ -33,43 +29,38 @@ void PlayerExplosionTrigger::Update()
     this->UpdateTriggerIf();
 }
 
-void PlayerExplosionTrigger::ImGui()
-{
-    #ifdef _DEBUG
-    float decreaseTimeFraction = decreaseTimer_->GetNow<float>() / kDecreaseBeginTime;
-    if (decreaseTimeFraction > 1.0f) decreaseTimeFraction = 1.0f;
-    ImGui::ProgressBar(decreaseTimeFraction);
-    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-    ImGui::Text("Until Decrease");
-    #endif // _DEBUG
-}
-
 void PlayerExplosionTrigger::OnKillEnemyEvent(const KillEnemyEvent&)
 {
-    pContext_->IncreaseExplosionScore(kScorePerEnemy);
-    decreaseTimer_->Reset();
-    decreaseTimer_->Start();
+    context_.IncreaseExplosionScore(kScorePerEnemy);
+    decreaseTimer_.Reset();
+    decreaseTimer_.Start();
+}
+
+float PlayerExplosionTrigger::GetDecreaseProgress()
+{
+    const float now = decreaseTimer_.GetNow<float>();
+    float decreaseProgress = now / kDecreaseBeginTime;
+    if (decreaseProgress > 1.0f) decreaseProgress = 1.0f;
+    return decreaseProgress;
 }
 
 void PlayerExplosionTrigger::DecreaseScore()
 {
     auto channel = static_cast<uint32_t>(DeltaTimeChannelReserved::Game);
     float dt = DeltaTimeManager::GetInstance()->GetDeltaTime(channel);
-    pContext_->DecreaseExplosionScore(kDecreasePerSec * dt);
+    context_.DecreaseExplosionScore(kDecreasePerSec * dt);
 }
 
 void PlayerExplosionTrigger::UpdateTriggerIf()
-{
-    if (!pInput_) return;
-    
-    bool doExplosion = pInput_->GetData().isExplosionTriggered;
-    doExplosion &= (pContext_->Get().explosionScore >= kTargetTriggerScore_);
+{    
+    bool doExplosion = input_.GetData().isExplosionTriggered;
+    doExplosion &= (context_.Get().explosionScore >= kTargetTriggerScore_);
 
     if (doExplosion)
     {
         /// トリガーイベント発行
-        pContext_->ResetExplosionScore();
-        decreaseTimer_->Reset();
+        context_.ResetExplosionScore();
+        decreaseTimer_.Reset();
         EventListener::GetInstance()->Publish(PlayerExplosionEvent{});
     }
 }

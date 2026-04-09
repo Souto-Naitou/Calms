@@ -208,7 +208,7 @@ void EditScene::InitializePlayer()
 
 void EditScene::InitializeObject3d()
 {
-    pGrid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
+    pGrid_ = presets::grid::Create(pModelManager_->Load(Path::Model::kGrid));
     pGrid_->GetOption().lightSettingData->enableDirectionalLight= true;
     pGrid_->GetOption().materialData->tilingMultiply = Vector2(10.0f, 10.0f);
 

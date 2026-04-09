@@ -25,6 +25,7 @@
 #include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Layer/OrderedCanvasLayer.h>
 #include <Features/event/EventSubscription.h>
+#include <Features/Input/InputMapper.hpp>
 #include <Interfaces/ISceneArgs.h>
 
 // PostEffects
@@ -44,11 +45,13 @@
 #include <logic/event/PlayerExplosionEvent.h>
 #include <logic/score/ScoreCalculator.h>
 #include <logic/slomo/SlomoLogic.h>
+#include <logic/input/InputAction.h>
 #include <ui/countdown/CountDown.h>
 #include <ui/guide/InputGuide.h>
 #include <ui/PlayerUI3d.h>
 #include <scene/game/animation/GameClearAnimation.h>
 #include <presentation/slomo/SlomoEffectController.h>
+#include <presentation/animation/RadialBeat.h>
 
 // STL
 #include <cstdint>
@@ -57,7 +60,6 @@
 #include <vector>
 #include <memory>
 #include <optional>
-#include <presentation/animation/RadialBeat.h>
 
 /// <summary>
 /// ゲーム層 (他にポーズメニュー層やリザルト層などを実装予定)
@@ -169,23 +171,22 @@ private:
     float                                           areaWidth_              = 25.0f;    // !< エリアの幅
 
     AABB                                            playableArea_           = {};       // !< プレイヤーの移動可能範囲
-
-    std::optional<EventSubscription>                playerExplosionSub_     = std::nullopt;
-    std::optional<EventSubscription>                particleEmitSub_        = std::nullopt;
+    std::vector<std::optional<EventSubscription>>   eventSubscriptions_     = {};       // !< 敵の死亡イベント購読
     std::array<Particle*, kMaxParticleIDs_>         particles_              = {};       // !< パーティクル
     std::unique_ptr<ParticleEmitterGroup>           pEmitterGroup_          = nullptr;  // !< エミッターグループ
 
     // Pointers
-    DirectX12*          pDx12_              = nullptr;
-    DeltaTimeManager*   pDeltaTimeManager_  = nullptr;
-    RandomGenerator*    randomGenerator_    = nullptr;
-    ModelManager*       pModelManager_      = nullptr;
-    LineSystem*         pLineSystem_        = nullptr;
-    TextureManager*     pTextureManager_    = nullptr;
-    OrderedCanvasLayer* pLayer_             = nullptr;
-    GrayscaleOption*    pOptionGrayscale_   = nullptr;
-    DirectionalLight*   pDirectionalLight_  = nullptr;
-    PointLight*         pPointLight_        = nullptr;
+    DirectX12*                  pDx12_              = nullptr;
+    DeltaTimeManager*           pDeltaTimeManager_  = nullptr;
+    RandomGenerator*            pRandomGenerator_    = nullptr;
+    ModelManager*               pModelManager_      = nullptr;
+    LineSystem*                 pLineSystem_        = nullptr;
+    TextureManager*             pTextureManager_    = nullptr;
+    OrderedCanvasLayer*         pLayer_             = nullptr;
+    GrayscaleOption*            pOptionGrayscale_   = nullptr;
+    DirectionalLight*           pDirectionalLight_  = nullptr;
+    PointLight*                 pPointLight_        = nullptr;
+    InputMapper<InputActionUI>* pInputMapperUI_     = nullptr;
 
     /// [ デバッグ ]
     bool isDisplayColliderEnemy_        = false;

@@ -112,7 +112,6 @@ private:
     bool                    isEnablePop_            = false;                // !< 生成フラグ
 
     /// Json
-    const std::string       kJsonFileName_          = "PopTimeTable.json";  // !< Jsonファイルパス
     json                    jsonPopTimeTable_       = {};                   // !< Jsonデータ
     PathResolver            pathResolver_           = {};                   // !< ファイルパス検索
     std::vector<PopData>    popData_                = {};                   // !< 生成データ

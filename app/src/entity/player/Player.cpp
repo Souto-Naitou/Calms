@@ -162,6 +162,8 @@ void Player::UpdateInputCommands()
 
     if (inputData.isShotPressed)
     {
+        Input* pInput = Input::GetInstance();
+        pInput->SetGamepadVibrationLeft(0.5f);
         if (pTimerShot_->GetNow<float>() > kShotInterval_)
         {
             pAudioShot_->Play();
@@ -190,6 +192,7 @@ void Player::AudioHandleInitialize()
 
 void Player::ComponentInitialize()
 {
+    pDebug_ = std::make_unique<PlayerDebug>();
     // トランスフォーム
     transform_.scale = Vector3(1.0f, 1.0f, 1.0f);
     transform_.rotate = Vector3(0.0f, 0.0f, 0.0f);
@@ -207,8 +210,8 @@ void Player::ComponentInitialize()
     pMovement_ = std::make_unique<PlayerMovement>(pInput_.get());
     pMovement_->SetMovePower(kMovePower_);
     // 爆発トリガー
-    pExplosionTrigger_ = std::make_unique<PlayerExplosionTrigger>();
-    pExplosionTrigger_->Initialize(pInput_.get(), pContext_.get());
+    pExplosionTrigger_ = std::make_unique<PlayerExplosionTrigger>(*pInput_, *pContext_);
+    pExplosionTrigger_->Initialize();
     // AABB制限
     if (params_.pMovableBounds)
     {
@@ -222,10 +225,9 @@ void Player::ComponentInitialize()
 
 void Player::ImGui()
 {
-    #ifdef _DEBUG
-    EntityBase::ImGui();
-    pExplosionTrigger_->ImGui();
-    #endif
+    this->EntityBase::ImGui();
+    pDebug_->ImGui(*pExplosionTrigger_);
+    pDebug_->ImGui(*pStats_);
 }
 
 void Player::DisableMovement()
@@ -247,7 +249,7 @@ void Player::OnCollisionTrigger(const Collider* other)
         pStats_->OnCollision(pOtherEntityStats);
         if (params_.pDirLight)
             params_.pDirLight->GetData().intensity -= kLightIntensityDecreaseAmount_;
-        EntityBase::ShakeCamera(kGameEyeShakePowerWhenDamage_);
+
         if (pStats_->GetHp() <= 0.0f)
         {
             EntityBase::Dead();
@@ -265,6 +267,11 @@ void Player::OnCollision(const Collider* other)
     {
         assert(other->GetOwnerTransform() &&
             "衝突相手のTransformが設定されていません。");
+
+        Input::GetInstance()->Vibrate(kVibrationValueWhenDamage_, kVibrationValueWhenDamage_);
+
+        EntityBase::ShakeCamera(kGameEyeShakePowerWhenDamage_);
+
         /// 反発を速度に適用
         Vector3 otherPos = other->GetOwnerTransform()->translate;
         otherPos.y = transform_.translate.y; // Y軸は無視する

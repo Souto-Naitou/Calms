@@ -8,6 +8,7 @@
 #include <Features/Lighting/PointLight.h>
 #include <drawable/sprite/Sprite.h>
 #include <logic/score/ScoreCalculator.h>
+#include <wrapper/InputAwareSprite.h>
 
 class GameClearAnimation
 {
@@ -76,6 +77,8 @@ private:
 
     std::unique_ptr<ParticleEmitter> pEmitter_ = nullptr;
     std::unique_ptr<NumericView> pScore_ = nullptr;
+    std::unique_ptr<InputAwareSprite> pInputAwareSprite_ = nullptr;
+
     Params initParams_ = {};
     float numSpriteColor_ = 0.0f;
 

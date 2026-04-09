@@ -17,6 +17,7 @@
 #include "Entity/Status/EntityStats.h"
 #include <Presentation/ParticleType.h>
 #include <logic/event/ParticleEmitEvent.h>
+#include <event/InputCallbackEvent.h>
 
 using namespace Math::Viewport::Unit;
 
@@ -26,18 +27,19 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     pLayer_ = pLayer;
     pDx12_ = std::any_cast<DirectX12*>(pArgs->Get("DirectX12"));
     pDeltaTimeManager_ = DeltaTimeManager::GetInstance();
-    randomGenerator_ = RandomGenerator::GetInstance();
+    pRandomGenerator_ = RandomGenerator::GetInstance();
     pTextureManager_ = TextureManager::GetInstance();
     pModelManager_ = std::any_cast<ModelManager*>(pArgs->Get("ModelManager"));
     pLineSystem_ = std::any_cast<LineSystem*>(pArgs->Get("LineSystem"));
     pDirectionalLight_ = std::any_cast<DirectionalLight*>(pArgs->Get("DirectionalLight"));
     pPointLight_ = std::any_cast<PointLight*>(pArgs->Get("PointLight"));
+    pInputMapperUI_ = std::any_cast<InputMapper<InputActionUI>*>(pArgs->Get("InputMapperUI"));
 
     /// [ デバッグエントリの初期化 ]
     pDebugEntry_ = std::make_unique<DebugEntry<GameLayer>>("Scene", "GameLayer", this);
 
     /// [ グリッドの初期化 ]
-    pGrid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
+    pGrid_ = presets::grid::Create(pModelManager_->Load(Path::Model::kGrid));
     pGrid_->GetOption().lightSettingData->enablePointLight = true;
     pGrid_->GetOption().lightSettingData->enableDirectionalLight = true;
     pGrid_->SetScale(Vector3(0.5f, 30.0f, 0.5f));
@@ -99,7 +101,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 
     pObject3dEnemy_ = std::make_unique<Object3dInstanced>();
     pObject3dEnemy_->Initialize();
-    pObject3dEnemy_->SetModel(pModelManager_->Load("Cube/Cube.obj"));
+    pObject3dEnemy_->SetModel(pModelManager_->Load(Path::Model::kEnemy));
     pObject3dEnemy_->GetOption().pMaterialData->environmentCoefficient = 0.0f;
     pObject3dEnemy_->GetOption().pLightSettingData->enableDirectionalLight = false;
     pObject3dEnemy_->GetOption().pLightSettingData->enablePointLight = false;
@@ -169,7 +171,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 
     /// [ エミッターグループの初期化 ]
     pEmitterGroup_ = std::make_unique<ParticleEmitterGroup>();
-    particleEmitSub_ = EventListener::GetInstance()->Subscribe<ParticleEmitEvent>(
+    eventSubscriptions_.emplace_back() = EventListener::GetInstance()->Subscribe<ParticleEmitEvent>(
             [this](const ParticleEmitEvent& e) {
         pEmitterGroup_->Emit(static_cast<uint32_t>(e.type), e.position);
     });
@@ -202,7 +204,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     
 
     /// [ イベント登録 ]
-    playerExplosionSub_ = EventListener::GetInstance()->Subscribe<PlayerExplosionEvent>(
+    eventSubscriptions_.emplace_back() = EventListener::GetInstance()->Subscribe<PlayerExplosionEvent>(
         std::bind(&GameLayer::AddPlayerExplosion, this, std::placeholders::_1)
     );
 }
@@ -350,7 +352,7 @@ void GameLayer::Update()
     ingameTimer_->Update();
 
     /// [ ゲームクリア後 / ゲームオーバー後のシーン遷移 ]
-    if (pGameClearAnimation_->IsFinished() && !isChangingScene_ && Input::GetInstance()->TriggerKey(DIK_SPACE))
+    if (pGameClearAnimation_->IsFinished() && !isChangingScene_ && pInputMapperUI_->IsTrigger(InputActionUI::Confirm))
     {
         SceneManager::GetInstance()->ReserveScene("TitleScene", std::make_unique<TransShutter>());
         isChangingScene_ = true;
@@ -603,17 +605,6 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
         pLayer_->AddCanvas(canvasParticle_.get());
     };
 
-    /// [ UI用キャンバス ]
-    auto create_ui_canvas = [=]()
-    {
-        Canvas::Params canvasParams = commonParams;
-        canvasParams.name = "UI_Canvas";
-        canvasUI_ = std::make_unique<Canvas>();
-        canvasUI_->Initialize(canvasParams);
-        canvasUI_->SetEnableManualDraw(true);
-        pLayer_->AddCanvas(canvasUI_.get());
-    };
-
     /// [ UI用キャンバス(エフェクトあり) ]
     auto create_ui_effected_canvas = [=]()
     {
@@ -638,6 +629,17 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
         }
 
         pLayer_->AddCanvas(canvasUIEffected_.get());
+    };
+
+    /// [ UI用キャンバス ]
+    auto create_ui_canvas = [=]()
+    {
+        Canvas::Params canvasParams = commonParams;
+        canvasParams.name = "UI_Canvas";
+        canvasUI_ = std::make_unique<Canvas>();
+        canvasUI_->Initialize(canvasParams);
+        canvasUI_->SetEnableManualDraw(true);
+        pLayer_->AddCanvas(canvasUI_.get());
     };
 
     /// [ 全体用キャンバス ]
@@ -679,8 +681,8 @@ void GameLayer::CanvasInitialize(TaskExecutor& executor, ISceneArgs* pArgs)
     executor.AddTask(create_grid_canvas);
     executor.AddTask(create_3dobject_canvas);
     executor.AddTask(create_particle_canvas);
-    executor.AddTask(create_ui_canvas);
     executor.AddTask(create_ui_effected_canvas);
+    executor.AddTask(create_ui_canvas);
     executor.AddTask(create_overall_canvas);
 }
 
@@ -732,8 +734,14 @@ void GameLayer::SpritesInitialize()
     spriteClear_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
 
     spriteSpace_ = std::make_unique<Sprite>();
-    pTextureManager_->LoadTexture(Path::Image::kTitleStartPrompt);
-    spriteSpace_->Initialize(Path::Image::kTitleStartPrompt);
+    if (Input::GetInstance()->IsPadConnected())
+    {
+        spriteSpace_->Initialize(Path::Image::kTitleStartPromptButtonA);
+    }
+    else
+    {
+        spriteSpace_->Initialize(Path::Image::kTitleStartPromptSpaceKey);
+    }
     spriteSpace_->SetAnchorPoint({ 0.5f, 0.5f });
     spriteSpace_->SetPosition({ 25.0_vw, 62.5_vh });
     spriteSpace_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
@@ -741,9 +749,20 @@ void GameLayer::SpritesInitialize()
 
 void GameLayer::AddPlayerBullet()
 {
-    Vector3 direction = screenToWorld_->GetWorldPoint() - pPlayer_->GetTransform().translate;
-    Vector3 position = pPlayer_->GetTransform().translate;
-    auto bulletsGenerated = playerBulletGenerator_.Generate(position, direction);
+    Vector3 direction = {};
+    Vector3 playerPosition = pPlayer_->GetTransform().translate;
+    auto pInput = Input::GetInstance();
+    if (pInput->IsPadMode())
+    {
+        auto& iAnalog = pInput->GetGamepadAnalogInput();
+        direction = { iAnalog.thumbR.x, 0.0f, iAnalog.thumbR.y };
+    }
+    else
+    {
+        direction = screenToWorld_->GetWorldPoint() - playerPosition;
+    }
+
+    auto bulletsGenerated = playerBulletGenerator_.Generate(playerPosition, direction);
     playerBullets_.insert(
         playerBullets_.end(),
         std::make_move_iterator(bulletsGenerated.begin()),

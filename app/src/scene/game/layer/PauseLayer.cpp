@@ -16,7 +16,6 @@ using namespace Math::Viewport::Unit;
 
 void PauseLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 {
-    pInput_ = Input::GetInstance();
 }
 
 void PauseLayer::Finalize()

@@ -13,6 +13,7 @@
 #include <Math/ViewportUnits.hpp>
 #include <NiGui.h>
 #include <Math/Easing.h>
+#include <Xinput.h>
 
 void TitleScene::Initialize()
 {
@@ -21,6 +22,7 @@ void TitleScene::Initialize()
     pSceneManager_ = SceneManager::GetInstance();
     pCubemapSystem_ = std::any_cast<CubemapSystem*>(pArgs_->Get("CubemapSystem"));
     pDx12_ = std::any_cast<DirectX12*>(pArgs_->Get("DirectX12"));
+    pInputMapperUI_ = std::any_cast<InputMapper<InputActionUI>*>(pArgs_->Get("InputMapperUI"));
 
     /// Canvasの初期化
     {
@@ -116,13 +118,10 @@ void TitleScene::Update()
     pSeparatedGaussianFilter_->GetOption().kernelSize = static_cast<int>(kernelSize);
     pSeparatedGaussianFilter_->CreateKernel();
 
-    if (pInput_->ReleaseKey(DIK_SPACE) && !isChangingScene_)
+    
+    if (pInputMapperUI_->IsRelease(InputActionUI::Confirm) && !isChangingScene_)
     {
-        pSoundStartButton_->Play();
-        pRadialBeat_->Start(1.0f);
-        pTransShutter_ = std::make_unique<TransShutter>();
-        pSceneManager_->ReserveScene("GameScene", "LoadingScreen", std::move(pTransShutter_));
-        isChangingScene_ = true;
+        this->ChangeToGameScene();
     }
 
     if (isChangingScene_)
@@ -168,6 +167,10 @@ void TitleScene::InitializeGameEye()
 
 void TitleScene::InitializeSprites()
 {
+    /// AwareSpriteの方を先に初期化
+    pInputAwareSprite_ = std::make_unique<InputAwareSprite>();
+    pInputAwareSprite_->Initialize();
+
     /// タイトルテキストの初期化
     pSpriteTitle_ = std::make_unique<Sprite>();
     pSpriteTitle_->Initialize(Path::Image::kTitle);
@@ -187,11 +190,22 @@ void TitleScene::InitializeSprites()
 
     /// 開始プロンプトの初期化
     pSpritePressStart_ = std::make_unique<Sprite>();
-    pSpritePressStart_->Initialize(Path::Image::kTitleStartPrompt);
+    pSpritePressStart_->Initialize(Path::Image::kTitleStartPromptSpaceKey);
     pSpritePressStart_->SetName("PressStart");
     pSpritePressStart_->SetAnchorPoint({ 0.5f, 0.5f });
     pSpritePressStart_->SetPosition({ 50.0_vw, 50.0_vh + 200.0f });
     pSpritePressStart_->SetSizeWithFactor(1.05f);
+
+    TextureManager* tm = TextureManager::GetInstance();
+    tm->LoadTexture(Path::Image::kTitleStartPromptSpaceKey);
+    tm->LoadTexture(Path::Image::kTitleStartPromptButtonA);
+
+    InputAwareSprite::Entry entry = {};
+    entry.pSprite_ = pSpritePressStart_.get();
+    entry.handleKeyboard_ = TextureManager::GetInstance()->GetSrvHandleGPU(Path::Image::kTitleStartPromptSpaceKey);
+    entry.handleGamepad_ = TextureManager::GetInstance()->GetSrvHandleGPU(Path::Image::kTitleStartPromptButtonA);
+
+    pInputAwareSprite_->AddEntry(entry);
 }
 
 void TitleScene::InitializeSkybox()
@@ -238,7 +252,7 @@ void TitleScene::UpdateStartPromptAnimation()
     t += 0.04f;
     pSpritePressStart_->SetColor(Vector4(1.0f, 1.0f, 1.0f, opacityStartPrompt_));
 
-    if (pInput_->PushKey(DIK_SPACE))
+    if (pInputMapperUI_->IsPush(InputActionUI::Confirm))
     {
         pSpritePressStart_->SetSizeWithFactor(kPressSpaceScaleActive_);
     }
@@ -246,4 +260,13 @@ void TitleScene::UpdateStartPromptAnimation()
     {
         pSpritePressStart_->SetSizeWithFactor(1.05f);
     }
+}
+
+void TitleScene::ChangeToGameScene()
+{
+    pSoundStartButton_->Play();
+    pRadialBeat_->Start(1.0f);
+    pTransShutter_ = std::make_unique<TransShutter>();
+    pSceneManager_->ReserveScene("GameScene", "LoadingScreen", std::move(pTransShutter_));
+    isChangingScene_ = true;
 }

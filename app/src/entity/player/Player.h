@@ -23,6 +23,7 @@
 #include <Features/Primitive/AABB.h>
 #include <component/MovementLimitterAABB.h>
 #include <component/FocusOrientation.h>
+#include "PlayerDebug.h"
 
 
 /// <summary>
@@ -133,12 +134,15 @@ private:
     static constexpr float  kReflectionPower_               = 70.0f;
     static constexpr float  kShotInterval_                  = 0.05f;
     static constexpr float  kLightIntensityDecreaseAmount_  = 1.0f;
+    static constexpr float  kVibrationValueWhenDamage_      = 0.75f;
+
     // 初期化パラメータ
     Params      params_;
     uint32_t    flags_      = static_cast<uint32_t>(Flags::None);
 
     /// [ コンポーネント ]
     EulerTransform                              transform_          = {};
+    std::unique_ptr<PlayerDebug>                pDebug_             = nullptr;
     std::unique_ptr<PlayerInput>                pInput_             = nullptr;
     std::unique_ptr<PlayerContext>              pContext_           = nullptr;
     std::unique_ptr<PlayerMovement>             pMovement_          = nullptr;
@@ -151,7 +155,7 @@ private:
     std::unique_ptr<Collider>                   pCollider_          = nullptr;
     std::unique_ptr<TimeMeasurer>               pTimerShot_         = nullptr;
 
-    bool  isShot_   = false;
+    bool    isShot_   = false;
 
     /// コライダー用
     OBB obb_ = {};
