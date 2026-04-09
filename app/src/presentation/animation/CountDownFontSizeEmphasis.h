@@ -3,6 +3,8 @@
 #include <Range.h>
 #include <drawable/font/NumericView.h>
 
+/// NumericViewのコンポーネント
+/// カウントダウンの残り時間が特定の範囲内に入ったときに、フォントサイズを強調するアニメーションを再生するためのクラス
 class CountDownFontSizeEmphasis
 {
 public:

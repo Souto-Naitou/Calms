@@ -39,7 +39,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     pDebugEntry_ = std::make_unique<DebugEntry<GameLayer>>("Scene", "GameLayer", this);
 
     /// [ グリッドの初期化 ]
-    pGrid_ = presets::grid::Create(pModelManager_->Load("Grid_v3/Grid_v3.obj"));
+    pGrid_ = presets::grid::Create(pModelManager_->Load(Path::Model::kGrid));
     pGrid_->GetOption().lightSettingData->enablePointLight = true;
     pGrid_->GetOption().lightSettingData->enableDirectionalLight = true;
     pGrid_->SetScale(Vector3(0.5f, 30.0f, 0.5f));
@@ -101,7 +101,7 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
 
     pObject3dEnemy_ = std::make_unique<Object3dInstanced>();
     pObject3dEnemy_->Initialize();
-    pObject3dEnemy_->SetModel(pModelManager_->Load("Cube/Cube.obj"));
+    pObject3dEnemy_->SetModel(pModelManager_->Load(Path::Model::kEnemy));
     pObject3dEnemy_->GetOption().pMaterialData->environmentCoefficient = 0.0f;
     pObject3dEnemy_->GetOption().pLightSettingData->enableDirectionalLight = false;
     pObject3dEnemy_->GetOption().pLightSettingData->enablePointLight = false;

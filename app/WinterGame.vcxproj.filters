@@ -67,9 +67,6 @@
     <Filter Include="Logic\Timer">
       <UniqueIdentifier>{7e57411c-5795-47fe-bd26-eaea6b828de2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\Load">
-      <UniqueIdentifier>{f4d730e1-b8e5-41fb-9d79-b0eafe7b5496}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Entity\Player\Animation">
       <UniqueIdentifier>{a8ea2415-d455-497c-9c82-1bfa7c8494d6}</UniqueIdentifier>
     </Filter>
@@ -123,6 +120,15 @@
     </Filter>
     <Filter Include="Presentation\RadialBeat">
       <UniqueIdentifier>{ee697180-199a-49c5-9550-cb346c795ef8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Presentation\Animation">
+      <UniqueIdentifier>{7b00f885-e996-4417-8cce-4ba8526b7baf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Input">
+      <UniqueIdentifier>{7a62a5b6-a83b-45e0-bf85-781fb52099cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Wrapper">
+      <UniqueIdentifier>{63032eb1-c124-4187-b56b-53b83514db05}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -274,11 +280,21 @@
     <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateKnockback.cpp">
       <Filter>Entity\Enemy\Rusher</Filter>
     </ClCompile>
-    <ClCompile Include="src\presentation\animation\RadialBeat.cpp" />
-    <ClCompile Include="src\presentation\animation\CountDownFontSizeEmphasis.cpp" />
-    <ClCompile Include="src\presentation\animation\CountDownColorEmphasis.cpp" />
-    <ClCompile Include="src\wrapper\InputAwareSprite.cpp" />
-    <ClCompile Include="src\entity\player\PlayerDebug.cpp" />
+    <ClCompile Include="src\presentation\animation\CountDownColorEmphasis.cpp">
+      <Filter>Presentation\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\presentation\animation\CountDownFontSizeEmphasis.cpp">
+      <Filter>Presentation\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wrapper\InputAwareSprite.cpp">
+      <Filter>Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\presentation\animation\RadialBeat.cpp">
+      <Filter>Presentation\RadialBeat</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\player\PlayerDebug.cpp">
+      <Filter>Entity\Player\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\framework\Calms.h">
@@ -455,12 +471,24 @@
     <ClInclude Include="src\presentation\ParticleType.h">
       <Filter>Presentation</Filter>
     </ClInclude>
-    <ClInclude Include="src\presentation\animation\RadialBeat.h" />
-    <ClInclude Include="src\presentation\animation\CountDownFontSizeEmphasis.h" />
-    <ClInclude Include="src\presentation\animation\CountDownColorEmphasis.h" />
-    <ClInclude Include="src\logic\input\InputAction.h" />
-    <ClInclude Include="src\wrapper\InputAwareSprite.h" />
-    <ClInclude Include="src\entity\player\PlayerDebug.h" />
+    <ClInclude Include="src\presentation\animation\CountDownColorEmphasis.h">
+      <Filter>Presentation\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\presentation\animation\CountDownFontSizeEmphasis.h">
+      <Filter>Presentation\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="src\logic\input\InputAction.h">
+      <Filter>Logic\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\wrapper\InputAwareSprite.h">
+      <Filter>Wrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\presentation\animation\RadialBeat.h">
+      <Filter>Presentation\RadialBeat</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\player\PlayerDebug.h">
+      <Filter>Entity\Player\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Json\.engine\config.json">

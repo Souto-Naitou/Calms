@@ -8,9 +8,7 @@
 #include <Features/Layer/Canvas.h>
 #include <Features/Model/ModelManager.h>
 #include <string>
-#include <vector>
 #include <memory>
-#include <queue>
 #include <Interfaces/ISceneArgs.h>
 
 /// <summary>
