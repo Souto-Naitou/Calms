@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="AddressSanitizer|x64">
@@ -222,7 +222,9 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\component\FocusOrientation.cpp" />
     <ClCompile Include="src\component\PhysicsMovement.cpp" />
     <ClCompile Include="src\entity\enemy\EnemyFactory.cpp" />
+    <ClCompile Include="src\entity\enemy\EnemyGenerationCostList.cpp" />
     <ClCompile Include="src\entity\enemy\EnemyRepository.cpp" />
+    <ClCompile Include="src\entity\enemy\EnemyTypeSelector.cpp" />
     <ClCompile Include="src\entity\enemy\rusher\EnemyRusher.cpp" />
     <ClCompile Include="src\component\MovementLimitterAABB.cpp" />
     <ClCompile Include="src\entity\enemy\rusher\EnemyRusherStateAim.cpp" />
@@ -237,14 +239,26 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClCompile Include="src\entity\player\PlayerExplosionTrigger.cpp" />
     <ClCompile Include="src\entity\player\PlayerInput.cpp" />
     <ClCompile Include="src\entity\player\PlayerMovement.cpp" />
+    <ClCompile Include="src\logic\score\ScoreReviewer.cpp" />
     <ClCompile Include="src\logic\slomo\SlomoLogic.cpp" />
+    <ClCompile Include="src\logic\spawner\ResourceBasedEnemySpawner.cpp" />
+    <ClCompile Include="src\logic\wave\WaveBadgetCalculator.cpp" />
+    <ClCompile Include="src\logic\wave\WaveInfoBuilder.cpp" />
     <ClCompile Include="src\presentation\animation\CountDownColorEmphasis.cpp" />
     <ClCompile Include="src\presentation\animation\CountDownFontSizeEmphasis.cpp" />
     <ClCompile Include="src\presentation\animation\RadialBeat.cpp" />
+    <ClCompile Include="src\presentation\animation\sprite\SpriteFadeInOut.cpp" />
+    <ClCompile Include="src\presentation\ScoreEvaluationView.cpp" />
     <ClCompile Include="src\presentation\slomo\SlomoEffectController.cpp" />
     <ClCompile Include="src\scene\Edit\EditScene.cpp" />
     <ClCompile Include="src\scene\game\animation\GameClearAnimation.cpp" />
     <ClCompile Include="src\scene\game\layer\GameLayer.cpp" />
+    <ClCompile Include="src\scene\game\layer\IncrementalGameLayer.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AddressSanitizer|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_DynamicDebug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\scene\game\layer\PauseLayer.cpp" />
     <ClCompile Include="src\scene\game\layer\ResultLayer.cpp" />
     <ClCompile Include="src\scene\game\layer\TitleLayer.cpp" />
@@ -286,8 +300,10 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\component\FocusOrientation.h" />
     <ClInclude Include="src\component\PhysicsMovement.h" />
     <ClInclude Include="src\entity\enemy\EnemyFactory.h" />
+    <ClInclude Include="src\entity\enemy\EnemyGenerationCostList.h" />
     <ClInclude Include="src\entity\enemy\EnemyInitParams.h" />
     <ClInclude Include="src\entity\enemy\EnemyRepository.h" />
+    <ClInclude Include="src\entity\enemy\EnemyTypeSelector.h" />
     <ClInclude Include="src\entity\enemy\rusher\EnemyRusher.h" />
     <ClInclude Include="src\entity\enemy\rusher\EnemyRusherState.h" />
     <ClInclude Include="src\entity\enemy\EnemyType.h" />
@@ -309,15 +325,30 @@ copy "$(WindowsSdkDir)bin\$(TargetPlatformVersion)\x64\dxil.dll" "$(TargetDir)dx
     <ClInclude Include="src\logic\event\PauseMenuToggleEvent.h" />
     <ClInclude Include="src\logic\event\PlayerExplosionEvent.h" />
     <ClInclude Include="src\logic\input\InputAction.h" />
+    <ClInclude Include="src\logic\score\ScoreReviewer.h" />
     <ClInclude Include="src\logic\slomo\SlomoLogic.h" />
+    <ClInclude Include="src\logic\spawner\ResourceBasedEnemySpawner.h" />
+    <ClInclude Include="src\logic\wave\WaveBadgetCalculator.h" />
+    <ClInclude Include="src\logic\wave\WaveInfoBuilder.h" />
+    <ClInclude Include="src\logic\wave\WaveInfo.h" />
+    <ClInclude Include="src\logic\wave\WaveSequencer.h" />
+    <ClInclude Include="src\logic\wave\WaveState.h" />
     <ClInclude Include="src\presentation\animation\CountDownColorEmphasis.h" />
     <ClInclude Include="src\presentation\animation\CountDownFontSizeEmphasis.h" />
     <ClInclude Include="src\presentation\animation\RadialBeat.h" />
+    <ClInclude Include="src\presentation\animation\sprite\SpriteFadeInOut.h" />
     <ClInclude Include="src\presentation\ParticleType.h" />
+    <ClInclude Include="src\presentation\ScoreEvaluationView.h" />
     <ClInclude Include="src\presentation\slomo\SlomoEffectController.h" />
     <ClInclude Include="src\scene\Edit\EditScene.h" />
     <ClInclude Include="src\scene\game\animation\GameClearAnimation.h" />
     <ClInclude Include="src\scene\game\layer\GameLayer.h" />
+    <ClInclude Include="src\scene\game\layer\IncrementalGameLayer.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AddressSanitizer|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_DynamicDebug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="src\scene\game\layer\PauseLayer.h" />
     <ClInclude Include="src\scene\game\layer\ResultLayer.h" />
     <ClInclude Include="src\config\ResourcePath.h" />

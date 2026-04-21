@@ -254,7 +254,7 @@ void EnemySpawner::UpdatePop()
 void EnemySpawner::ReloadJsonData()
 {
     auto path = pathResolver_.GetFilePath(Path::Json::kPopTimeTable);
-    jsonPopTimeTable_ = jsonIO_->Unload(path);
+    jsonIO_->Unload(path);
     jsonPopTimeTable_ = jsonIO_->Load(path);
     this->InitPopData();
     timerOverall_.Reset();

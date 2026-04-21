@@ -2,6 +2,7 @@
 
 #include <drawable/sprite/Sprite.h>
 #include <Features/Layer/Canvas.h>
+#include <wrapper/InputAwareSprite.h>
 
 /// <summary>
 /// 入力ガイドクラス
@@ -31,6 +32,9 @@ public:
     void Finalize();
 
 private:
+    void InitializeInputAwareSprite();
+
+    InputAwareSprite inputAwareSprite_;
     std::unique_ptr<Sprite> shoot_ = nullptr;
     std::unique_ptr<Sprite> slomo_ = nullptr;
     std::unique_ptr<Sprite> explosion_ = nullptr;

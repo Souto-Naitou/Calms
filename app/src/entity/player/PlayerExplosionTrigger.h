@@ -1,7 +1,7 @@
 #pragma once
 #include "PlayerInput.h"
 #include <logic/event/KillEnemyEvent.h>
-#include <Features/TimeMeasurer/TimeMeasurerByDt.h>
+#include <Features/TimeMeasurer/DeltaTimeStopWatch.h>
 #include <Features/Event/EventSubscription.h>
 #include <optional>
 #include <memory>
@@ -30,6 +30,6 @@ private:
 
     PlayerInput&                        input_;
     PlayerContext&                      context_;
-    TimeMeasurerByDt                    decreaseTimer_ = {};
+    DeltaTimeStopWatch                    decreaseTimer_ = {};
     std::optional<EventSubscription>    subscription_   = std::nullopt;
 };

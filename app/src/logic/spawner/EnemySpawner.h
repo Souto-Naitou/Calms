@@ -5,7 +5,7 @@
 #include <Utility/PathResolver/PathResolver.h>
 #include <Utility/JSONIO/JSONIO.h>
 #include <DebugTools/DebugEntry/DebugEntry.h>
-#include <Features/TimeMeasurer/TimeMeasurerByDt.h>
+#include <Features/TimeMeasurer/DeltaTimeStopWatch.h>
 #include <entity/enemy/EnemyFactory.h>
 #include <entity/enemy/EnemyRepository.h>
 #include <Range.h>
@@ -103,9 +103,9 @@ private:
 
     // Common methods
     using json = nlohmann::json;
-    TimeMeasurerByDt        timerOverall_           = {};                   // !< 全体用タイマー
-    TimeMeasurerByDt        timerPop_               = {};                   // !< 生成用タイマー
-    TimeMeasurerByDt        timerPopDelay_          = {};                   // !< 遅延生成用タイマー
+    DeltaTimeStopWatch        timerOverall_           = {};                   // !< 全体用タイマー
+    DeltaTimeStopWatch        timerPop_               = {};                   // !< 生成用タイマー
+    DeltaTimeStopWatch        timerPopDelay_          = {};                   // !< 遅延生成用タイマー
     float                   popInterval_            = 1.0f;                 // !< 生成間隔
     uint32_t                popCount_               = 1;                    // !< 一度に生成する数
     uint32_t                popDelayCount_          = 0;                    // !< 遅延生成する数

@@ -9,6 +9,7 @@
 #include <drawable/sprite/Sprite.h>
 #include <logic/score/ScoreCalculator.h>
 #include <wrapper/InputAwareSprite.h>
+#include <presentation/animation/sprite/SpriteFadeInOut.h>
 
 class GameClearAnimation
 {
@@ -21,6 +22,7 @@ public:
         Particle* pParticle = nullptr;
         Sprite* pSpriteClear = nullptr;
         Sprite* pSpriteSpace = nullptr;
+        Sprite* pSpriteScoreEvaluation = nullptr;
         ScoreCalculator* pScoreCalculator = nullptr;
     };
 
@@ -42,6 +44,7 @@ public:
         Vector3 cameraRotate = {};
         float pointLightIntensity = 0.0f;
         float score = 0.0f;
+        Vector2 spriteScoreEvaluationSize = {};
     };
 
     GameClearAnimation() = default;
@@ -56,6 +59,7 @@ public:
     bool IsFinished() const { return isFinished_; }
 
 private:
+    void ParticleEmittersInitialize();
     void ShakeCameraUpdate();
     void CameraApproach();
     void LightIntensityUpdate();
@@ -75,12 +79,23 @@ private:
 
     TimeMeasurer timer_ = {};
 
-    std::unique_ptr<ParticleEmitter> pEmitter_ = nullptr;
+    std::unique_ptr<ParticleEmitter> pEmitterOrange_ = nullptr;
+    std::unique_ptr<ParticleEmitter> pEmitterYellow_ = nullptr;
+    std::unique_ptr<ParticleEmitter> pEmitterBlue_ = nullptr;
+
+    std::array<ParticleEmitter*, 3> emitters_;
+
     std::unique_ptr<NumericView> pScore_ = nullptr;
     std::unique_ptr<InputAwareSprite> pInputAwareSprite_ = nullptr;
+    SpriteFadeInOut spriteFadeInOut_ = {};
+    bool isClearSpriteVisible_ = false;
 
     Params initParams_ = {};
     float numSpriteColor_ = 0.0f;
+
+    static constexpr float kIncrementSizeFactorAnimation_ = 0.002f;
+    float sizeFactorEvaluationSprite_ = 0.0f;
+    float directionSizeFactorAnimation_ = 1.0f;
 
 
     bool isFinished_ = false;

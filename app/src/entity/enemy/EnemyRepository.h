@@ -12,7 +12,7 @@
 class EnemyRepository
 {
 public:
-    static constexpr size_t         kNumEnemyMax_ = 0x100; //!< 敵の最大数
+    static constexpr size_t         kNumEnemyMax_ = 0x1000; //!< 敵の最大数
 
     EnemyRepository();
 

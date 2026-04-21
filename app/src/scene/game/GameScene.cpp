@@ -117,6 +117,16 @@ void GameScene::TogglePauseMenu(const PauseMenuToggleEvent&)
 {
     isPauseMenuActive_ = !isPauseMenuActive_;
     pPauseLayer_->SetPaused(isPauseMenuActive_);
+    if (isPauseMenuActive_)
+    {
+        DeltaTimeManager::GetInstance()->SetDeltaTime(DeltaTimeChannelReserved::Game, 0.0f);
+        DeltaTimeManager::GetInstance()->SetDeltaTime(DeltaTimeChannelReserved::Particle, 0.0f);
+    }
+    else
+    {
+        DeltaTimeManager::GetInstance()->SetDeltaTime(DeltaTimeChannelReserved::Game, 1.0f / 60.0f);
+        DeltaTimeManager::GetInstance()->SetDeltaTime(DeltaTimeChannelReserved::Particle, 1.0f / 60.0f);
+    }
 }
 
 void GameScene::PauseBlurUpdate()

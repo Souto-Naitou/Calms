@@ -6,10 +6,17 @@
 #include <Features/Event/EventListener.h>
 #include <logic/event/KillEnemyEvent.h>
 #include <logic/event/ParticleEmitEvent.h>
+#include <cassert>
 
 EnemyNormal::EnemyNormal(const EnemyNormalInitParams& param)
 {
     params_ = param;
+}
+
+EnemyNormal::~EnemyNormal()
+{
+    bool isRegistered = CollisionManager::GetInstance()->IsRegisteredCollider(pCollider_.get());
+    assert(!isRegistered && "Collider is not unregistered.");
 }
 
 void EnemyNormal::Initialize(bool enableDebugWindow)
@@ -26,7 +33,7 @@ void EnemyNormal::Initialize(bool enableDebugWindow)
     /// パラメータの初期化
     transform_.translate = params_.position;
     pStats_ = std::make_unique<EntityStats>();
-    pStats_->Initialize(1.0f, 10.0f, 10.0f);
+    pStats_->Initialize(1.0f, 0.0f, 10.0f);
 
     // コライダーの初期化
     this->InitializeCollider();
@@ -143,11 +150,18 @@ void EnemyNormal::OnCollision(const Collider* other)
 
 void EnemyNormal::OnCollisionTrigger(const Collider* other)
 {
-    bool isCollide = other->GetColliderID() == "playerBullet";
-    isCollide |= other->GetColliderID() == "PlayerExplosion";
+    bool isCollidedPlayerBullet = other->GetColliderID() == "playerBullet";
+    bool isCollidedPlayerExplosion = other->GetColliderID() == "PlayerExplosion";
+    bool isCollidedPlayerBody = other->GetColliderID() == "player";
 
-    bool isPlayerBullet = other->GetColliderID() == "playerBullet";
-    bool isPlayerExplosion = other->GetColliderID() == "PlayerExplosion";
+    bool isCollide = false;
+    isCollide |= isCollidedPlayerBullet;
+    isCollide |= isCollidedPlayerExplosion;
+    isCollide |= isCollidedPlayerBody;
+
+    bool isCollidedWithDamage = false;
+    isCollidedWithDamage |= isCollidedPlayerBullet;
+    isCollidedWithDamage |= isCollidedPlayerExplosion;
 
     /// 衝突している場合
     if (isCollide)
@@ -156,6 +170,18 @@ void EnemyNormal::OnCollisionTrigger(const Collider* other)
         assert(pStatsOther);
         pStats_->OnCollision(pStatsOther);
         
+        if (isCollidedPlayerBody)
+        {
+            // プレイヤーに衝突したらスコアを与えない形で死亡する
+            EntityBase::Dead();
+        }
+
+        /// (敵が)ダメージを受けている場合はカメラを揺らす
+        if (isCollidedWithDamage)
+        {
+            EntityBase::ShakeCamera(kCameraShakePower_);
+        }
+
         if (pStats_->GetHp() <= 0) 
         {
             // 死亡する
@@ -163,11 +189,11 @@ void EnemyNormal::OnCollisionTrigger(const Collider* other)
             audioDeath_->Play();
             
             /// あたっている相手に応じてスコアイベントを発行
-            if (isPlayerBullet)
+            if (isCollidedPlayerBullet)
             {
                 EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyType::Normal, 0.2f });
             }
-            else if (isPlayerExplosion)
+            else if (isCollidedPlayerExplosion)
             {
                 EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyType::Normal, 1.0f });
             }
@@ -181,9 +207,6 @@ void EnemyNormal::OnCollisionTrigger(const Collider* other)
         {
             assert(0);
         }
-
-        /// 画面揺れ
-        EntityBase::ShakeCamera(kCameraShakePower_);
     }
 }
 

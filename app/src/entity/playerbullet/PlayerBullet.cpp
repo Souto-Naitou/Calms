@@ -17,7 +17,7 @@ void PlayerBullet::Initialize(bool enableDebugWindow)
     deltaTimeManager_ = DeltaTimeManager::GetInstance();
 
     /// タイマーの初期化
-    pTimeMeasurer_ = std::make_unique<TimeMeasurer>();
+    pTimeMeasurer_ = std::make_unique<DeltaTimeStopWatch>();
     pTimeMeasurer_->Start();
 
     // コンポーネントの初期化
@@ -64,6 +64,8 @@ void PlayerBullet::Update()
     sphere_.radius_ = 0.3f;
 
     pCollider_->SetShapeData(&sphere_);
+
+    pTimeMeasurer_->Update(deltaTimeChannel);
 }
 
 

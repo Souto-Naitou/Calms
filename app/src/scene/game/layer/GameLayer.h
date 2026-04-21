@@ -4,9 +4,7 @@
 
 // engine
 #include <Core/DirectX12/TextureManager.h>
-#include <Common/structs.h>
 #include <DebugTools/DebugEntry/DebugEntry.h>
-#include <Features/Bar2d/Bar2d.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <Features/GameEye/GameEye.h>
 #include <Features/Layer/Canvas.h>
@@ -52,14 +50,15 @@
 #include <scene/game/animation/GameClearAnimation.h>
 #include <presentation/slomo/SlomoEffectController.h>
 #include <presentation/animation/RadialBeat.h>
+#include <presentation/ScoreEvaluationView.h>
 
 // STL
 #include <cstdint>
-#include <list>
 #include <array>
 #include <vector>
 #include <memory>
 #include <optional>
+#include <logic/score/ScoreReviewer.h>
 
 /// <summary>
 /// ゲーム層 (他にポーズメニュー層やリザルト層などを実装予定)
@@ -86,8 +85,6 @@ private:
     void UpdatePlayerExplosion();
     void RegisterParticleEmitters();
 
-    /// <summary>
-    /// </summary>
     void CreateEnemy();
 
     /// <summary>
@@ -109,14 +106,14 @@ private:
         Size
     };
 
-    static constexpr inline size_t kMaxParticleIDs_ = static_cast<size_t>(ParticleID::Size);
-    static constexpr inline size_t kMaxPlayerBullets = 128u;
-    static constexpr inline float  kGameEyeHeightDefault_ = 65.0f;
-    static constexpr inline float  kGameEyeHeightDuringSlow_ = 30.0f;
-    static constexpr inline float  kTargetDirectionalLightFlashIntensity_ = 12.0f;
+    static constexpr inline size_t kMaxParticleIDs_                         = static_cast<size_t>(ParticleID::Size);
+    static constexpr inline size_t kMaxPlayerBullets                        = 128u;
+    static constexpr inline float  kGameEyeHeightDefault_                   = 65.0f;
+    static constexpr inline float  kGameEyeHeightDuringSlow_                = 30.0f;
+    static constexpr inline float  kTargetDirectionalLightFlashIntensity_   = 12.0f;
 
 #ifdef _DEBUG
-    static constexpr inline uint32_t kGameLimitTime = 15u;
+    static uint32_t kGameLimitTime;
 #else
     static constexpr inline uint32_t kGameLimitTime = 60u;
 #endif // _DEBUG
@@ -151,6 +148,7 @@ private:
     std::unique_ptr<InputGuide>                     inputGuide_             = {};       // !< 入力ガイド
     std::unique_ptr<Sprite>                         spriteClear_            = {};       // !< クリアスプライト
     std::unique_ptr<Sprite>                         spriteSpace_            = {};       // !< クリアスプライト
+    std::unique_ptr<ScoreEvaluationView>            pScoreEvaluation_       = nullptr;  // !< スコア評価ビュー
     std::unique_ptr<PlayerUI3d>                     pPlayerUI3d_            = {};       // !< プレイヤー3DUI
 
     std::unique_ptr<GameOverAnimation>              gameOverAnimation_      = {};       // !< ゲームオーバーアニメーション
@@ -174,11 +172,12 @@ private:
     std::vector<std::optional<EventSubscription>>   eventSubscriptions_     = {};       // !< 敵の死亡イベント購読
     std::array<Particle*, kMaxParticleIDs_>         particles_              = {};       // !< パーティクル
     std::unique_ptr<ParticleEmitterGroup>           pEmitterGroup_          = nullptr;  // !< エミッターグループ
+    std::unique_ptr<ScoreReviewer>                  pScoreReviewer_         = nullptr;  // !< スコアレビュアー
 
     // Pointers
     DirectX12*                  pDx12_              = nullptr;
     DeltaTimeManager*           pDeltaTimeManager_  = nullptr;
-    RandomGenerator*            pRandomGenerator_    = nullptr;
+    RandomGenerator*            pRandomGenerator_   = nullptr;
     ModelManager*               pModelManager_      = nullptr;
     LineSystem*                 pLineSystem_        = nullptr;
     TextureManager*             pTextureManager_    = nullptr;
