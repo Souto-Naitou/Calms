@@ -32,6 +32,20 @@ namespace Path::Image
     inline constexpr const char* kCountDownEndString = "common/font/start.dds";
     inline constexpr const char* kSpaceText = "common/font/space.dds";
     inline constexpr const char* kClearText = "common/font/clear.dds";
+    inline constexpr const char* kFinishText = "common/font/finish.png";
+
+    /// [ クリア ]
+    namespace Clear
+    {
+        inline constexpr const char* kScoreResult[] =
+        {
+            "clear/score_s.png",
+            "clear/score_a.png",
+            "clear/score_b.png",
+            "clear/score_c.png",
+        };
+
+    }
 
     /// [ パーティクル ]
     inline constexpr const char* kParticleCircle = "particle/circle_256x256_white.dds";
@@ -46,9 +60,17 @@ namespace Path::Image
     /// [ ローディング画面 ]
     inline constexpr const char* kLoading = "load/NOWLOADING.dds";
 
-    /// [ ゲームシーン ]
+    /// [ インゲーム ]
     namespace InGame
     {
+        namespace GamePad
+        {
+            inline constexpr const char* kGuideShoot = "guide/shoot_gamepad.png";
+            inline constexpr const char* kGuideSlow = "guide/slomo_gamepad.png";
+            inline constexpr const char* kGuideExplosion = "guide/explosion_gamepad.png";
+            inline constexpr const char* kGuidePause = "guide/pause_gamepad.png";
+        }
+
         // ガイド画像
         inline constexpr const char* kGuideShoot = "guide/shoot.dds";
         inline constexpr const char* kGuideSlow = "guide/slomo.dds";
@@ -107,7 +129,9 @@ namespace Path::ParticleEmitter
     inline constexpr const char* kSaveDir = "resources/json/particles/";
     inline constexpr const char* kPlayerConstantTrail = "Player_Constant_Trail.json";
     inline constexpr const char* kGameOverExplosion = "Scene_GameOver_Explosion.json";
-    inline constexpr const char* kGameClearExplosion = "Scene_GameClear_Explosion.json";
+    inline constexpr const char* kGameClearExplosionOrange = "Scene_GameClear_Explosion_Orange.json";
+    inline constexpr const char* kGameClearExplosionYellow = "Scene_GameClear_Explosion_Yellow.json";
+    inline constexpr const char* kGameClearExplosionBlue = "Scene_GameClear_Explosion_Blue.json";
     inline constexpr const char* kEnemyNormalDeathExplosion = "EnemyNormal_Death_Explosion.json";
     inline constexpr const char* kEnemyNormalDeathSpark = "EnemyNormal_Death_Spark.json";
 }
@@ -115,4 +139,5 @@ namespace Path::ParticleEmitter
 namespace Path::Json
 {
     inline constexpr const char* kPopTimeTable = "PopTimeTable.json";
+    inline constexpr const char* kScoreReviewerThresholds = "ScoreReviewerThresholds.json";
 }

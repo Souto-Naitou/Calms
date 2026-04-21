@@ -4,7 +4,7 @@
 #include <drawable/Object3d/Object3d.h>
 #include <Core/DirectX12/DirectX12.h>
 #include <memory>
-#include <Features/TimeMeasurer/TimeMeasurerByDt.h>
+#include <Features/TimeMeasurer/DeltaTimeStopWatch.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <Features/Collision/Manager/CollisionManager.h>
 #include <Features/Collision/Collider/Collider.h>
@@ -41,7 +41,7 @@ private:
 
     Params params_;
     EulerTransform                      transform_      = {};
-    std::unique_ptr<TimeMeasurerByDt>   pTimeMeasurer_  = nullptr;
+    std::unique_ptr<DeltaTimeStopWatch>   pTimeMeasurer_  = nullptr;
     std::unique_ptr<RingModel>          pModelRing_     = nullptr;
     std::unique_ptr<Object3d>           pObjectRing_    = nullptr;
     std::unique_ptr<Collider>           pCollider_      = nullptr;

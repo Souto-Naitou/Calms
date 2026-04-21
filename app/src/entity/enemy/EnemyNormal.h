@@ -23,6 +23,7 @@ class EnemyNormal : public EntityBase
 {
 public:
     EnemyNormal(const EnemyNormalInitParams& param);
+    ~EnemyNormal();
 
     /// <summary>
     /// 敵の初期化を行います。

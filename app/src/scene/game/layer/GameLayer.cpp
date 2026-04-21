@@ -18,6 +18,11 @@
 #include <Presentation/ParticleType.h>
 #include <logic/event/ParticleEmitEvent.h>
 #include <event/InputCallbackEvent.h>
+#include <algorithm>
+
+#ifdef _DEBUG
+uint32_t GameLayer::kGameLimitTime = 3u;
+#endif // _DEBUG
 
 using namespace Math::Viewport::Unit;
 
@@ -162,6 +167,14 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
     scoreCalculator_ = std::make_unique<ScoreCalculator>();
     scoreCalculator_->Initialize();
 
+    /// [ スコアレビュアーの初期化 ]
+    pScoreReviewer_ = std::make_unique<ScoreReviewer>();
+    pScoreReviewer_->Initialize();
+
+    /// [ スコア評価表示の初期化 ]
+    pScoreEvaluation_ = std::make_unique<ScoreEvaluationView>();
+    pScoreEvaluation_->Initialize();
+
     /// [ スロー移動ロジックの初期化 ]
     pSlomoLogic_ = std::make_unique<SlomoLogic>();
 
@@ -198,7 +211,8 @@ void GameLayer::Initialize(ISceneArgs* pArgs, OrderedCanvasLayer* pLayer)
             .pParticle = particles_[static_cast<size_t>(ParticleID::PlayerDeath)],
             .pSpriteClear = spriteClear_.get(),
             .pSpriteSpace = spriteSpace_.get(),
-            .pScoreCalculator = scoreCalculator_.get()
+            .pSpriteScoreEvaluation = pScoreEvaluation_->GetSprite(),
+            .pScoreCalculator = scoreCalculator_.get(),
         }
     );
     
@@ -251,6 +265,7 @@ void GameLayer::Finalize()
 void GameLayer::Update()
 {
     static constexpr float kDirectionalLightTargetIntensity = 0.25f;
+    static constexpr float kDirectionalLightMinIntensity = 0.0f;
 
     pGameEye_->Update();
     pGrid_->Update();
@@ -264,6 +279,7 @@ void GameLayer::Update()
     {
         auto& dirLightData = pDirectionalLight_->GetData();
         dirLightData.intensity = std::lerp(dirLightData.intensity, kDirectionalLightTargetIntensity, 0.0125f);
+        dirLightData.intensity = std::max(dirLightData.intensity, kDirectionalLightMinIntensity);
     }
 
     /// [ プレイヤーの更新 ]
@@ -273,7 +289,13 @@ void GameLayer::Update()
     if (isPlayerDead) gameOverAnimation_->Play();
 
     bool isClear = ingameTimer_->IsEnd() && !pGameClearAnimation_->IsPlaying();
-    if (isClear) pGameClearAnimation_->Play();
+    if (isClear)
+    {
+        auto result = pScoreReviewer_->Review(scoreCalculator_->GetScore());
+        pScoreEvaluation_->SetResult(result);
+        pGameClearAnimation_->Play();
+    }
+    pScoreEvaluation_->Update();
 
     if (isPlayerDead || isClear)
     {
@@ -452,6 +474,7 @@ void GameLayer::Draw()
     {
         spriteClear_->Draw1F();
         spriteSpace_->Draw1F();
+        pScoreEvaluation_->Draw1F();
     }
 
     CanvasScope overallCanvasScope(canvasOverall_.get());
@@ -475,6 +498,24 @@ void GameLayer::Preload(const PreloadContext& ctx, TaskExecutor& executor)
 void GameLayer::ImGui()
 {
     #ifdef _DEBUG
+
+    static constexpr std::array kLimitTimeTemplates = { 3, 10, 30, 60, 120};
+
+    if (ImGui::CollapsingHeader("Common"))
+    {
+        int limitTime = static_cast<int>(kGameLimitTime);
+        ImGui::SliderInt("GameDuration", &limitTime, 0, 1800, "%dsec");
+
+        for (const auto& templateTime : kLimitTimeTemplates)
+        {
+            if (ImGui::Button((std::to_string(templateTime) + " sec").c_str())) limitTime = templateTime;
+            ImGui::SameLine();
+        }
+
+        ImGui::NewLine();
+
+        kGameLimitTime = static_cast<uint32_t>(limitTime);
+    }
 
     if (ImGui::CollapsingHeader("InGame"))
     {
@@ -730,7 +771,7 @@ void GameLayer::SpritesInitialize()
     pTextureManager_->LoadTexture(Path::Image::kClearText);
     spriteClear_->Initialize(Path::Image::kClearText);
     spriteClear_->SetAnchorPoint({ 0.5f, 0.5f });
-    spriteClear_->SetPosition({ 25.0_vw, 35.7_vh });
+    spriteClear_->SetPosition({ 25.0_vw, 24.5_vh });
     spriteClear_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
 
     spriteSpace_ = std::make_unique<Sprite>();
@@ -743,7 +784,7 @@ void GameLayer::SpritesInitialize()
         spriteSpace_->Initialize(Path::Image::kTitleStartPromptSpaceKey);
     }
     spriteSpace_->SetAnchorPoint({ 0.5f, 0.5f });
-    spriteSpace_->SetPosition({ 25.0_vw, 62.5_vh });
+    spriteSpace_->SetPosition({ 25.0_vw, 75.5_vh });
     spriteSpace_->SetColor({ 1.0f, 1.0f, 1.0f, 0.0f });
 }
 

@@ -3,13 +3,13 @@
 #include <Entity/EntityBase.h>
 #include <Vector3.h>
 #include <memory>
-#include <Features/TimeMeasurer/TimeMeasurer.h>
 #include <Features/Collision/Collider/Collider.h>
 #include <Features/Collision/Manager/CollisionManager.h>
 #include <Features/DeltaTimeManager/DeltaTimeManager.h>
 #include <drawable/particle/Type/ParticleType.h>
 #include <entity/status/EntityStats.h>
 #include <component/PhysicsMovement.h>
+#include <Features/TimeMeasurer/DeltaTimeStopWatch.h>
 
 
 /// <summary>
@@ -99,7 +99,7 @@ private:
     static constexpr float kLifeTimeLimit_  = 1.5f;
     static constexpr float kFriction_       = 1.0f;
 
-    std::unique_ptr<TimeMeasurer>   pTimeMeasurer_ = nullptr;
+    std::unique_ptr<DeltaTimeStopWatch>   pTimeMeasurer_ = nullptr;
     Params params_ = {};
 
     /// [ コンポーネント ]

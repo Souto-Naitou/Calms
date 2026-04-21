@@ -1,0 +1,12 @@
+{
+    "EnemyGenerationCost": [
+        {
+            "EnemyType": "Normal",
+            "Cost": 10
+        },
+        {
+            "EnemyType": "Rusher",
+            "Cost": 50
+        }
+    ]
+}

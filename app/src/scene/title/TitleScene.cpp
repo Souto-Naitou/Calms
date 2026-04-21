@@ -206,6 +206,7 @@ void TitleScene::InitializeSprites()
     entry.handleGamepad_ = TextureManager::GetInstance()->GetSrvHandleGPU(Path::Image::kTitleStartPromptButtonA);
 
     pInputAwareSprite_->AddEntry(entry);
+    pInputAwareSprite_->ApplyCurrentMode();
 }
 
 void TitleScene::InitializeSkybox()

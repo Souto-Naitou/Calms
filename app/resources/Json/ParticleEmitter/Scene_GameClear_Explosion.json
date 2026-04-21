@@ -1,19 +1,19 @@
 {
     "collisionFloor": {
-        "bouncePower": 0.4300000071525574,
+        "bouncePower": 0.30000001192092896,
         "elevation": 0.10000000149011612
     },
     "common": {
         "alphaDeltaValue": 0.0,
-        "emitInterval": 0.019999999552965164,
-        "emitNum": 300,
+        "emitInterval": 8.720000267028809,
+        "emitNum": 500,
         "emitPositionFixed": {
             "x": 0.0,
-            "y": 0.0,
+            "y": 2.140000104904175,
             "z": 0.0
         },
         "emitterLifeTime": 0.0,
-        "particleLifeTime": 2.4000000953674316,
+        "particleLifeTime": 30.0,
         "scaleDelayTime": 0.0,
         "scaleFixed": {
             "x": 0.4300000071525574,
@@ -28,40 +28,42 @@
     },
     "flags": {
         "enableCollisionFloor": true,
-        "enableRandomEmit": true,
+        "enableRandomEmit": false,
         "enableRandomRotation": false,
-        "enableRandomScale": true,
+        "enableRandomScale": false,
         "enableRandomVelocity": true,
         "enableScaleTransition": true,
+        "enableSmoothNoise": false,
         "velocityDistribution": 1
     },
-    "name": "Spark",
+    "name": "GameClear_Explosion",
     "physics": {
-        "frictionCoef": 0.17000000178813934,
+        "frictionCoef": 0.8999999761581421,
         "gravity": {
             "x": 0.0,
-            "y": -6.460000038146973,
+            "y": -3.9000000953674316,
             "z": 0.0
         },
         "resistance": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
-        }
+        },
+        "smoothNoisePower": 1.75
     },
     "ranges": {
         "color": {
             "end": {
                 "w": 1.0,
                 "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
+                "y": 0.8041980266571045,
+                "z": 0.6708860397338867
             },
             "start": {
                 "w": 1.0,
                 "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
+                "y": 0.8041980266571045,
+                "z": 0.6708860397338867
             }
         },
         "position": {
@@ -95,8 +97,8 @@
                 "z": 1.0
             },
             "start": {
-                "x": 0.25,
-                "y": 0.25,
+                "x": 0.009999999776482582,
+                "y": 0.009999999776482582,
                 "z": 1.0
             }
         },
@@ -125,8 +127,8 @@
             }
         },
         "velocityRandomSphere": {
-            "end": 11.0,
-            "start": 11.0
+            "end": -3.069999933242798,
+            "start": 3.0199999809265137
         }
     },
     "version": 3

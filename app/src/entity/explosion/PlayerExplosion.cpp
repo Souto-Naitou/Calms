@@ -18,7 +18,7 @@ void PlayerExplosion::Initialize(bool enableDebugWindow /* = true */)
     this->InitializeCollider();
 
     /// タイマーの初期化と開始
-    pTimeMeasurer_ = std::make_unique<TimeMeasurerByDt>();
+    pTimeMeasurer_ = std::make_unique<DeltaTimeStopWatch>();
     pTimeMeasurer_->Start();
 }
 

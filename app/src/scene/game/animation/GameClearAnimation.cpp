@@ -3,22 +3,21 @@
 #include <Math/Easing.h>
 #include <config/ResourcePath.h>
 #include <Core/DirectX12/TextureManager.h>
-#include <Core/Window/Window.h>
 #include <cmath>
 #include <Color.h>
+#include <Math/ViewportUnits.hpp>
+
+using namespace Math::Viewport::Unit;
 
 
 void GameClearAnimation::Initialize(Params params)
 {
     initParams_ = params;
-    ParticleEmitter::Params emitterParams = {};
-    emitterParams.particle = initParams_.pParticle;
-    emitterParams.jsonPath = Path::ParticleEmitter::kGameClearExplosion;
-    pEmitter_ = std::make_unique<ParticleEmitter>();
-    pEmitter_->Initialize(emitterParams);
-    pEmitter_->SetEnableBillboard(true);
-    pEmitter_->EnableManualMode();
 
+    /// パーティクルエミッターの初期化
+    this->ParticleEmittersInitialize();
+
+    /// スコア表示の初期化
     std::array<D3D12_GPU_DESCRIPTOR_HANDLE, 10> textureHandles = {};
     for (uint32_t i = 0; i < 10; ++i)
     {
@@ -27,13 +26,14 @@ void GameClearAnimation::Initialize(Params params)
     }
     pScore_ = std::make_unique<NumericView>();
     pScore_->Initialize(textureHandles);
-    pScore_->SetFontSize(56.0f);
+    pScore_->SetFontSize(64.0f);
     pScore_->SetColor(RGBA(0xc5a44600).to_Vector4());
     auto& layoutProp = pScore_->GetFontLayoutProperties();
-    layoutProp.leftTop = { static_cast<float>(Window::clientWidth) / 4.0f, static_cast<float>(Window::clientHeight) / 2.0f };
+    layoutProp.leftTop = { 25_vw, 62_vh };
     layoutProp.anchorPoint = { 0.5f, 0.5f };
     layoutProp.letterSpacing = 32.0f;
 
+    /// 入力モードに応じた操作説明スプライトの初期化
     pInputAwareSprite_ = std::make_unique<InputAwareSprite>();
     InputAwareSprite::Entry entry = {};
     entry.pSprite_ = initParams_.pSpriteSpace;
@@ -41,13 +41,21 @@ void GameClearAnimation::Initialize(Params params)
     entry.handleGamepad_  = TextureManager::GetInstance()->GetSrvHandleGPU(Path::Image::kTitleStartPromptButtonA);
     pInputAwareSprite_->Initialize();
     pInputAwareSprite_->AddEntry(entry);
+    
+    /// スコア評価スプライトをフェードインさせるためのクラスを初期化
+    spriteFadeInOut_.Initialize(params.pSpriteScoreEvaluation);
 }
 
 void GameClearAnimation::Update()
 {
-    pEmitter_->SetPosition(initParams_.pPlayer->GetObject3d()->GetTranslate());
-    pEmitter_->Update();
+    /// パーティクルエミッターの更新
+    for (auto& pEmitter : emitters_)
+    {
+        pEmitter->SetPosition(initParams_.pPlayer->GetObject3d()->GetTranslate());
+        pEmitter->Update();
+    }
 
+    /// スコア表示の更新
     pScore_->SetNumber(static_cast<uint32_t>(original_.score));
     pScore_->Update();
 
@@ -61,6 +69,7 @@ void GameClearAnimation::Update()
     SpriteClearUpdate();
     LightIntensityUpdate();
 
+    /// アニメーション終了判定
     if (timer_.GetNow<float>() > stateDurations_.at(State::End))
     {
         // アニメーション終了
@@ -84,8 +93,12 @@ void GameClearAnimation::Play()
     original_.playerPosition = initParams_.pPlayer->GetObject3d()->GetTranslate();
     original_.cameraRotate = initParams_.pGameEye->GetTransform().rotate;
     original_.score = initParams_.pScoreCalculator->GetScore();
-    pEmitter_->Emit();
-    pEmitter_->Emit();
+
+    /// パーティクルを発生させる
+    for (auto& pEmitter : emitters_)
+    {
+        pEmitter->Emit();
+    }
 }
 
 void GameClearAnimation::Reset()
@@ -100,6 +113,35 @@ void GameClearAnimation::Reset()
     initParams_.pPointLight->GetData().intensity = original_.pointLightIntensity;
 }
 
+void GameClearAnimation::ParticleEmittersInitialize()
+{
+    ParticleEmitter::Params emitterParams = {};
+    emitterParams.particle = initParams_.pParticle;
+    emitterParams.jsonPath = Path::ParticleEmitter::kGameClearExplosionOrange;
+    pEmitterOrange_ = std::make_unique<ParticleEmitter>();
+    pEmitterOrange_->Initialize(emitterParams);
+    pEmitterOrange_->SetEnableBillboard(true);
+    pEmitterOrange_->EnableManualMode();
+
+    emitterParams.jsonPath = Path::ParticleEmitter::kGameClearExplosionYellow;
+    pEmitterYellow_ = std::make_unique<ParticleEmitter>();
+    pEmitterYellow_->Initialize(emitterParams);
+    pEmitterYellow_->SetEnableBillboard(true);
+    pEmitterYellow_->EnableManualMode();
+
+    emitterParams.jsonPath = Path::ParticleEmitter::kGameClearExplosionBlue;
+    pEmitterBlue_ = std::make_unique<ParticleEmitter>();
+    pEmitterBlue_->Initialize(emitterParams);
+    pEmitterBlue_->SetEnableBillboard(true);
+    pEmitterBlue_->EnableManualMode();
+
+    emitters_ = {
+        pEmitterOrange_.get(),
+        pEmitterYellow_.get(),
+        pEmitterBlue_.get()
+    };
+}
+
 void GameClearAnimation::ShakeCameraUpdate()
 {
     if (timer_.GetNow<float>() > stateDurations_.at(State::ShakeCamera))
@@ -108,7 +150,7 @@ void GameClearAnimation::ShakeCameraUpdate()
         return;
     }
 
-    // カメラシェイク処理
+    /// カメラシェイク処理
     float t = stateDurations_.at(State::ShakeCamera) - timer_.GetNow<float>();
     t = t / stateDurations_.at(State::ShakeCamera);
     initParams_.pGameEye->Shake(t * 0.5f);
@@ -162,8 +204,37 @@ void GameClearAnimation::SpriteClearUpdate()
         float alpha = (std::sin(numSpriteColor_) + 1.0f) / 4.0f + 0.5f;
         initParams_.pSpriteClear->SetColor({ 1.0f, 1.0f, 1.0f, alpha });
         initParams_.pSpriteSpace->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+
+        sizeFactorEvaluationSprite_ += kIncrementSizeFactorAnimation_ * directionSizeFactorAnimation_;
+
+        if (sizeFactorEvaluationSprite_ >= 1.2f)
+        {
+            sizeFactorEvaluationSprite_ = 1.2f;
+            directionSizeFactorAnimation_ = -1.0f;
+        }
+        else if (sizeFactorEvaluationSprite_ <= 1.0f)
+        {
+            sizeFactorEvaluationSprite_ = 1.0f;
+            directionSizeFactorAnimation_ = 1.0f;
+        }
+
+
+        Vector2 size = original_.spriteScoreEvaluationSize;
+        size *= sizeFactorEvaluationSprite_;
+        initParams_.pSpriteScoreEvaluation->SetSize(size);
+        initParams_.pSpriteScoreEvaluation->SetRotation(1.0f - sizeFactorEvaluationSprite_);
+
         return;
     }
+
+    if (!isClearSpriteVisible_)
+    {
+        spriteFadeInOut_.Play(SpriteFadeInOut::State::FadeIn, 1.0f);
+        original_.spriteScoreEvaluationSize = initParams_.pSpriteScoreEvaluation->GetSize();
+        isClearSpriteVisible_ = true;
+    }
+
+    spriteFadeInOut_.Update();
 
     float t = (timer_.GetNow<float>() - stateDurations_.at(State::ApproachCamera))
         / (stateDurations_.at(State::ClearSpriteAppear) - stateDurations_.at(State::ApproachCamera));

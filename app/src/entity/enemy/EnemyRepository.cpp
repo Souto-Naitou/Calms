@@ -59,11 +59,8 @@ void EnemyRepository::KillAll()
 {
     for (auto& enemy : enemies_)
     {
-        if (enemy->IsAlive())
-        {
-            enemy->Finalize();
-            ++countEnemyKilled_;
-        }
+        enemy->Finalize();
+        ++countEnemyKilled_;
     }
     enemies_.clear();
 }

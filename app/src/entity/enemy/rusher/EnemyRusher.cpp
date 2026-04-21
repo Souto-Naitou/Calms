@@ -95,11 +95,18 @@ void EnemyRusher::ImGui()
 
 void EnemyRusher::OnCollisionTrigger(const Collider* pOther)
 {
-    bool isCollide = pOther->GetColliderID() == "playerBullet";
-    isCollide |= pOther->GetColliderID() == "PlayerExplosion";
+    bool isCollidedPlayerBullet = pOther->GetColliderID() == "playerBullet";
+    bool isCollidedPlayerExplosion = pOther->GetColliderID() == "PlayerExplosion";
+    bool isCollidedPlayerBody = pOther->GetColliderID() == "player";
 
-    bool isPlayerBullet = pOther->GetColliderID() == "playerBullet";
-    bool isPlayerExplosion = pOther->GetColliderID() == "PlayerExplosion";
+    bool isCollide = false;
+    isCollide |= isCollidedPlayerBullet;
+    isCollide |= isCollidedPlayerExplosion;
+    isCollide |= isCollidedPlayerBody;
+
+    bool isCollidedWithDamage = false;
+    isCollidedWithDamage |= isCollidedPlayerBullet;
+    isCollidedWithDamage |= isCollidedPlayerExplosion;
 
     /// 衝突している場合
     if (isCollide)
@@ -108,6 +115,18 @@ void EnemyRusher::OnCollisionTrigger(const Collider* pOther)
         assert(pStatsOther);
         pStats_->OnCollision(pStatsOther);
 
+        if (isCollidedPlayerBody)
+        {
+            // プレイヤーに衝突したらスコアを与えない形で死亡する
+            EntityBase::Dead();
+        }
+
+        /// (敵が)ダメージを受けている場合はカメラを揺らす
+        if (isCollidedWithDamage)
+        {
+            EntityBase::ShakeCamera(kCameraShakePower_);
+        }
+
         if (pStats_->GetHp() <= 0)
         {
             // 死亡する
@@ -115,11 +134,11 @@ void EnemyRusher::OnCollisionTrigger(const Collider* pOther)
             audioDeath_->Play();
 
             /// あたっている相手に応じてスコアイベントを発行
-            if (isPlayerBullet)
+            if (isCollidedPlayerBullet)
             {
                 EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyType::Rusher, 0.2f });
             }
-            else if (isPlayerExplosion)
+            else if (isCollidedPlayerExplosion)
             {
                 EventListener::GetInstance()->Publish(KillEnemyEvent{ EnemyType::Rusher, 1.0f });
             }
@@ -133,9 +152,6 @@ void EnemyRusher::OnCollisionTrigger(const Collider* pOther)
         {
             assert(0);
         }
-
-        /// 画面揺れ
-        EntityBase::ShakeCamera(kCameraShakePower_);
     }
 }
 
@@ -328,5 +344,5 @@ void EnemyRusher::InitializeFocusOrientation()
 void EnemyRusher::InitializeStats()
 {
     pStats_ = std::make_unique<EntityStats>();
-    pStats_->Initialize(12.0f, 10.0f, 10.0f);
+    pStats_->Initialize(12.0f, 0.0f, 10.0f);
 }

@@ -265,11 +265,11 @@ void Player::OnCollision(const Collider* other)
 
     if (other->GetColliderID() == "enemy")
     {
-        assert(other->GetOwnerTransform() &&
-            "衝突相手のTransformが設定されていません。");
+        assert(other->GetOwnerTransform() && "衝突相手のTransformが設定されていません。");
 
         Input::GetInstance()->Vibrate(kVibrationValueWhenDamage_, kVibrationValueWhenDamage_);
 
+        /// (プレイヤーが)ダメージを受けたときのカメラの揺れ
         EntityBase::ShakeCamera(kGameEyeShakePowerWhenDamage_);
 
         /// 反発を速度に適用
